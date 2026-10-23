@@ -187,6 +187,8 @@ function defaultState() {
     firstSeen: {},
     dismissed: {},
     snoozed: {},
+    shortlist: [],
+    rotationSeen: [],
     usage: { days: {} },
     events: [],
     coverage: null,
@@ -1276,6 +1278,7 @@ export function apply(ctx, rawConfig) {
     for (const name of Object.keys(state.firstSeen ?? {})) installedKeys.add(pkgName(name))
     const pending = state.recommendations.filter(
       (item) =>
+        state.dismissed[item.id] === undefined &&
         item.installed !== true &&
         !installedKeys.has(pkgName(item.spec)) &&
         !installedKeys.has(pkgName(item.name)) &&
@@ -1821,6 +1824,9 @@ export function apply(ctx, rawConfig) {
 
       state.workProfile = profile
       state.recommendations = recommendations.slice(0, cfg.maxRecommendations)
+      // Kept so "换一批" can rotate through ranked candidates without another
+      // network round trip (the full refresh takes minutes).
+      state.shortlist = recommendations.slice(0, 60)
       // Attribution feeds the installed view, so it has to be current first.
       state.attribution = attribution.byBundle
       state.installed = buildInstalledView(inventory.bundles, now)
@@ -2000,8 +2006,48 @@ export function apply(ctx, rawConfig) {
   function dismissRecommendation(id) {
     state.dismissed[id] = Date.now()
     state.recommendations = state.recommendations.filter((item) => item.id !== id)
+    // Gap cards carry the same candidates; drop them too or the click looks
+    // like it did nothing until the next full refresh.
+    state.gaps = (state.gaps ?? []).map((gap) => ({
+      ...gap,
+      suggestions: (gap.suggestions ?? []).filter((item) => item.id !== id),
+    }))
+    if (Array.isArray(state.shortlist)) {
+      state.shortlist = state.shortlist.filter((item) => item.id !== id)
+    }
     note('dismissed: ' + id)
     scheduleSave()
+  }
+
+  /** Show the next page of ranked candidates without re-running the pipeline. */
+  async function rotateRecommendations() {
+    const pool = Array.isArray(state.shortlist) ? state.shortlist : []
+    if (pool.length === 0) throw new Error('还没有可轮换的候选，请先刷新一次')
+    const cfg = settings()
+    const installedKeys = new Set()
+    for (const item of state.installed ?? []) installedKeys.add(pkgName(item.name))
+    for (const name of Object.keys(state.firstSeen ?? {})) installedKeys.add(pkgName(name))
+    const usable = (item) =>
+      state.dismissed[item.id] === undefined &&
+      item.installed !== true &&
+      !installedKeys.has(pkgName(item.spec)) &&
+      !installedKeys.has(pkgName(item.name))
+
+    const current = new Set(state.recommendations.map((item) => item.id))
+    const seen = new Set(state.rotationSeen ?? [])
+    let next = pool.filter((item) => usable(item) && !current.has(item.id) && !seen.has(item.id))
+    if (next.length === 0) {
+      // Everything has been shown once: start a fresh lap.
+      state.rotationSeen = []
+      next = pool.filter((item) => usable(item) && !current.has(item.id))
+    }
+    if (next.length === 0) throw new Error('候选池已耗尽，请刷新获取新数据')
+    const page = next.slice(0, cfg.maxRecommendations)
+    state.rotationSeen = [...(state.rotationSeen ?? []), ...state.recommendations.map((item) => item.id)]
+    state.recommendations = page
+    note('rotate: ' + page.map((item) => item.name).join(', '))
+    await save()
+    return page.length
   }
 
   function snoozeIdle(bundleName, days = 30) {
@@ -2149,6 +2195,11 @@ export function apply(ctx, rawConfig) {
           if (typeof body.id !== 'string') throw new Error('dismiss requires id')
           dismissRecommendation(body.id)
           sendJson(response, 200, { ok: true })
+          return
+        }
+        case 'rotate': {
+          const count = await rotateRecommendations()
+          sendJson(response, 200, { ok: true, result: { rotated: count } })
           return
         }
         case 'snooze': {

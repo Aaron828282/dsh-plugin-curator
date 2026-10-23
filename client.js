@@ -119,6 +119,9 @@ window.__ModuleLoader__.load({
       mRank: '热度超过',
       mUpdated: '更新',
       mNoSignal: '暂无市场数据',
+      rotate: '换一批',
+      rotating: '换一批中',
+      rotated: '已换一批',
       verified: '已验证',
       tierNew: '新发现',
       classChip: '能力升级',
@@ -247,6 +250,9 @@ window.__ModuleLoader__.load({
       mRank: 'beats',
       mUpdated: 'updated',
       mNoSignal: 'no market data yet',
+      rotate: 'Shuffle',
+      rotating: 'Shuffling',
+      rotated: 'New batch loaded',
       verified: 'verified',
       tierNew: 'new',
       classChip: 'upgrade',
@@ -348,6 +354,7 @@ window.__ModuleLoader__.load({
       '.pc-textarea{flex:1 1 auto;min-height:38px;max-height:120px;resize:vertical;border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-base);color:inherit;padding:8px 10px;font:inherit;}',
       '.pc-textarea:focus{outline:none;border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}',
       '.pc-pick{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--dsw-alias-bg-base);}',
+      '.pc-pane-actions{display:flex;gap:8px;justify-content:flex-end;}',
       '.pc-metrics{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;color:var(--dsw-alias-label-tertiary);font-size:11.5px;}',
       '.pc-metric{white-space:nowrap;}',
       '.pc-gap-picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin:10px 0 4px;}',
@@ -710,6 +717,7 @@ window.__ModuleLoader__.load({
       const [draft, setDraft] = React.useState('')
       const [sending, setSending] = React.useState(false)
       const [busyFor, setBusyFor] = React.useState(0)
+      const [dismissedLocal, setDismissedLocal] = React.useState([])
 
 
       const load = React.useCallback(async () => {
@@ -779,6 +787,11 @@ window.__ModuleLoader__.load({
           setBusy('')
         }
       }, [load, t])
+
+      const dismissCard = React.useCallback(async (id) => {
+        setDismissedLocal((current) => (current.includes(id) ? current : [...current, id]))
+        await act('dismiss', { id }, t('dismissDone'))
+      }, [act, t])
 
       const saveSettings = React.useCallback(async (next) => {
         const response = await fetch(API_SETTINGS, {
@@ -911,11 +924,16 @@ window.__ModuleLoader__.load({
         installedKeys.has(pkgOf(item.name)) ||
         installedKeys.has(pkgOf(item.npm))
 
-      const recommendations = (data.recommendations || []).filter((item) => !isInstalled(item))
+      const hiddenLocal = new Set(dismissedLocal)
+      const recommendations = (data.recommendations || []).filter(
+        (item) => !isInstalled(item) && !hiddenLocal.has(item.id),
+      )
       const idle = data.idle || []
       const gaps = (data.gaps || []).map((gap) => ({
         ...gap,
-        suggestions: (gap.suggestions || []).filter((item) => !isInstalled(item)),
+        suggestions: (gap.suggestions || []).filter(
+          (item) => !isInstalled(item) && !hiddenLocal.has(item.id),
+        ),
       }))
       const diff = data.diff
       const conflicts = data.conflicts || []
@@ -1003,8 +1021,16 @@ window.__ModuleLoader__.load({
         ),
       )
 
+      const paneActions = h('div', { className: 'pc-pane-actions' },
+        h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => act('rotate', {}, t('rotated')) },
+          busy === 'rotate' ? t('rotating') : t('rotate')),
+        h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => act('refresh', {}, t('refresh')) },
+          busy === 'refresh' ? t('refreshing') + '…' : t('refresh')),
+      )
+
       const recsView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
         chatView,
+        paneActions,
         h('div', { className: 'pc-grid' },
           recommendations.length === 0
             ? h('div', { className: 'pc-empty' }, t('emptyRecommend'))
@@ -1015,7 +1041,7 @@ window.__ModuleLoader__.load({
               chinese,
               busy,
               onInstall: installCard,
-              onDismiss: (id) => act('dismiss', { id }, t('dismissDone')),
+              onDismiss: dismissCard,
             }))))
 
       const installedView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
@@ -1043,6 +1069,7 @@ window.__ModuleLoader__.load({
       }
 
       const insightView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+        paneActions,
         h(Card, { title: t('diffTitle'), hint: t('diffHint') },
           h(Chips, { items: diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }] })),
         conflicts.length === 0 ? null : h(Card, { title: t('conflictsTitle'), count: conflicts.length, hint: t('conflictsHint') },
@@ -1071,7 +1098,7 @@ window.__ModuleLoader__.load({
                     chinese,
                     busy,
                     onInstall: installCard,
-                    onDismiss: (id) => act('dismiss', { id }, t('dismissDone')),
+                    onDismiss: dismissCard,
                   })))
                 : h('div', { className: 'pc-desc' }, t('gapNoPlugin')),
             ))),
