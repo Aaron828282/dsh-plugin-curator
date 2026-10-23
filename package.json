@@ -25,6 +25,14 @@
     "marketplace"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aaron828282/dsh-plugin-curator.git"
+  },
+  "homepage": "https://github.com/Aaron828282/dsh-plugin-curator#readme",
+  "bugs": {
+    "url": "https://github.com/Aaron828282/dsh-plugin-curator/issues"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

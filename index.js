@@ -1944,7 +1944,7 @@ export function apply(ctx, rawConfig) {
     note('install (' + origin + '): ' + spec)
     const result = kind === 'bundled'
       ? await engine.setBundleEnabled(spec, true)
-      : await engine.installBundle(spec, { enabled: true })
+      : await withTimeout(engine.installBundle(spec, { enabled: true }), 10 * 60 * 1000, 'install')
     const alreadyInstalled = result?.error?.code === 'already-installed'
     recommendation.installed = alreadyInstalled || result?.application === 'applied' || result?.application === 'restart-required'
     if (recommendation.installed) {
@@ -2126,7 +2126,7 @@ export function apply(ctx, rawConfig) {
           const engine = manager()
           if (!engine) throw new Error('pluginManager service is not available in this profile')
           note('install (chat): ' + spec)
-          const result = await engine.installBundle(spec, { enabled: true })
+          const result = await withTimeout(engine.installBundle(spec, { enabled: true }), 10 * 60 * 1000, 'install')
           const applied =
             result?.application === 'applied' ||
             result?.application === 'restart-required' ||

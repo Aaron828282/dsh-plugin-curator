@@ -463,7 +463,7 @@ window.__ModuleLoader__.load({
         h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' } },
           h('div', { className: 'pc-score' }, String(item.score), h('small', null, chinese ? '匹配' : 'fit')),
           h('div', { style: { display: 'flex', gap: '6px' } },
-            h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') : t('install')),
+            h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
             h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss')),
           ),
         ),
@@ -654,6 +654,13 @@ window.__ModuleLoader__.load({
       const description = (chinese && item.descriptionZh) ? item.descriptionZh : pickText(item.description, chinese)
       const reasons = (item.reasons ?? []).map((reason) => pickText(reason, chinese)).filter(Boolean).slice(0, 3)
       const installing = busy === 'install:' + item.id
+      const [elapsed, setElapsed] = React.useState(0)
+      React.useEffect(() => {
+        if (!installing) { setElapsed(0); return undefined }
+        const started = Date.now()
+        const timer = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000)
+        return () => clearInterval(timer)
+      }, [installing])
       return h('div', { className: 'pc-card', style: { display: 'flex', flexDirection: 'column' } },
         h('div', { style: { padding: '13px 15px 10px', display: 'flex', gap: '10px', alignItems: 'flex-start' } },
           h('div', { className: 'pc-avatar' }, (title || item.name).slice(0, 1)),
@@ -676,7 +683,7 @@ window.__ModuleLoader__.load({
           item.use ? h('div', { className: 'pc-line' }, h('b', null, t('howUse') + ':'), h('span', null, pickText(item.use, chinese))) : null,
         ),
         h('div', { style: { marginTop: 'auto', padding: '10px 15px 13px', display: 'flex', gap: '8px', borderTop: '1px solid var(--dsw-alias-border-l1)' } },
-          h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') : t('install')),
+          h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
           h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss')),
         ),
       )
