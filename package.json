@@ -1,0 +1,47 @@
+{
+  "name": "dsh-plugin-curator",
+  "version": "0.2.0",
+  "private": false,
+  "type": "module",
+  "description": "Daily plugin curation for DeepSeek Harness: work-profile-aware recommendations, tuning hints for the plugins you actually use, and idle-plugin cleanup reminders.",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "core.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "curator",
+    "marketplace"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings-plugins"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.0",
+    "@deepseek-ai/dsh": "^0.2.0-rc.2"
+  },
+  "scripts": {
+    "test": "node --test test/core.test.mjs test/host.smoke.test.mjs test/client.smoke.test.mjs"
+  }
+}

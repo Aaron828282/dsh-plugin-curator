@@ -1,0 +1,36 @@
+# dsh bundle patch: inserts the curator row into a profile's layer stack.
+#
+# Everything here is editable from the profile's own cordis.patch.yml, which
+# wins over this layer. Leave the row out entirely to disable the curator.
+- insert:
+    - id: plugin-curator
+      name: dsh-plugin-curator
+      config:
+        # Local hour (0-23) after which the daily report rebuilds.
+        dailyHour: 9
+        # Days without an attributable call before a plugin is called idle.
+        idleDays: 30
+        # How many recommendations one day may hold.
+        maxRecommendations: 8
+        # Off by default: the tab asks before installing anything.
+        autoInstall: false
+        autoInstallMinScore: 85
+        autoInstallMax: 2
+        npmSearch: true
+        # npm wraps around after ~5k results, so several queries widen the slice.
+        npmQueries:
+          - keywords:dsh-plugin
+          - keywords:deepseek-harness
+        npmPages: 40
+        githubSearch: true
+        githubPages: 2
+        # How many shortlisted candidates get a real installability check.
+        validateTop: 40
+        # Mine your own prompts for capabilities you keep asking for.
+        intentEnabled: true
+        intentDays: 14
+        intentSessions: 8
+        intentMinHits: 1
+        # Public indexes scanned for candidates.
+        sources:
+          - https://awesome-dsh-plugin.com/plugins.json
