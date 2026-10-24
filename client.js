@@ -44,6 +44,14 @@ window.__ModuleLoader__.load({
       diffEmpty: '没有变化',
       conflictsTitle: '能力重叠',
       conflictsHint: '多个已装插件覆盖同一类能力，可能互相打断或重复占用上下文。',
+      overlapCount: '{n} 个插件覆盖同类能力',
+      overlapPrimary: '主力',
+      overlapCalls: '调用 {n} 次',
+      overlapTools: '{n} 个工具',
+      overlapLastUsed: '最近使用',
+      overlapIdle: '闲置 {n} 天',
+      overlapAfterInstall: '与 {n} 组已装插件功能重叠',
+      disabledTag: '已停用',
       conflictShared: '{n} 个插件覆盖「{tag}」',
       gapsTitle: '需求缺口',
       gapsHint: '来自你的提问、工具失败或出厂能力空白的推断。每条都带证据。',
@@ -175,6 +183,14 @@ window.__ModuleLoader__.load({
       diffEmpty: 'No changes',
       conflictsTitle: 'Overlapping capabilities',
       conflictsHint: 'Several installed plugins cover the same capability; they may compete or duplicate context.',
+      overlapCount: '{n} plugins overlap',
+      overlapPrimary: 'primary',
+      overlapCalls: '{n} calls',
+      overlapTools: '{n} tools',
+      overlapLastUsed: 'last used',
+      overlapIdle: 'idle {n}d',
+      overlapAfterInstall: 'overlaps {n} installed groups',
+      disabledTag: 'disabled',
       conflictShared: '{n} plugins cover “{tag}”',
       gapsTitle: 'Open gaps',
       gapsHint: 'Inferred from your prompts, tool failures and capabilities DSH does not ship. Every entry carries evidence.',
@@ -355,6 +371,9 @@ window.__ModuleLoader__.load({
       '.pc-textarea:focus{outline:none;border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}',
       '.pc-pick{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--dsw-alias-bg-base);}',
       '.pc-pane-actions{display:flex;gap:8px;justify-content:flex-end;}',
+      '.pc-overlap{padding:12px 4px;border-top:1px solid var(--dsw-alias-border-subtle,rgba(0,0,0,.08));}',
+      '.pc-overlap-head{display:flex;gap:8px;align-items:baseline;}',
+      '.pc-overlap-item{display:flex;gap:10px;align-items:flex-start;margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--dsw-alias-bg-layer-2,rgba(0,0,0,.03));}',
       '.pc-metrics{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;color:var(--dsw-alias-label-tertiary);font-size:11.5px;}',
       '.pc-metric{white-space:nowrap;}',
       '.pc-gap-picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin:10px 0 4px;}',
@@ -866,8 +885,11 @@ window.__ModuleLoader__.load({
           if (!response.ok || body === null || body.ok !== true) throw new Error((body && body.error) || 'HTTP ' + response.status)
           const application = body.result && body.result.application
           const errorCode = body.result && body.result.error && body.result.error.code
+          const overlaps = Array.isArray(body.overlaps) ? body.overlaps : []
           if (errorCode) {
             setToast({ kind: 'err', text: fill(t('installedFailed'), { reason: errorCode }) })
+          } else if (overlaps.length > 0) {
+            setToast({ kind: 'ok', text: t('installedLive') + ' · ' + fill(t('overlapAfterInstall'), { n: overlaps.length }) })
           } else if (application === 'restart-required') {
             setToast({ kind: 'ok', text: t('installedRestart') })
           } else {
@@ -1073,11 +1095,42 @@ window.__ModuleLoader__.load({
         h(Card, { title: t('diffTitle'), hint: t('diffHint') },
           h(Chips, { items: diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }] })),
         conflicts.length === 0 ? null : h(Card, { title: t('conflictsTitle'), count: conflicts.length, hint: t('conflictsHint') },
-          conflicts.map((conflict, index) => h('div', { key: conflict.tag, className: 'pc-row', style: index === 0 ? { borderTop: 'none' } : null },
-            h('div', { className: 'pc-avatar' }, '∩'),
-            h('div', { className: 'pc-grow' },
-              h('div', { className: 'pc-name' }, conflict.tag),
-              h('div', { className: 'pc-desc' }, conflict.names.join(' · '))))))
+          conflicts.map((conflict, index) => h('div', {
+            key: conflict.tag,
+            className: 'pc-overlap',
+            style: index === 0 ? { borderTop: 'none' } : null,
+          },
+            h('div', { className: 'pc-overlap-head' },
+              h('span', { className: 'pc-name' }, conflict.tag),
+              h('span', { className: 'pc-chip' }, fill(t('overlapCount'), { n: (conflict.plugins ?? []).length })),
+            ),
+            (conflict.plugins ?? []).map((plugin) => h('div', { key: plugin.name, className: 'pc-overlap-item' },
+              h('div', { className: 'pc-grow' },
+                h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline', flexWrap: 'wrap' } },
+                  h('span', { className: 'pc-name' }, plugin.title || plugin.name),
+                  plugin.version ? h('span', { className: 'pc-chip' }, 'v' + plugin.version) : null,
+                  plugin.primary ? h('span', { className: 'pc-chip ok' }, t('overlapPrimary')) : null,
+                  plugin.enabled === false ? h('span', { className: 'pc-chip' }, t('disabled')) : null,
+                ),
+                plugin.description ? h('div', { className: 'pc-desc' }, plugin.description) : null,
+                h('div', { className: 'pc-metrics' },
+                  h('span', { className: 'pc-metric' }, fill(t('overlapCalls'), { n: plugin.calls })),
+                  h('span', { className: 'pc-metric' }, fill(t('overlapTools'), { n: plugin.toolCount })),
+                  plugin.lastUsed ? h('span', { className: 'pc-metric' }, t('overlapLastUsed') + ' ' + plugin.lastUsed) : null,
+                  plugin.daysInactive === null || plugin.daysInactive === undefined ? null : h('span', { className: 'pc-metric' }, fill(t('overlapIdle'), { n: plugin.daysInactive })),
+                ),
+              ),
+              plugin.removable
+                ? h(Button, {
+                  variant: 'danger',
+                  disabled: busy !== '',
+                  onClick: () => (confirming === plugin.name
+                    ? act('remove', { name: plugin.name }, t('removedLive'))
+                    : setConfirming(plugin.name)),
+                }, confirming === plugin.name ? t('confirmRemove') : t('remove'))
+                : null,
+            )),
+          )))
         ,
         h(Card, { title: t('gapsTitle'), count: gaps.length, hint: t('gapsHint') },
           gaps.length === 0 ? h('div', { className: 'pc-empty' }, t('gapEmpty')) : gaps.map((gap, index) => h('div', { key: gap.tag, className: 'pc-row', style: index === 0 ? { borderTop: 'none' } : null },

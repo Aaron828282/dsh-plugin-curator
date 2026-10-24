@@ -1271,6 +1271,54 @@ export function apply(ctx, rawConfig) {
     return base <= Date.now() ? Date.now() + 60_000 : base
   }
 
+  /**
+   * Group installed plugins by the capability they cover, with enough detail per
+   * plugin that the panel can explain how they differ (usage, tools, freshness).
+   */
+  function rebuildConflicts() {
+    const installed = (state.installed ?? []).filter((item) => item.enabled !== false)
+    const byTag = new Map()
+    for (const item of installed) {
+      const tags = capabilityTags({
+        name: item.name,
+        title: item.titleI18n ?? item.title,
+        description: item.description,
+      })
+      for (const tag of tags) {
+        const list = byTag.get(tag) ?? []
+        list.push(item)
+        byTag.set(tag, list)
+      }
+    }
+    state.conflicts = [...byTag.entries()]
+      .filter(([, items]) => items.length > 1)
+      .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+      .slice(0, 6)
+      .map(([tag, items]) => {
+        const topCalls = Math.max(...items.map((item) => Number(item.calls) || 0))
+        return {
+          tag,
+          names: items.map((item) => item.name),
+          plugins: items.map((item) => ({
+            name: item.name,
+            title: item.title || item.name,
+            version: item.version ?? '',
+            enabled: item.enabled === true,
+            removable: item.removable === true,
+            official: item.official === true,
+            description: item.description ?? '',
+            calls: Number(item.calls) || 0,
+            toolCount: (item.tools ?? []).length,
+            toolsPreview: (item.tools ?? []).slice(0, 3).map((tool) => tool.name),
+            lastUsed: item.lastUsed ?? '',
+            daysInactive: item.daysInactive ?? null,
+            installedAt: item.installedAt ?? '',
+            primary: topCalls > 0 && (Number(item.calls) || 0) === topCalls,
+          })),
+        }
+      })
+  }
+
   function snapshot() {
     const cfg = settings()
     const installedKeys = new Set()
@@ -1753,18 +1801,8 @@ export function apply(ctx, rawConfig) {
       state.lastRecommendationIds = currentIds
       state.lastInstalledNames = currentInstalled
 
-      const byTag = new Map()
-      for (const bundle of inventory.bundles.filter((item) => item.installed && item.enabled !== false)) {
-        for (const tag of capabilityTags(bundle)) {
-          const names = byTag.get(tag) ?? []
-          names.push(bundle.name)
-          byTag.set(tag, names)
-        }
-      }
-      state.conflicts = [...byTag.entries()]
-        .filter(([, names]) => names.length > 1)
-        .map(([tag, names]) => ({ tag, names }))
-        .slice(0, 6)
+      // Conflict detection lives in rebuildConflicts() so installs and removals
+      // can refresh it without re-running the whole pipeline.
 
       if (cfg.llmEnabled === true && cfg.model?.provider) {
         await translateDescriptions(diversified, cfg.model)
@@ -1830,6 +1868,7 @@ export function apply(ctx, rawConfig) {
       // Attribution feeds the installed view, so it has to be current first.
       state.attribution = attribution.byBundle
       state.installed = buildInstalledView(inventory.bundles, now)
+      rebuildConflicts()
       state.sourceStatus = gathered.sources
       state.intents = intentResult.intents
       state.gaps = gaps
@@ -1958,6 +1997,7 @@ export function apply(ctx, rawConfig) {
       if (state.dismissed?.[recommendation.id] !== undefined) delete state.dismissed[recommendation.id]
       const inventory = await readInventory()
       state.installed = buildInstalledView(inventory.bundles)
+    rebuildConflicts()
     }
     note('install result: ' + (result?.application ?? 'unknown') + ' ' + (result?.error?.code ?? ''))
     await save()
@@ -1983,6 +2023,7 @@ export function apply(ctx, rawConfig) {
     }
     const inventory = await readInventory()
     state.installed = buildInstalledView(inventory.bundles)
+    rebuildConflicts()
     state.idle = state.idle.filter((item) => item.name !== bundleName)
     note('remove result: ' + (result?.application ?? 'unknown'))
     await save()
@@ -1999,6 +2040,7 @@ export function apply(ctx, rawConfig) {
     const result = await engine.setBundleEnabled(bundleName, enabled === true)
     const inventory = await readInventory()
     state.installed = buildInstalledView(inventory.bundles)
+    rebuildConflicts()
     await save()
     return result
   }
@@ -2186,9 +2228,14 @@ export function apply(ctx, rawConfig) {
             }
             const inventory = await readInventory()
             state.installed = buildInstalledView(inventory.bundles)
+            rebuildConflicts()
           }
           await save()
-          sendJson(response, 200, { ok: true, result })
+          const target = pkgName(spec)
+          const overlaps = (state.conflicts ?? []).filter((group) =>
+            (group.plugins ?? []).some((plugin) => pkgName(plugin.name) === target),
+          ).map((group) => ({ tag: group.tag, names: group.names }))
+          sendJson(response, 200, { ok: true, result, overlaps })
           return
         }
         case 'dismiss': {
