@@ -10,7 +10,7 @@
  * Install and remove are user actions: the agent-facing tool is read-only.
  */
 
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
@@ -823,15 +823,45 @@ export function apply(ctx, rawConfig) {
     }
   }
 
+  /** Locate the profile directory: the host passes it on argv. */
+  function profileDir() {
+    if (process.env.DSH_PROFILE_DIR) return process.env.DSH_PROFILE_DIR
+    const fromArgv = (process.argv ?? []).find((arg) => /[\\/]profiles[\\/][^\\/]+$/.test(String(arg)))
+    if (fromArgv !== undefined) return fromArgv
+    return join(process.env.DSH_HOME || join(homedir(), '.dsh'), 'profiles', 'desktop')
+  }
+
+  /**
+   * The activation list from the profile manifest. listBundles() also reports
+   * packages that are still npm dependencies but were removed from the profile,
+   * so "installed" alone over-reports; the manifest list is authoritative.
+   */
+  let activeBundlesCache = { at: 0, names: null }
+  async function readActiveBundles() {
+    try {
+      const file = join(profileDir(), 'package.json')
+      const info = await stat(file)
+      if (activeBundlesCache.names !== null && info.mtimeMs === activeBundlesCache.at) {
+        return activeBundlesCache.names
+      }
+      const raw = JSON.parse(await readFile(file, 'utf8'))
+      const names = Array.isArray(raw?.dsh?.profile?.bundles) ? raw.dsh.profile.bundles.map((name) => String(name)) : null
+      activeBundlesCache = { at: info.mtimeMs, names }
+      return names
+    } catch {
+      return null
+    }
+  }
+
   async function readInventory() {
     const engine = manager()
-    if (!engine) return { bundles: [], available: false }
+    if (!engine) return { bundles: [], active: null, available: false }
     try {
-      const bundles = await engine.listBundles()
-      return { bundles: Array.isArray(bundles) ? bundles : [], available: true }
+      const [bundles, active] = await Promise.all([engine.listBundles(), readActiveBundles()])
+      return { bundles: Array.isArray(bundles) ? bundles : [], active, available: true }
     } catch (error) {
       warn('inventory read failed: ' + errorMessage(error))
-      return { bundles: [], available: false }
+      return { bundles: [], active: null, available: false }
     }
   }
 
@@ -1223,13 +1253,27 @@ export function apply(ctx, rawConfig) {
     }
 
     const candidates = mergeCandidates(lists)
-    return { candidates, sources, installedNames: new Set(bundles.filter((b) => b.installed).map((b) => String(b.name).toLowerCase())) }
+    // Removed-but-still-a-dependency packages must not count as installed, or
+    // they would be excluded from recommendations forever.
+    const active = await readActiveBundles()
+    const activeSet = Array.isArray(active) ? new Set(active.map((name) => pkgName(name))) : null
+    const installedNames = new Set(
+      bundles
+        .filter((bundle) => bundle.installed)
+        .map((bundle) => String(bundle.name).toLowerCase())
+        .filter((name) => activeSet === null || activeSet.has(pkgName(name))),
+    )
+    return { candidates, sources, installedNames }
   }
 
-  function buildInstalledView(bundles, now = Date.now()) {
+  function buildInstalledView(bundles, now = Date.now(), active = null) {
     const idleByName = new Map((state.idle ?? []).map((item) => [item.name, item]))
+    // A package that is still an npm dependency but was removed from the profile
+    // bundle list is not installed in DSH terms; the manifest decides.
+    const activeSet = Array.isArray(active) ? new Set(active.map((name) => pkgName(name))) : null
     return bundles
       .filter((bundle) => bundle?.installed)
+      .filter((bundle) => activeSet === null || activeSet.has(pkgName(bundle.name)))
       .map((bundle) => {
         const attribution = state.attribution?.[bundle.name] ?? {}
         const idleItem = idleByName.get(bundle.name)
@@ -1327,7 +1371,7 @@ export function apply(ctx, rawConfig) {
   async function syncInstalledFromInventory() {
     try {
       const inventory = await readInventory()
-      state.installed = buildInstalledView(inventory.bundles)
+      state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
       rebuildConflicts()
     } catch {
       // Keep the last known view if the manager is unavailable mid-recompose.
@@ -1883,7 +1927,7 @@ export function apply(ctx, rawConfig) {
       state.shortlist = recommendations.slice(0, 60)
       // Attribution feeds the installed view, so it has to be current first.
       state.attribution = attribution.byBundle
-      state.installed = buildInstalledView(inventory.bundles, now)
+      state.installed = buildInstalledView(inventory.bundles, now, inventory.active)
       rebuildConflicts()
       state.sourceStatus = gathered.sources
       state.intents = intentResult.intents
@@ -2012,7 +2056,7 @@ export function apply(ctx, rawConfig) {
       state.firstSeen[String(spec)] = dateKey()
       if (state.dismissed?.[recommendation.id] !== undefined) delete state.dismissed[recommendation.id]
       const inventory = await readInventory()
-      state.installed = buildInstalledView(inventory.bundles)
+      state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
     rebuildConflicts()
     }
     note('install result: ' + (result?.application ?? 'unknown') + ' ' + (result?.error?.code ?? ''))
@@ -2038,7 +2082,7 @@ export function apply(ctx, rawConfig) {
       if (recommendation.npm === bundleName || recommendation.spec === bundleName) recommendation.installed = false
     }
     const inventory = await readInventory()
-    state.installed = buildInstalledView(inventory.bundles)
+    state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
     rebuildConflicts()
     state.idle = state.idle.filter((item) => item.name !== bundleName)
     note('remove result: ' + (result?.application ?? 'unknown'))
@@ -2055,7 +2099,7 @@ export function apply(ctx, rawConfig) {
     note('set enabled ' + bundleName + ': ' + enabled)
     const result = await engine.setBundleEnabled(bundleName, enabled === true)
     const inventory = await readInventory()
-    state.installed = buildInstalledView(inventory.bundles)
+    state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
     rebuildConflicts()
     await save()
     return result
@@ -2243,7 +2287,7 @@ export function apply(ctx, rawConfig) {
               }
             }
             const inventory = await readInventory()
-            state.installed = buildInstalledView(inventory.bundles)
+            state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
             rebuildConflicts()
           }
           await save()
