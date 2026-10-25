@@ -1319,7 +1319,23 @@ export function apply(ctx, rawConfig) {
       })
   }
 
-  function snapshot() {
+  /**
+   * Refresh the installed list from the live bundle inventory on every snapshot:
+   * plugins removed from the Plugins page (or by another process) must disappear
+   * immediately, not after the next two-minute pipeline.
+   */
+  async function syncInstalledFromInventory() {
+    try {
+      const inventory = await readInventory()
+      state.installed = buildInstalledView(inventory.bundles)
+      rebuildConflicts()
+    } catch {
+      // Keep the last known view if the manager is unavailable mid-recompose.
+    }
+  }
+
+  async function snapshot() {
+    await syncInstalledFromInventory()
     const cfg = settings()
     const installedKeys = new Set()
     for (const item of state.installed ?? []) installedKeys.add(pkgName(item.name))
@@ -1911,7 +1927,7 @@ export function apply(ctx, rawConfig) {
       await writeDailyReport()
 
       if (cfg.autoInstall) await autoInstall(cfg)
-      return snapshot()
+      return await snapshot()
     })(), 5 * 60 * 1000, 'refresh')
     try {
       return await busy
@@ -2100,8 +2116,8 @@ export function apply(ctx, rawConfig) {
     scheduleSave()
   }
 
-  function toolPayload() {
-    const report = snapshot()
+  async function toolPayload() {
+    const report = await snapshot()
     return {
       generatedAt: report.generatedAt,
       lastRunDate: report.lastRunDate,
@@ -2185,7 +2201,7 @@ export function apply(ctx, rawConfig) {
       switch (body.action) {
         case 'refresh': {
           await refresh('manual')
-          sendJson(response, 200, { ok: true, value: snapshot() })
+          sendJson(response, 200, { ok: true, value: await snapshot() })
           return
         }
         case 'install': {
@@ -2287,7 +2303,7 @@ export function apply(ctx, rawConfig) {
           // First open with no report yet: start the build and answer with the
           // current (empty) snapshot so the tab renders immediately.
           if (state.lastRunAt === 0 && busy === null) void refresh('route')
-          sendJson(response, 200, { ok: true, value: snapshot() })
+          sendJson(response, 200, { ok: true, value: await snapshot() })
         } catch (error) {
           sendJson(response, 500, { ok: false, error: errorMessage(error) })
         }
