@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 
 import {
   buildAttribution,
+  groupOverlaps,
   buildIdle,
   buildProfile,
   buildSuggestions,
@@ -273,3 +274,47 @@ test('tool errors are attributed to the tool that failed', () => {
   assert.ok(failing.match instanceof RegExp)
   assert.equal(failingTool(stats, { minCalls: 99 }), null)
 })
+
+test('overlap never groups plugins that only share a description word', () => {
+  const items = [
+    { name: 'dsh-context', title: '上下文', description: 'context dashboard and context command', tools: [], enabled: true },
+    { name: 'dsh-xdpool', title: '模型池', description: 'model pool usage dashboard and gateway', tools: [], enabled: true },
+  ]
+  assert.deepEqual(groupOverlaps(items), [])
+})
+
+test('overlap groups plugins that register tools in the same domain', () => {
+  const items = [
+    { name: 'meow-memory', title: 'meow', description: '', tools: [{ name: 'memory_remember' }], enabled: true },
+    { name: '@furongjun1999/dsh-memory', title: '灵枢', description: '', tools: [{ name: 'memory_search' }], enabled: true },
+  ]
+  const groups = groupOverlaps(items)
+  assert.equal(groups.length, 1)
+  assert.equal(groups[0].tag, 'memory')
+  assert.equal(groups[0].items.length, 2)
+  assert.ok(groups[0].reason.zh.includes('记忆'))
+})
+
+test('overlap falls back to a shared name word, not to a shared domain word', () => {
+  const shared = groupOverlaps([
+    { name: 'dsh-session-search', title: '会话搜索', description: '', tools: [], enabled: true },
+    { name: 'dsh-session-titles', title: '标题', description: '', tools: [], enabled: true },
+  ])
+  assert.equal(shared.length, 1)
+  assert.equal(shared[0].tag, 'session')
+
+  const unrelated = groupOverlaps([
+    { name: 'dsh-context', title: '上下文', description: '', tools: [], enabled: true },
+    { name: 'dsh-dashboard', title: '看板', description: '', tools: [], enabled: true },
+  ])
+  assert.deepEqual(unrelated, [])
+})
+
+test('overlap ignores disabled plugins', () => {
+  const groups = groupOverlaps([
+    { name: 'meow-memory', title: 'meow', description: '', tools: [{ name: 'memory_remember' }], enabled: true },
+    { name: 'dsh-memory', title: 'memory', description: '', tools: [{ name: 'memory_search' }], enabled: false },
+  ])
+  assert.deepEqual(groups, [])
+})
+

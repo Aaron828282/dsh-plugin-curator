@@ -27,6 +27,7 @@ import {
   baselineGaps,
   failingTool,
   capabilityTags,
+  groupOverlaps,
   matchesBaseline,
   detectIntents,
   installHint,
@@ -1321,29 +1322,17 @@ export function apply(ctx, rawConfig) {
    */
   function rebuildConflicts() {
     const installed = (state.installed ?? []).filter((item) => item.enabled !== false)
-    const byTag = new Map()
-    for (const item of installed) {
-      const tags = capabilityTags({
-        name: item.name,
-        title: item.titleI18n ?? item.title,
-        description: item.description,
-      })
-      for (const tag of tags) {
-        const list = byTag.get(tag) ?? []
-        list.push(item)
-        byTag.set(tag, list)
-      }
-    }
-    state.conflicts = [...byTag.entries()]
-      .filter(([, items]) => items.length > 1)
-      .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+    state.conflicts = groupOverlaps(installed)
+      .sort((a, b) => b.items.length - a.items.length || a.tag.localeCompare(b.tag))
       .slice(0, 6)
-      .map(([tag, items]) => {
-        const topCalls = Math.max(...items.map((item) => Number(item.calls) || 0))
+      .map(({ tag, reason, items: bucketItems }) => {
+        const bucket = { reason, items: bucketItems }
+        const topCalls = Math.max(...bucket.items.map(({ item }) => Number(item.calls) || 0))
         return {
           tag,
-          names: items.map((item) => item.name),
-          plugins: items.map((item) => ({
+          reason: bucket.reason,
+          names: bucket.items.map(({ item }) => item.name),
+          plugins: bucket.items.map(({ item, evidence }) => ({
             name: item.name,
             title: item.title || item.name,
             version: item.version ?? '',
@@ -1351,9 +1340,12 @@ export function apply(ctx, rawConfig) {
             removable: item.removable === true,
             official: item.official === true,
             description: item.description ?? '',
+            descriptionZh: state.translations?.[item.name] ?? '',
             calls: Number(item.calls) || 0,
             toolCount: (item.tools ?? []).length,
             toolsPreview: (item.tools ?? []).slice(0, 3).map((tool) => tool.name),
+            evidence: evidence.tools,
+            evidenceKind: evidence.strength === 2 ? 'tool' : 'name',
             lastUsed: item.lastUsed ?? '',
             daysInactive: item.daysInactive ?? null,
             installedAt: item.installedAt ?? '',
@@ -1929,6 +1921,26 @@ export function apply(ctx, rawConfig) {
       state.attribution = attribution.byBundle
       state.installed = buildInstalledView(inventory.bundles, now, inventory.active)
       rebuildConflicts()
+      // Overlap cards are Chinese-facing: translate the few descriptions that
+      // actually appear there, then rebuild so descriptionZh is attached.
+      if (cfg.llmEnabled === true && cfg.model?.provider) {
+        const wanted = []
+        for (const group of state.conflicts ?? []) {
+          for (const plugin of group.plugins ?? []) {
+            if (state.translations?.[plugin.name] === undefined && String(plugin.description ?? '') !== '') {
+              wanted.push({ name: plugin.name, description: plugin.description })
+            }
+          }
+        }
+        if (wanted.length > 0) {
+          try {
+            await withTimeout(translateDescriptions(wanted, cfg.model), 120_000, 'translate-conflicts')
+            rebuildConflicts()
+          } catch (error) {
+            warn('overlap description translation failed: ' + errorMessage(error))
+          }
+        }
+      }
       state.sourceStatus = gathered.sources
       state.intents = intentResult.intents
       state.gaps = gaps

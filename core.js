@@ -877,6 +877,161 @@ export function capabilityTags(subject) {
   return [...tags]
 }
 
+
+/**
+ * Capabilities an installed bundle demonstrably provides.
+ *
+ * capabilityTags() reads free-form descriptions, which is right for matching a
+ * candidate against an intent but far too loose for claiming two installed
+ * plugins overlap ("dashboard" alone made a context viewer and a model pool
+ * collide). Overlap therefore needs evidence: a tool the bundle actually
+ * registers, or a domain word in its own name/title. Descriptions are ignored
+ * here on purpose.
+ */
+export const OVERLAP_DOMAINS = [
+  {
+    tag: 'memory',
+    tools: /^(memory_|meow_|recall|remember|engram_)/i,
+    names: /memory|记忆|mnemon|engram|recall/i,
+    reason: {
+      zh: '都负责跨会话记忆：各自注册了记忆写入/检索工具，同时启用会重复写入同一批对话内容，召回时也会互相干扰。',
+      en: 'Both handle cross-session memory; enabling both writes the same conversations twice and their recall results compete.',
+    },
+  },
+  {
+    tag: 'session',
+    tools: /^(session_|history_|transcript_)/i,
+    names: /session|conversation|会话|标题/i,
+    reason: {
+      zh: '都在读写会话记录（搜索、归档或标题），同时启用会重复索引同一批会话日志。',
+      en: 'Both read or write session logs (search, archive, titles); enabling both indexes the same transcripts twice.',
+    },
+  },
+  {
+    tag: 'automation',
+    tools: /^(cron_|schedule_|todo_|remind_|automation_)/i,
+    names: /proactive|schedule|automation|todo|定时|巡检|提醒/i,
+    reason: {
+      zh: '都在做后台自动化（定时任务/待办/主动巡检），同时启用会出现两套调度，重复触发同一件事。',
+      en: 'Both run background automation (schedules, todos, proactive checks); two schedulers will fire the same work twice.',
+    },
+  },
+  {
+    tag: 'documents',
+    tools: /^(office_|docx_|xlsx_|pptx_|pdf_|doc_)/i,
+    names: /office|document|文档|表格|演示|pdf/i,
+    reason: {
+      zh: '都提供文档处理能力（读取/生成 Office 或 PDF），同时启用会让同类文件走两条不同的处理链路。',
+      en: 'Both provide document processing; the same files would be handled by two different pipelines.',
+    },
+  },
+  {
+    tag: 'ui',
+    tools: /^(ui_|theme_|wallpaper_|sidebar_)/i,
+    names: /wallpaper|theme|侧边栏|界面|外观/i,
+    reason: {
+      zh: '都在改界面外观（主题/壁纸/侧边栏），同时启用会互相覆盖样式。',
+      en: 'Both restyle the interface (theme, wallpaper, sidebar); they will fight over the same styles.',
+    },
+  },
+  {
+    tag: 'research',
+    tools: /^(web_|search_|fetch_|crawl_|browse_)/i,
+    names: /search|research|检索|搜索|联网/i,
+    reason: {
+      zh: '都提供外部检索/抓取能力，同时启用会重复发起同样的网络请求。',
+      en: 'Both provide external retrieval; the same queries get issued twice.',
+    },
+  },
+  {
+    tag: 'tooling',
+    tools: /^(ops_|bash|shell|file_|edit_)/i,
+    names: /ops|shell|file-?system|toolkit/i,
+    reason: {
+      zh: '都提供底层执行/文件工具，同时启用会让模型看到两套功能重叠的工具，增加选择成本。',
+      en: 'Both expose low-level execution or file tools, so the model sees two overlapping tool sets.',
+    },
+  },
+]
+
+/** Evidence-backed overlap domains for one installed bundle. */
+export function overlapEvidence(bundle) {
+  const tools = (bundle?.tools ?? []).map((tool) => String(tool?.name ?? tool).toLowerCase())
+  const text = [bundle?.name, pickText(bundle?.title, 'en'), pickText(bundle?.title, 'zh')]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+  const hits = []
+  for (const domain of OVERLAP_DOMAINS) {
+    const matchedTools = tools.filter((tool) => domain.tools.test(tool))
+    const nameHit = domain.names.test(text)
+    if (matchedTools.length === 0 && !nameHit) continue
+    hits.push({
+      tag: domain.tag,
+      // A registered tool is hard evidence; a name keyword alone is only a hint.
+      strength: matchedTools.length > 0 ? 2 : 1,
+      tools: matchedTools.slice(0, 3),
+      reason: domain.reason,
+    })
+  }
+  return hits
+}
+
+
+const NAME_STOPWORDS = new Set(['dsh', 'plugin', 'plugins', 'bundle', 'agent', 'agents', 'manager', 'tool', 'tools', 'mcp', 'with', 'from'])
+
+/** Distinctive words of a package name, used to prove two names share a domain. */
+export function nameTokens(name) {
+  return new Set(
+    String(name ?? '')
+      .toLowerCase()
+      .split(/[^a-z0-9\u4e00-\u9fa5]+/)
+      .filter((token) => token.length >= 4 && !NAME_STOPWORDS.has(token)),
+  )
+}
+
+/**
+ * Group installed bundles whose overlap is provable.
+ *
+ * A group needs either two bundles that register a tool in the same domain, or
+ * members whose own names share a distinctive word. Description text is never
+ * used: "dashboard" appearing in two unrelated descriptions is not overlap.
+ */
+export function groupOverlaps(items) {
+  const byTag = new Map()
+  for (const item of items ?? []) {
+    if (item?.enabled === false) continue
+    for (const hit of overlapEvidence(item)) {
+      const bucket = byTag.get(hit.tag) ?? { reason: hit.reason, items: [] }
+      bucket.items.push({ item, evidence: hit })
+      byTag.set(hit.tag, bucket)
+    }
+  }
+  const groups = []
+  for (const [tag, bucket] of byTag.entries()) {
+    if (bucket.items.length < 2) continue
+    const strong = bucket.items.filter(({ evidence }) => evidence.strength === 2)
+    let kept = []
+    if (strong.length >= 2) {
+      const strongTokens = strong.map(({ item }) => nameTokens(item.name))
+      const strongNames = new Set(strong.map(({ item }) => item.name))
+      kept = bucket.items.filter(({ item }) => {
+        if (strongNames.has(item.name)) return true
+        const own = nameTokens(item.name)
+        return [...own].some((token) => strongTokens.some((set) => set.has(token)))
+      })
+    } else {
+      const shared = bucket.items.reduce(
+        (acc, { item }, index) => (index === 0 ? nameTokens(item.name) : new Set([...acc].filter((token) => nameTokens(item.name).has(token)))),
+        new Set(),
+      )
+      if (shared.size > 0) kept = bucket.items
+    }
+    if (kept.length > 1) groups.push({ tag, reason: bucket.reason, items: kept })
+  }
+  return groups
+}
+
 /** Gaps are mined intents no installed bundle already covers. */
 export function openGaps(intents, installedBundles) {
   const covered = new Set()

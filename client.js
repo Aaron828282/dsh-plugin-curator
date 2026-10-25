@@ -51,6 +51,15 @@ window.__ModuleLoader__.load({
       overlapLastUsed: '最近使用',
       overlapIdle: '闲置 {n} 天',
       overlapAfterInstall: '与 {n} 组已装插件功能重叠',
+      overlapEvidenceTool: '共同工具：{list}',
+      overlapEvidenceName: '名称同属该领域',
+      overlapGroup_memory: '记忆',
+      overlapGroup_session: '会话',
+      overlapGroup_automation: '自动化',
+      overlapGroup_documents: '文档处理',
+      overlapGroup_ui: '界面外观',
+      overlapGroup_research: '检索联网',
+      overlapGroup_tooling: '底层工具',
       disabledTag: '已停用',
       conflictShared: '{n} 个插件覆盖「{tag}」',
       gapsTitle: '需求缺口',
@@ -190,6 +199,15 @@ window.__ModuleLoader__.load({
       overlapLastUsed: 'last used',
       overlapIdle: 'idle {n}d',
       overlapAfterInstall: 'overlaps {n} installed groups',
+      overlapEvidenceTool: 'shared tools: {list}',
+      overlapEvidenceName: 'same domain by name',
+      overlapGroup_memory: 'Memory',
+      overlapGroup_session: 'Sessions',
+      overlapGroup_automation: 'Automation',
+      overlapGroup_documents: 'Documents',
+      overlapGroup_ui: 'Appearance',
+      overlapGroup_research: 'Retrieval',
+      overlapGroup_tooling: 'Tooling',
       disabledTag: 'disabled',
       conflictShared: '{n} plugins cover “{tag}”',
       gapsTitle: 'Open gaps',
@@ -946,6 +964,12 @@ window.__ModuleLoader__.load({
         installedKeys.has(pkgOf(item.name)) ||
         installedKeys.has(pkgOf(item.npm))
 
+      const groupKey = (tag) => 'overlapGroup_' + tag
+      const groupLabel = (tag) => {
+        const key = groupKey(tag)
+        const label = t(key)
+        return label === key ? tag : label
+      }
       const hiddenLocal = new Set(dismissedLocal)
       const recommendations = (data.recommendations || []).filter(
         (item) => !isInstalled(item) && !hiddenLocal.has(item.id),
@@ -1101,18 +1125,30 @@ window.__ModuleLoader__.load({
             style: index === 0 ? { borderTop: 'none' } : null,
           },
             h('div', { className: 'pc-overlap-head' },
-              h('span', { className: 'pc-name' }, conflict.tag),
+              h('span', { className: 'pc-name' }, groupLabel(conflict.tag)),
               h('span', { className: 'pc-chip' }, fill(t('overlapCount'), { n: (conflict.plugins ?? []).length })),
             ),
+            conflict.reason
+              ? h('div', { className: 'pc-desc', style: { marginTop: '4px' } }, pickText(conflict.reason, chinese))
+              : null,
             (conflict.plugins ?? []).map((plugin) => h('div', { key: plugin.name, className: 'pc-overlap-item' },
               h('div', { className: 'pc-grow' },
                 h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline', flexWrap: 'wrap' } },
                   h('span', { className: 'pc-name' }, plugin.title || plugin.name),
                   plugin.version ? h('span', { className: 'pc-chip' }, 'v' + plugin.version) : null,
                   plugin.primary ? h('span', { className: 'pc-chip ok' }, t('overlapPrimary')) : null,
-                  plugin.enabled === false ? h('span', { className: 'pc-chip' }, t('disabled')) : null,
+                  plugin.enabled === false ? h('span', { className: 'pc-chip' }, t('disabledTag')) : null,
                 ),
-                plugin.description ? h('div', { className: 'pc-desc' }, plugin.description) : null,
+                (chinese && plugin.descriptionZh) || plugin.description
+                  ? h('div', { className: 'pc-desc' }, (chinese && plugin.descriptionZh) || plugin.description)
+                  : null,
+                (plugin.evidence ?? []).length > 0
+                  ? h('div', { className: 'pc-metrics' },
+                    h('span', { className: 'pc-metric' }, fill(t('overlapEvidenceTool'), { list: plugin.evidence.join('、') })))
+                  : plugin.evidenceKind === 'name'
+                    ? h('div', { className: 'pc-metrics' },
+                      h('span', { className: 'pc-metric' }, t('overlapEvidenceName')))
+                    : null,
                 h('div', { className: 'pc-metrics' },
                   h('span', { className: 'pc-metric' }, fill(t('overlapCalls'), { n: plugin.calls })),
                   h('span', { className: 'pc-metric' }, fill(t('overlapTools'), { n: plugin.toolCount })),
