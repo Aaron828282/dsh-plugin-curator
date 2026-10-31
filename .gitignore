@@ -4,3 +4,7 @@ node_modules/
 .env
 .env.*
 coverage/
+
+# preview harness output
+__p_*.png
+__report.json

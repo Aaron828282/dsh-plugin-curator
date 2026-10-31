@@ -50,6 +50,7 @@
     "@deepseek-ai/dsh": "^0.2.0-rc.2"
   },
   "scripts": {
-    "test": "node --test test/core.test.mjs test/host.smoke.test.mjs test/client.smoke.test.mjs"
+    "test": "node --test test/core.test.mjs test/host.smoke.test.mjs test/client.smoke.test.mjs",
+    "preview": "node tools/preview.mjs"
   }
 }

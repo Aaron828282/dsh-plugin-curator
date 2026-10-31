@@ -258,6 +258,7 @@ window.__ModuleLoader__.load({
       cvHealth: '体检',
       cvHealthGood: '没有发现需要处理的问题。',
       cvHealthIdle: '{n} 个插件装上后没被调用',
+      cvSomeCalls: '其中 {n} 个插件有调用记录',
       cvHealthConflict: '{n} 组插件能力重叠',
       cvHealthModel: 'AI 分析没有成功：{reason}',
       cvHealthSource: '{n} 个采集渠道异常',
@@ -503,6 +504,7 @@ window.__ModuleLoader__.load({
       cvHealth: 'Checkup',
       cvHealthGood: 'Nothing needs attention.',
       cvHealthIdle: '{n} bundles installed but never called',
+      cvSomeCalls: '{n} of them have recorded calls',
       cvHealthConflict: '{n} groups of overlapping bundles',
       cvHealthModel: 'AI analysis failed: {reason}',
       cvHealthSource: '{n} source channels errored',
@@ -658,7 +660,8 @@ window.__ModuleLoader__.load({
     // are tuned for the 260-420px sidebar and grow only when the container
     // itself gets wide, never when the window does.
     const CV_CSS = [
-      '.cv{display:flex;flex-direction:column;gap:9px;padding:0 0 26px;max-width:1080px;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv{display:flex;flex-direction:column;gap:9px;padding:0 0 26px;width:100%;box-sizing:border-box;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '@container (min-width:1560px){.cv{padding-left:max(0px,calc((100% - 1440px) / 2));padding-right:max(0px,calc((100% - 1440px) / 2));}}',
       '.cv-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}',
       '.cv-head h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.2px;line-height:1.3;}',
       '.cv-head p{margin:2px 0 0;font-size:11.5px;color:var(--cv-text-3);}',
@@ -672,6 +675,11 @@ window.__ModuleLoader__.load({
       '.cv-side .cv-side-item[data-on=true] b{color:inherit;opacity:.75;}',
       '.cv-side > small{flex:1 1 100%;color:var(--cv-text-3);font-size:10.5px;line-height:1.4;}',
       '.cv-grid2,.cv-grid3,.cv-grid4,.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
+      '.cv-masonry{columns:1;column-gap:8px;}',
+      '.cv-masonry > *{break-inside:avoid;margin-bottom:8px;display:block;}',
+      '@container (min-width:560px){.cv-masonry{columns:2;}}',
+      '@container (min-width:1000px){.cv-masonry{columns:3;}}',
+      '@container (min-width:1360px){.cv-masonry{columns:3;column-gap:10px;}}',
       '.cv-rows{display:flex;flex-direction:column;gap:5px;}',
       '.cv-split{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
       '@container (min-width:520px){.cv-grid2,.cv-cols{grid-template-columns:repeat(2,minmax(0,1fr));}}',
@@ -2160,13 +2168,93 @@ window.__ModuleLoader__.load({
           ? h(EmptyBox, { title: fill(t('cvTopEmpty'), { days }) })
           : usageColumns)
 
-      const overviewCards = h('div', { className: 'cv-grid2' },
+      const gapPreviewNode = gaps.length === 0
+        ? h(EmptyBox, { title: t('gapEmpty'), hint: t('gapEmptyHint') })
+        : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '6px' } },
+          gaps.slice(0, 4).map((gap) => h('button', {
+            key: gap.tag,
+            type: 'button',
+            className: 'cv-bar-item',
+            style: { border: 0, background: 'transparent', font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left', gridTemplateColumns: 'minmax(0,1fr) auto' },
+            onClick: () => setView('gaps'),
+          },
+          h('span', { style: { fontSize: '12px', fontWeight: 600 } }, pickText(gap.label, chinese)),
+          h('span', { className: 'cv-note' }, String((gap.suggestions ?? []).length)))))
+
+      const gapPreviewCard = h(Panel, {
+        title: t('gapsTitle'),
+        count: gaps.length,
+        note: t('gapsHint'),
+      }, gapPreviewNode)
+
+      const buildDiffPreviewNode = () => h('div', { style: { display: 'flex', gap: '5px', flexWrap: 'wrap' } },
+        (diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }]).map((item, index) =>
+          h('span', { key: index, className: 'cv-tag' + (item.tone ? ' ' + item.tone : '') }, item.label)))
+
+      const buildDiffPreviewCard = () => h(Panel, {
+        title: t('diffTitle'),
+        note: t('diffHint'),
+      }, buildDiffPreviewNode())
+
+      const picksCard = h(Panel, {
+        title: t('recommendTitle'),
+        count: recommendations.length,
+        note: t('recommendHint'),
+      },
+      recommendations.length === 0
+        ? h(EmptyBox, { title: t('emptyRecommend'), hint: t('emptyRecommendHint') })
+        : h('div', { className: 'cv-rows' }, scored.slice(0, 4).map((item) => h(RecRow, {
+          key: item.id,
+          item,
+          t,
+          chinese,
+          busy: busy !== '' || dismissedLocal.includes(item.id),
+          stage: '',
+          open: openRec === item.id,
+          onToggle: () => setOpenRec(openRec === item.id ? '' : item.id),
+          onInstall: () => installCard(item),
+          onDismiss: () => dismissCard(item),
+        }))))
+
+      const statusRows = [
+        { key: 'active', label: t('active'), tone: 'ok' },
+        { key: 'watching', label: t('watching'), tone: '' },
+        { key: 'unused', label: t('unused'), tone: 'warn' },
+      ]
+      const installedCard = h(Panel, {
+        title: t('installedTitle'),
+        count: installed.length,
+        note: t('installedHint'),
+      },
+      h('div', { style: { display: 'flex', flexDirection: 'column', gap: '7px' } },
+        h('div', { style: { display: 'flex', gap: '5px', flexWrap: 'wrap' } },
+          statusRows.map((row) => h('span', {
+            key: row.key,
+            className: 'cv-tag' + (row.tone ? ' ' + row.tone : ''),
+          }, row.label + ' ' + String((installed.filter((one) => one.status === row.key) ?? []).length)))),
+        callsBundles === 0
+          ? h('div', { className: 'cv-note' }, fill(t('cvHealthIdle'), { n: installed.length }))
+          : h('div', { className: 'cv-note' }, fill(t('cvSomeCalls'), { n: callsBundles }))),
+        installed.filter((one) => one.status === 'unused').length === 0
+          ? null
+          : h('div', { className: 'cv-rows' }, installed
+            .filter((one) => one.status === 'unused')
+            .slice(0, 5)
+            .map((one) => h('div', { key: one.name, className: 'cv-bar-item' },
+              h('span', { className: 'cv-bar-name' }, one.title || one.name),
+              h('span', { className: 'cv-bar-val' }, t('unused'))))))
+
+      const buildOverviewCards = () => h('div', { className: 'cv-masonry' },
         usageCard,
         h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut),
         topCard,
         healthCard,
         modelCard,
-        adhocCard)
+        adhocCard,
+        gapPreviewCard,
+        buildDiffPreviewCard(),
+        picksCard,
+        installedCard)
       const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
         h('div', { className: 'cv-chat' },
           messages.length === 0
@@ -2407,6 +2495,8 @@ window.__ModuleLoader__.load({
         onTest: testModel,
       })
 
+      const diffPreviewCard = buildDiffPreviewCard()
+
       const diffCard = h(Panel, { title: t('diffTitle'), note: t('diffHint') },
         h('div', { style: { display: 'flex', gap: '5px', flexWrap: 'wrap' } },
           (diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }]).map((item, index) =>
@@ -2456,7 +2546,7 @@ window.__ModuleLoader__.load({
           : view === 'installed' ? [installedSection]
             : view === 'insight' ? [insightSection]
               : view === 'gaps' ? [gapsSection]
-                : [overviewCards]
+                : [buildOverviewCards()]
 
       const toastCard = toast === null ? null : h('div', {
         className: 'cv-note',
