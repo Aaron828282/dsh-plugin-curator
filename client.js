@@ -251,6 +251,8 @@ window.__ModuleLoader__.load({
       cvToolTitle: '调用最多的工具',
       cvToolNote: '按工具调用次数排序',
       cvToolEmpty: '还没有记录到工具调用',
+      cvLogTitle: '运行记录',
+      cvLogNote: '最近的巡检与刷新',
       cvTopEmpty: '近 {days} 天还没有插件被调用',
       cvSplit: '已装构成',
       cvExcluded: '未进推荐',
@@ -497,6 +499,8 @@ window.__ModuleLoader__.load({
       cvToolTitle: 'Most-called tools',
       cvToolNote: 'Ranked by tool call count',
       cvToolEmpty: 'No tool call recorded yet',
+      cvLogTitle: 'Activity log',
+      cvLogNote: 'Recent refreshes',
       cvTopEmpty: 'No bundle was called in the last few days',
       cvSplit: 'Installed mix',
       cvExcluded: 'Kept out',
@@ -514,8 +518,14 @@ window.__ModuleLoader__.load({
     }
 
     const CSS = [
-      '.cv{--cv-accent:var(--dsw-alias-brand-primary,#1b1b1f);--cv-bg:var(--dsw-alias-bg-base,#fff);--cv-line:var(--dsw-alias-border-l1,#e7e7ea);--cv-line-strong:var(--dsw-alias-border-l2,#d9d9de);--cv-text:var(--dsw-alias-label-primary,#1b1b1f);--cv-text-2:var(--dsw-alias-label-secondary,#5c5c66);--cv-text-3:var(--dsw-alias-label-tertiary,#8e8e99);--cv-fill:var(--dsw-alias-bg-layer-2,#f3f3f5);--cv-radius:10px;container-type:inline-size;display:flex;flex-direction:column;gap:10px;padding:0 0 22px;color:var(--cv-text);font-size:12px;line-height:1.5;}',
-      '.cv{padding:0 0 22px;display:flex;flex-direction:column;gap:12px;color:var(--dsw-alias-label-primary,#1f2328);}',
+      '.cv{--cv-accent:var(--dsw-alias-brand-primary,#1b1b1f);--cv-bg:var(--dsw-alias-bg-base,#fff);--cv-line:var(--dsw-alias-border-l1,#e7e7ea);--cv-line-strong:var(--dsw-alias-border-l2,#d9d9de);--cv-text:var(--dsw-alias-label-primary,#1b1b1f);--cv-text-2:var(--dsw-alias-label-secondary,#5c5c66);--cv-text-3:var(--dsw-alias-label-tertiary,#8e8e99);--cv-fill:var(--dsw-alias-bg-layer-2,#f3f3f5);--cv-surface:var(--dsw-alias-bg-layer-1,#fbfbfc);--cv-radius:10px;container-type:inline-size;display:flex;flex-direction:column;gap:10px;padding:0 0 22px;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv{display:flex;flex-direction:column;gap:9px;padding:0 0 10px;width:100%;box-sizing:border-box;min-height:100%;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
+      '.cv-main{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 auto;min-height:0;height:100%;}',
+      '.cv-masonry{display:flex;align-items:stretch;gap:8px;width:100%;}',
+      '.cv-masonry-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px;}',
+      '.cv-masonry-col > *{margin:0;flex:0 0 auto;display:flex;flex-direction:column;min-height:0;}',
+        '.cv-masonry-col > * > *{min-height:0;}',
       '.pc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}',
       '.pc-title{font-size:19px;font-weight:650;letter-spacing:.2px;margin:0 0 2px;}',
       '.pc-sub{color:var(--dsw-alias-label-secondary);font-size:12.5px;margin:0;}',
@@ -660,31 +670,44 @@ window.__ModuleLoader__.load({
     // are tuned for the 260-420px sidebar and grow only when the container
     // itself gets wide, never when the window does.
     const CV_CSS = [
-      '.cv{display:flex;flex-direction:column;gap:9px;padding:0 0 26px;width:100%;box-sizing:border-box;color:var(--cv-text);font-size:12px;line-height:1.5;}',
       '@container (min-width:1560px){.cv{padding-left:max(0px,calc((100% - 1440px) / 2));padding-right:max(0px,calc((100% - 1440px) / 2));}}',
       '.cv-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}',
       '.cv-head h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.2px;line-height:1.3;}',
       '.cv-head p{margin:2px 0 0;font-size:11.5px;color:var(--cv-text-3);}',
       '.cv-meta{display:flex;flex-wrap:wrap;gap:2px 10px;margin-top:4px;font-size:11px;color:var(--cv-text-3);font-variant-numeric:tabular-nums;}',
       '.cv-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}',
-      '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
-      '.cv-main{display:flex;flex-direction:column;gap:8px;min-width:0;}',
-      '.cv-side{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px;align-items:center;}',
-      '.cv-side .cv-side-item{width:auto;flex:0 1 auto;padding:4px 9px;border:1px solid var(--cv-line);border-radius:999px;font-size:11.5px;gap:5px;}',
-      '.cv-side .cv-side-item b{margin-left:0;font-size:10.5px;color:var(--cv-text-3);font-weight:500;}',
+      '@container (min-width:560px){.cv-body{grid-template-columns:140px minmax(0,1fr);align-items:start;}}',
+      '.cv-card{padding:8px 11px 9px;}',
+      '.cv-card-head{margin-bottom:6px;}',
+      '.cv-stat{padding:7px 9px 8px;}',
+      '.cv-stat-value{font-size:20px;}',
+      '.cv-grid4{gap:7px;}',
+      '.cv-grid4 .cv-stat{min-height:64px;justify-content:center;}',
+      '.cv-card{background:var(--cv-surface);}',
+      '.cv-stat-label{order:0;}',
+      '.cv-stat-value{order:1;font-size:22px;line-height:1.2;letter-spacing:-.5px;}',
+      '.cv-stat-foot{order:2;}',
+      '.cv-side{display:flex;flex-direction:column;gap:2px;align-items:stretch;}',
+      '.cv-side > small{margin-top:6px;padding-top:8px;border-top:1px solid var(--cv-line);color:var(--cv-text-3);font-size:10.5px;line-height:1.45;}',
+      '.cv-side .cv-side-item{width:auto;flex:0 1 auto;padding:4px 10px;border:1px solid var(--cv-line);border-radius:999px;font-size:11.5px;gap:5px;background:transparent;}',
+      '.cv-side .cv-side-item b{margin-left:0;font-size:10.5px;color:var(--cv-text-3);font-weight:500;}' +
+      '.cv-side-foot{margin-top:8px;padding:0 2px;color:var(--cv-text-3);font-size:10.5px;line-height:1.5;}',
       '.cv-side .cv-side-item[data-on=true] b{color:inherit;opacity:.75;}',
       '.cv-side > small{flex:1 1 100%;color:var(--cv-text-3);font-size:10.5px;line-height:1.4;}',
       '.cv-grid2,.cv-grid3,.cv-grid4,.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
-      '.cv-masonry{columns:1;column-gap:8px;}',
-      '.cv-masonry > *{break-inside:avoid;margin-bottom:8px;display:block;}',
-      '@container (min-width:560px){.cv-masonry{columns:2;}}',
-      '@container (min-width:1000px){.cv-masonry{columns:3;}}',
-      '@container (min-width:1360px){.cv-masonry{columns:3;column-gap:10px;}}',
       '.cv-rows{display:flex;flex-direction:column;gap:5px;}',
       '.cv-split{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
       '@container (min-width:520px){.cv-grid2,.cv-cols{grid-template-columns:repeat(2,minmax(0,1fr));}}',
       '@container (min-width:920px){.cv-grid2{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-grid3{grid-template-columns:repeat(3,minmax(0,1fr));}}',
-      '@container (min-width:680px){.cv-body{grid-template-columns:132px minmax(0,1fr);gap:14px;}.cv-side{position:sticky;top:0;flex-direction:column;gap:1px;flex-wrap:nowrap;}.cv-side .cv-side-item{width:100%;flex:1 1 auto;padding:6px 9px;border:0;border-radius:7px;font-size:12px;gap:7px;}.cv-side .cv-side-item b{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--cv-text);}.cv-side > small{display:none;}.cv-grid3,.cv-grid4{grid-template-columns:repeat(3,minmax(0,1fr));}}',
+      '@container (min-width:680px){.cv-body{grid-template-columns:136px minmax(0,1fr);gap:14px;}' +
+        '.cv-side{position:sticky;top:0;flex-direction:column;gap:2px;flex-wrap:nowrap;align-items:stretch;}' +
+        '.cv-side .cv-side-item{width:100%;flex:1 1 auto;padding:6px 9px;border:0;border-radius:7px;font-size:12px;gap:7px;text-align:left;}' +
+        '.cv-side .cv-side-item b{margin-left:auto;font-size:11px;font-weight:600;color:var(--cv-text-3);}' +
+        '.cv-side .cv-side-item:hover{background:var(--cv-fill,var(--dsw-alias-bg-layer-2));}' +
+        '.cv-side .cv-side-item[data-on=true]{background:var(--cv-fill,var(--dsw-alias-bg-layer-2));font-weight:600;}' +
+        '.cv-side .cv-side-item[data-on=true] b{color:var(--cv-text);}' +
+        '.cv-side-foot{display:none;}' +
+        '.cv-grid3,.cv-grid4{grid-template-columns:repeat(3,minmax(0,1fr));}}',
 
       '.cv-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:26px;padding:0 10px;border-radius:7px;border:1px solid var(--cv-line);background:var(--cv-bg);color:var(--cv-text);font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:background .12s ease,border-color .12s ease;}',
       '.cv-btn:hover{border-color:var(--cv-line-strong);background:var(--cv-fill);}',
@@ -706,7 +729,11 @@ window.__ModuleLoader__.load({
       '.cv-side-item b{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--cv-text);font-variant-numeric:tabular-nums;}',
       '.cv-side-item:hover{background:var(--cv-fill);color:var(--cv-text);}',
       '.cv-side-item[data-on=true]{background:var(--cv-fill);color:var(--cv-text);font-weight:600;}',
-      '.cv-stat{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:1px;min-width:0;padding:11px 9px 12px;border:1px solid var(--cv-line);border-radius:var(--cv-radius);background:var(--cv-bg);text-align:center;}',
+      '.cv-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;padding:9px 10px 10px;border:1px solid var(--cv-line);border-radius:var(--cv-radius);background:var(--cv-bg);text-align:center;}' +
+        '.cv-stat-label{order:0;}' +
+        '.cv-stat-value{order:1;}' +
+        '.cv-stat-foot{order:2;}' +
+        '.cv-stat .cv-spark{order:3;}',
       '.cv-stat-label{font-size:11px;line-height:1.3;color:var(--cv-text-2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
       '.cv-stat-value{font-size:25px;line-height:1.12;font-weight:600;letter-spacing:-.8px;font-variant-numeric:tabular-nums;color:var(--cv-text);}',
       '.cv-stat-unit{font-size:11px;font-weight:500;letter-spacing:0;color:var(--cv-text-3);margin-left:2px;}',
@@ -732,7 +759,13 @@ window.__ModuleLoader__.load({
       '.cv-grid2 > :only-child{grid-column:1 / -1;}',
       '@container (min-width:520px){.cv-grid4{grid-template-columns:repeat(3,minmax(0,1fr));}}',
       '@container (min-width:900px){.cv-grid4{grid-template-columns:repeat(3,minmax(0,1fr));}}',
-      '.cv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 10px;border:1px dashed var(--cv-line);border-radius:8px;color:var(--cv-text-3);text-align:center;}',
+      '.cv-empty-line{margin:0;padding:2px 0 4px;color:var(--cv-text-3);font-size:10.5px;line-height:1.5;}',
+      '.cv-log-strip{width:100%;min-width:0;display:block;}',
+      '.cv-log{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px 16px;}',
+      '.cv-log-row{display:flex;gap:8px;align-items:baseline;min-width:0;padding:2px 0;font-size:11px;}',
+      '.cv-log-time{flex:0 0 auto;color:var(--cv-text-3);font-variant-numeric:tabular-nums;}',
+      '.cv-log-text{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cv-text-2);}',
+        '.cv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 10px;border:1px dashed var(--cv-line);border-radius:8px;color:var(--cv-text-3);text-align:center;}',
       '.cv-empty b{font-size:11.5px;font-weight:600;color:var(--cv-text-2);}',
       '.cv-empty span{font-size:10.5px;line-height:1.45;}',
       '.cv-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--cv-line);border-radius:8px;background:var(--cv-bg);transition:border-color .12s ease;}',
@@ -1175,7 +1208,7 @@ window.__ModuleLoader__.load({
         },
         h('span', null, item.label),
         item.count === undefined || item.count === null ? null : h('b', null, String(item.count)))),
-        foot ? h('div', { className: 'cv-note', style: { marginTop: '8px', paddingLeft: '9px' } }, foot) : null)
+        foot ? h('div', { className: 'cv-side-foot' }, foot) : null)
     }
 
     /** Card shell: a title, an optional count, a note, and a body. */
@@ -1653,6 +1686,80 @@ window.__ModuleLoader__.load({
       return out
     }
 
+    // Distribute cards across N columns by tallest-first greedy packing.
+    // CSS multi-column cannot balance past break-inside:avoid, which leaves the
+    // short columns with a large empty tail, so column packing is done here.
+    function packColumns(items, count) {
+      const n = Math.max(1, Math.min(4, count | 0))
+      const cols = []
+      for (let i = 0; i < n; i++) cols.push({ weight: 0, items: [] })
+      const ordered = items.slice().sort((a, b) => (b.height || 0) - (a.height || 0))
+      for (const entry of ordered) {
+        let target = cols[0]
+        for (const col of cols) if (col.weight < target.weight) target = col
+        target.items.push(entry)
+        target.weight += (entry.height || 0) + 8
+      }
+      return cols.map((col) => col.items)
+    }
+
+    // Track the rendered width so the column count follows the real panel size.
+    // The row ref mounts before layout settles, so keep polling briefly until it
+    // reports a real width; a ResizeObserver alone can fire on the pre-layout box.
+    function useMeasuredHeights(rowRef) {
+  const [measured, setMeasured] = React.useState({})
+  React.useEffect(() => {
+    const root = rowRef.current
+    if (!root) return
+    const next = {}
+    for (const node of root.querySelectorAll('[data-card-key]')) {
+      const key = node.getAttribute('data-card-key')
+      const height = Math.round(node.getBoundingClientRect().height)
+      if (key && height > 0) next[key] = height
+    }
+    if (Object.keys(next).length === 0) return
+    setMeasured((prev) => {
+      let changed = false
+      for (const key of Object.keys(next)) if (prev[key] !== next[key]) changed = true
+      if (!changed && Object.keys(prev).length === Object.keys(next).length) return prev
+      return next
+    })
+  })
+  return measured
+}
+function useColumnCount() {
+      const ref = React.useRef(null)
+      const [count, setCount] = React.useState(3)
+      React.useEffect(() => {
+        let attempts = 0
+        let timer = 0
+        let stopped = false
+        const measure = () => {
+          if (stopped) return
+          const el = ref.current
+          const width = el ? Math.max(el.getBoundingClientRect().width, el.clientWidth || 0) : 0
+          if (width > 0) {
+            setCount(width >= 980 ? 3 : width >= 620 ? 2 : 1)
+            return
+          }
+          attempts += 1
+          if (attempts < 40) timer = window.setTimeout(measure, 50)
+        }
+        measure()
+        let observer = null
+        if (typeof ResizeObserver === 'function') {
+          observer = new ResizeObserver(measure)
+          if (ref.current) observer.observe(ref.current)
+        }
+        return () => {
+          stopped = true
+          window.clearTimeout(timer)
+          if (observer) observer.disconnect()
+        }
+      }, [])
+      return [ref, count]
+    }
+
     function CuratorTab(props) {
       const t = props.t
       const locale = props.locale
@@ -1663,6 +1770,8 @@ window.__ModuleLoader__.load({
       const chinese = String(localeId).startsWith('zh')
 
       const [data, setData] = React.useState(null)
+      const [rowRef, masonryCols] = useColumnCount()
+      const measuredHeights = useMeasuredHeights(rowRef)
       const [error, setError] = React.useState('')
       const [busy, setBusy] = React.useState('')
       const [toast, setToast] = React.useState(null)
@@ -2128,7 +2237,7 @@ window.__ModuleLoader__.load({
 
       const topCard = h(Panel, { title: t('cvToolTitle'), note: t('cvToolNote') },
         topTools.length === 0
-          ? h(EmptyBox, { title: t('cvToolEmpty') })
+          ? h('p', { className: 'cv-empty-line' }, t('cvToolEmpty'))
           : h(Bars, { items: topTools }))
 
       const adhocCard = h(Panel, { title: t('chartSourceTitle'), note: t('chartSourceHint') },
@@ -2165,7 +2274,7 @@ window.__ModuleLoader__.load({
 
       const usageCard = h(Panel, { title: t('cvTop'), count: usageColumnsItems.length, note: fill(t('chartUsageHint'), { days }) },
         usageColumnsItems.length === 0
-          ? h(EmptyBox, { title: fill(t('cvTopEmpty'), { days }) })
+          ? h('p', { className: 'cv-empty-line' }, fill(t('cvTopEmpty'), { days }))
           : usageColumns)
 
       const gapPreviewNode = gaps.length === 0
@@ -2203,7 +2312,7 @@ window.__ModuleLoader__.load({
       },
       recommendations.length === 0
         ? h(EmptyBox, { title: t('emptyRecommend'), hint: t('emptyRecommendHint') })
-        : h('div', { className: 'cv-rows' }, scored.slice(0, 4).map((item) => h(RecRow, {
+        : h('div', { className: 'cv-rows' }, scored.map((item) => h(RecRow, {
           key: item.id,
           item,
           t,
@@ -2221,6 +2330,7 @@ window.__ModuleLoader__.load({
         { key: 'watching', label: t('watching'), tone: '' },
         { key: 'unused', label: t('unused'), tone: 'warn' },
       ]
+      const unusedList = installed.filter((one) => one.status === 'unused')
       const installedCard = h(Panel, {
         title: t('installedTitle'),
         count: installed.length,
@@ -2235,26 +2345,51 @@ window.__ModuleLoader__.load({
         callsBundles === 0
           ? h('div', { className: 'cv-note' }, fill(t('cvHealthIdle'), { n: installed.length }))
           : h('div', { className: 'cv-note' }, fill(t('cvSomeCalls'), { n: callsBundles }))),
-        installed.filter((one) => one.status === 'unused').length === 0
+        unusedList.length === 0
           ? null
-          : h('div', { className: 'cv-rows' }, installed
-            .filter((one) => one.status === 'unused')
-            .slice(0, 5)
-            .map((one) => h('div', { key: one.name, className: 'cv-bar-item' },
+          : h('div', { className: 'cv-rows' }, unusedList.map((one) => h('div', { key: one.name, className: 'cv-bar-item' },
               h('span', { className: 'cv-bar-name' }, one.title || one.name),
               h('span', { className: 'cv-bar-val' }, t('unused'))))))
 
-      const buildOverviewCards = () => h('div', { className: 'cv-masonry' },
-        usageCard,
-        h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut),
-        topCard,
-        healthCard,
-        modelCard,
-        adhocCard,
-        gapPreviewCard,
-        buildDiffPreviewCard(),
-        picksCard,
-        installedCard)
+      // Column packing uses layout-independent estimates; CSS then stretches each
+      // column to the tallest one so no column can end with an empty tail.
+      const buildActivityCard = () => {
+        const log = Array.isArray(data.events) ? data.events.slice(-8).reverse() : []
+        if (log.length === 0) return null
+        const rows = log.map((event, index) => h('div', { className: 'cv-log-row', key: 'log-' + index },
+          h('span', { className: 'cv-log-time' }, clock(event.at, chinese)),
+          h('span', { className: 'cv-log-text' }, String(event.message ?? ''))))
+        return h('div', { className: 'cv-log-strip' },
+          h(Panel, { title: t('cvLogTitle'), count: log.length, note: t('cvLogNote') },
+            h('div', { className: 'cv-log' }, rows)))
+      }
+      const buildOverviewCards = () => {
+        const pool = [
+          { key: 'usage', height: 96, node: usageCard },
+          { key: 'donut', height: 140, node: h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut) },
+          { key: 'tools', height: (profile.topTools ?? []).length === 0 ? 84 : 180, node: topCard },
+          { key: 'health', height: 76, node: healthCard },
+          { key: 'model', height: 110, node: modelCard },
+          { key: 'adhoc', height: 100, node: adhocCard },
+          { key: 'gaps', height: gaps.length === 0 ? 76 : 76 + gaps.length * 34, node: gapPreviewCard },
+          { key: 'diff', height: 74, node: buildDiffPreviewCard() },
+          { key: 'picks', height: 60 + scored.length * 86, node: picksCard },
+          { key: 'installed', height: 150 + Math.min(5, installed.filter((one) => one.status === 'unused').length) * 22, node: installedCard },
+        ]
+        const usable = pool.filter((entry) => entry.node !== null && entry.node !== undefined && entry.node !== false)
+        const sized = usable.map((entry) => (measuredHeights[entry.key] ? { ...entry, height: measuredHeights[entry.key] } : entry))
+        const columns = packColumns(sized, masonryCols)
+        return h('div', { className: 'cv-masonry', ref: rowRef },
+          columns.map((columnItems, columnIndex) => h('div', {
+            key: columnIndex,
+            className: 'cv-masonry-col',
+          }, columnItems.map((item) => h('div', {
+            key: item.key,
+            'data-card-key': item.key,
+            style: { display: 'block' },
+          }, item.node)))))
+      }
+
       const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
         h('div', { className: 'cv-chat' },
           messages.length === 0
@@ -2546,7 +2681,7 @@ window.__ModuleLoader__.load({
           : view === 'installed' ? [installedSection]
             : view === 'insight' ? [insightSection]
               : view === 'gaps' ? [gapsSection]
-                : [buildOverviewCards()]
+                : [buildOverviewCards(), buildActivityCard()]
 
       const toastCard = toast === null ? null : h('div', {
         className: 'cv-note',
