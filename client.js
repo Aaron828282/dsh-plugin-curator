@@ -18,6 +18,7 @@ window.__ModuleLoader__.load({
     const API_SETTINGS = '/plugin-curator/api/settings'
     const API_TEST = '/plugin-curator/api/settings/test'
     const API_CHAT = '/plugin-curator/api/chat'
+    const API_EXPLAIN = '/plugin-curator/api/explain'
     const PANEL_ID = 'plugin-curator'
 
     const zh = {
@@ -75,6 +76,32 @@ window.__ModuleLoader__.load({
       emptyRecommend: '今天没有新的合适插件。',
       installedTitle: '已安装',
       installedHint: '开关即时生效；卸载受保护的包会禁用。',
+      installedSearch: '搜索已装插件或工具…',
+      installedSortActive: '按调用量',
+      installedSortName: '按名称',
+      installedFilterAll: '全部',
+      installedFilterActive: '在用',
+      installedFilterIdle: '闲置',
+      installedNone: '没有匹配的插件',
+      installedCalls: '次调用',
+      emptyRecommendHint: '点上面的「换一批」重新扫描社区，或稍等今天的自动巡检。',
+      chatEmptyHint: '比如问：「我最近在忙什么，有哪个插件能省事？」',
+      emptyInstalled: '还没有装任何插件',
+      emptyInstalledHint: '推荐会带上安装命令，装完回来这里能看到调用情况。',
+      installedNoneHint: '换个关键词，或把筛选调回「全部」。',
+      emptyIdleHint: '插件装了但一直没被调用时，会出现在这里。',
+      gapEmptyHint: '当前的能力缺口都已被填上。',
+      tabsLabel: '插件管家分区',
+      statsLabel: '今日概览',
+      explainTitle: '为什么没推荐某个插件',
+      explainHint: '输入插件名，插件管家会按它自己的门槛逐条告诉你它被卡在哪一步。',
+      explainSearch: '输入插件名，例如 dsh-session-toolbox',
+      explainBtn: '查一下',
+      explainNotFound: '候选池里没有这个名字',
+      explainAdmitted: '已在今日推荐里',
+      explainRank: '排第',
+      explainScore: '得分',
+      explainTier: '档位',
       idleTitle: '闲置',
       idleHint: '长期没有关联调用。',
       emptyIdle: '暂时没有闲置插件。',
@@ -234,6 +261,32 @@ window.__ModuleLoader__.load({
       emptyRecommend: 'Nothing new today.',
       installedTitle: 'Installed',
       installedHint: 'Toggles apply immediately; protected bundles can only be disabled.',
+      installedSearch: 'Search bundles or tools…',
+      installedSortActive: 'By calls',
+      installedSortName: 'By name',
+      installedFilterAll: 'All',
+      installedFilterActive: 'Active',
+      installedFilterIdle: 'Idle',
+      installedNone: 'No matching bundles',
+      installedCalls: 'calls',
+      emptyRecommendHint: 'Use Refresh above to rescan the community, or wait for the next scheduled sweep.',
+      chatEmptyHint: 'Try: which bundle would save me time on what I was doing this week?',
+      emptyInstalled: 'No bundles installed yet',
+      emptyInstalledHint: 'Every pick ships with an install command; call counts show up here once used.',
+      installedNoneHint: 'Try another keyword, or set the filter back to all.',
+      emptyIdleHint: 'Bundles that are installed but never called land here.',
+      gapEmptyHint: 'Every capability gap this sweep found is already covered.',
+      tabsLabel: 'Plugin curator sections',
+      statsLabel: 'Today at a glance',
+      explainTitle: 'Why was a bundle not recommended?',
+      explainHint: 'Type a bundle name; the curator replays its own gates and names the step that dropped it.',
+      explainSearch: 'Bundle name, e.g. dsh-session-toolbox',
+      explainBtn: 'Explain',
+      explainNotFound: 'No candidate by that name',
+      explainAdmitted: "Already in today's picks",
+      explainRank: 'rank',
+      explainScore: 'score',
+      explainTier: 'tier',
       idleTitle: 'Idle',
       idleHint: 'No related calls for a long time.',
       emptyIdle: 'Nothing idle.',
@@ -364,6 +417,14 @@ window.__ModuleLoader__.load({
       '.pc-desc{color:var(--dsw-alias-label-secondary);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
       '.pc-line{margin-top:6px;color:var(--dsw-alias-label-secondary);display:flex;gap:6px;align-items:baseline;}',
       '.pc-line b{font-weight:600;color:var(--dsw-alias-label-primary);}',
+      '.pc-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;}',
+      '.pc-search{flex:1 1 180px;min-width:0;appearance:none;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);border-radius:9px;padding:7px 11px;font-size:12px;font-family:inherit;}',
+      '.pc-search::placeholder{color:var(--dsw-alias-label-tertiary);}',
+      '.pc-search:focus{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:1px;}',
+      '.pc-seg{display:inline-flex;border:1px solid var(--dsw-alias-border-l1);border-radius:9px;overflow:hidden;}',
+      '.pc-seg button{appearance:none;border:0;background:transparent;color:var(--dsw-alias-label-secondary);font-size:12px;font-family:inherit;padding:6px 10px;cursor:pointer;}',
+      '.pc-seg button[data-on="true"]{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font-weight:600;}',
+      '.pc-seg button:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px;}',
       '.pc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}',
       '.pc-chip{font-size:11px;line-height:18px;padding:0 8px;border-radius:999px;border:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-bg-base);white-space:nowrap;}',
       '.pc-chip.warn{border-color:var(--dsw-alias-state-warn-primary);color:var(--dsw-alias-state-warn-primary);}',
@@ -372,7 +433,7 @@ window.__ModuleLoader__.load({
       '.pc-btn:hover{background:var(--dsw-alias-bg-layer-2);}',
       '.pc-btn:active{transform:translateY(1px);}',
       '.pc-btn[disabled]{opacity:.55;cursor:default;}',
-      '.pc-btn.primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:#fff;}',
+      '.pc-btn.primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-brand-on-primary,#fff);}',
       '.pc-btn.primary:hover{filter:brightness(1.06);}',
       '.pc-btn.danger{color:var(--dsw-alias-state-error-primary);border-color:var(--dsw-alias-border-l1);}',
       '.pc-btn.danger:hover{background:rgba(220,38,38,.08);}',
@@ -398,9 +459,12 @@ window.__ModuleLoader__.load({
       '.pc-pop-note{padding:14px 10px;font-size:12px;color:var(--dsw-alias-label-tertiary);text-align:center;}',
       '.pc-switch{position:relative;width:34px;height:19px;border-radius:999px;background:var(--dsw-alias-border-l1);cursor:pointer;transition:background .16s ease;border:none;padding:0;}',
       '.pc-switch[data-on="true"]{background:var(--dsw-alias-brand-primary);}',
-      '.pc-switch i{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .16s ease;display:block;}',
+      '.pc-switch i{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--dsw-alias-bg-layer-1,#fff);transition:transform .16s ease;display:block;}',
       '.pc-switch[data-on="true"] i{transform:translateX(15px);}',
       '.pc-empty{color:var(--dsw-alias-label-tertiary);padding:8px 0;}',
+      '.pc-empty-box{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:16px;border:1px dashed var(--dsw-alias-border-l1);border-radius:10px;color:var(--dsw-alias-label-secondary);}',
+      '.pc-empty-box b{font-size:13px;color:var(--dsw-alias-label-primary);}',
+      '.pc-empty-box span{font-size:12px;color:var(--dsw-alias-label-tertiary);}',
       '.pc-toast{position:sticky;bottom:8px;border-radius:10px;padding:9px 12px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);}',
       '.pc-toast.err{border-color:var(--dsw-alias-state-error-primary);}',
       '.pc-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;}',
@@ -415,11 +479,12 @@ window.__ModuleLoader__.load({
       '.pc-tab[data-active="true"]{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);box-shadow:0 1px 2px rgba(0,0,0,.08);font-weight:600;}',
       '.pc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}',
       '@media (max-width:900px){.pc-grid{grid-template-columns:1fr;}}',
+      '@media (max-width:520px){.pc-tiles{grid-template-columns:1fr;}.pc-head{flex-wrap:wrap;}.pc-actions{flex-wrap:wrap;}}',
       '.pc-chat{display:flex;flex-direction:column;gap:10px;min-height:220px;max-height:52vh;overflow-y:auto;padding:4px 2px;}',
       '.pc-msg{display:flex;gap:8px;max-width:88%;}',
       '.pc-msg.user{align-self:flex-end;flex-direction:row-reverse;}',
       '.pc-bubble{border:1px solid var(--dsw-alias-border-l1);border-radius:12px;padding:8px 11px;background:var(--dsw-alias-bg-layer-2);white-space:pre-wrap;}',
-      '.pc-msg.user .pc-bubble{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:#fff;}',
+      '.pc-msg.user .pc-bubble{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-brand-on-primary,#fff);}',
       '.pc-composer{display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--dsw-alias-border-l1);padding-top:10px;margin-top:4px;}',
       '.pc-textarea{flex:1 1 auto;min-height:38px;max-height:120px;resize:vertical;border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-base);color:inherit;padding:8px 10px;font:inherit;}',
       '.pc-textarea:focus{outline:none;border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}',
@@ -485,6 +550,112 @@ window.__ModuleLoader__.load({
       }, h('i'))
     }
 
+    // Ask the host why one candidate did or did not make today's picks.
+    // The host replays its real gates, so this reports the actual reason rather
+    // than a second guess invented for the UI.
+    function ExplainCard(props) {
+      const { t, chinese } = props
+      const [query, setQuery] = React.useState('')
+      const [busy, setBusy] = React.useState(false)
+      const [answer, setAnswer] = React.useState(null)
+      const [error, setError] = React.useState('')
+
+      const ask = React.useCallback(async () => {
+        const needle = query.trim()
+        if (needle === '' || busy) return
+        setBusy(true)
+        setError('')
+        try {
+          const response = await fetch(API_EXPLAIN + '?q=' + encodeURIComponent(needle), {
+            cache: 'no-store',
+            credentials: 'same-origin',
+          })
+          const body = await response.json()
+          if (!body || body.ok !== true) throw new Error(body && body.error ? body.error : 'failed')
+          setAnswer(body.value)
+        } catch (failure) {
+          setError(String(failure && failure.message ? failure.message : failure))
+          setAnswer(null)
+        } finally {
+          setBusy(false)
+        }
+      }, [query, busy])
+
+      let result = null
+      if (answer !== null) {
+        if (answer.found !== true) {
+          result = h('div', { className: 'pc-desc' }, t('explainNotFound'))
+        } else {
+          result = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            answer.matches.map((match) => {
+              const steps = match.admitted === true
+                ? [{ text: t('explainAdmitted') + ' · ' + t('explainRank') + ' ' + match.rank, tone: 'ok' }]
+                : (match.steps ?? []).map((step) => ({ text: pickText(step, chinese), tone: 'warn' }))
+              return h('div', { key: match.name, className: 'pc-overlap' },
+                h('div', { style: { display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' } },
+                  h('b', null, match.name),
+                  h('span', { className: 'pc-chip' }, t('explainScore') + ' ' + match.score),
+                  h('span', { className: 'pc-chip' }, t('explainTier') + ' ' + match.tier),
+                ),
+                h(Chips, { items: steps.map((step) => ({ label: step.text, tone: step.tone })) }),
+              )
+            }),
+          )
+        }
+      }
+
+      return h(Card, { title: t('explainTitle'), hint: t('explainHint') },
+        h('div', { className: 'pc-tools' },
+          h('input', {
+            className: 'pc-search',
+            type: 'search',
+            value: query,
+            placeholder: t('explainSearch'),
+            'aria-label': t('explainSearch'),
+            onChange: (event) => setQuery(event.target.value),
+            onKeyDown: (event) => { if (event.key === 'Enter') void ask() },
+          }),
+          h(Button, { variant: 'primary', disabled: busy || query.trim() === '', onClick: () => { void ask() } },
+            busy ? t('loading') : t('explainBtn')),
+        ),
+        error === '' ? null : h('div', { className: 'pc-desc', style: { color: 'var(--dsw-alias-state-danger-primary)' } }, error),
+        result,
+      )
+    }
+
+    // Toolbar for the installed list: free-text search over bundle names and
+    // their attributed tool names, a call-count / name sort, and an on/off state
+    // filter. Kept local to the panel so no host round trip is needed.
+    function InstalledTools(props) {
+      const { t, query, sort, filter, onChange } = props
+      const seg = (key, value, label) => h('button', {
+        type: 'button',
+        key: key,
+        'data-on': props[key] === value ? 'true' : 'false',
+        'aria-pressed': props[key] === value ? 'true' : 'false',
+        onClick: () => onChange(key, value),
+      }, label)
+      return h('div', { className: 'pc-tools' },
+        h('input', {
+          className: 'pc-search',
+          type: 'search',
+          value: query,
+          placeholder: t('installedSearch'),
+          'aria-label': t('installedSearch'),
+          onChange: (event) => onChange('query', event.target.value),
+        }),
+        h('div', { className: 'pc-seg', role: 'group', 'aria-label': t('installedSortActive') },
+          seg('sort', 'calls', t('installedSortActive')),
+          seg('sort', 'name', t('installedSortName')),
+        ),
+        h('div', { className: 'pc-seg', role: 'group', 'aria-label': t('installedFilterAll') },
+          seg('filter', 'all', t('installedFilterAll')),
+          seg('filter', 'active', t('installedFilterActive')),
+          seg('filter', 'idle', t('installedFilterIdle')),
+        ),
+      )
+    }
+
     function Card(props) {
       return h('section', { className: 'pc-card' },
         h('div', { className: 'pc-card-h' },
@@ -494,6 +665,13 @@ window.__ModuleLoader__.load({
         ),
         h('div', { className: 'pc-card-b' }, props.children),
       )
+    }
+
+    function EmptyBox(props) {
+      const { title, hint } = props
+      return h('div', { className: 'pc-empty-box', role: 'status' },
+        h('b', null, title),
+        hint ? h('span', null, hint) : null)
     }
 
     function Chips(props) {
@@ -518,7 +696,7 @@ window.__ModuleLoader__.load({
     }
 
     function RecommendationRow(props) {
-      const { item, t, chinese, busy, onInstall, onDismiss, first } = props
+      const { item, t, chinese, busy, stage, onInstall, onDismiss, first } = props
       const title = pickText(item.title, chinese) || item.name
       const description = (chinese && item.descriptionZh) ? item.descriptionZh : pickText(item.description, chinese)
       const reasons = (item.reasons ?? []).map((reason) => pickText(reason, chinese)).filter(Boolean).slice(0, 3)
@@ -543,7 +721,7 @@ window.__ModuleLoader__.load({
         h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' } },
           h('div', { className: 'pc-score' }, String(item.score), h('small', null, chinese ? '匹配' : 'fit')),
           h('div', { style: { display: 'flex', gap: '6px' } },
-            h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
+            h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (stage !== '' ? ' · ' + stage : elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
             h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss')),
           ),
         ),
@@ -872,7 +1050,7 @@ window.__ModuleLoader__.load({
     }
 
     function RecommendationCard(props) {
-      const { item, t, chinese, busy, onInstall, onDismiss } = props
+      const { item, t, chinese, busy, stage, onInstall, onDismiss } = props
       const title = pickText(item.title, chinese) || item.name
       const description = (chinese && item.descriptionZh) ? item.descriptionZh : pickText(item.description, chinese)
       const reasons = (item.reasons ?? []).map((reason) => pickText(reason, chinese)).filter(Boolean).slice(0, 3)
@@ -906,7 +1084,7 @@ window.__ModuleLoader__.load({
           item.use ? h('div', { className: 'pc-line' }, h('b', null, t('howUse') + ':'), h('span', null, pickText(item.use, chinese))) : null,
         ),
         h('div', { style: { marginTop: 'auto', padding: '10px 15px 13px', display: 'flex', gap: '8px', borderTop: '1px solid var(--dsw-alias-border-l1)' } },
-          h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
+          h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (stage !== '' ? ' · ' + stage : elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
           h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss')),
         ),
       )
@@ -929,6 +1107,9 @@ window.__ModuleLoader__.load({
       const [settingsValue, setSettingsValue] = React.useState(null)
       const [testing, setTesting] = React.useState(false)
       const [tab, setTab] = React.useState('recs')
+      const [installedQuery, setInstalledQuery] = React.useState('')
+      const [installedSort, setInstalledSort] = React.useState('calls')
+      const [installedFilter, setInstalledFilter] = React.useState('all')
       const [messages, setMessages] = React.useState([])
       const [draft, setDraft] = React.useState('')
       const [sending, setSending] = React.useState(false)
@@ -936,28 +1117,58 @@ window.__ModuleLoader__.load({
       const [dismissedLocal, setDismissedLocal] = React.useState([])
 
 
+      // Remember the validator of the last body we rendered so the 45-second
+      // poll can ask for a 304 instead of re-downloading (and re-parsing) the
+      // whole snapshot every time nothing changed. Kept per tab: the validator
+      // describes the bytes of one tab's slice.
+      const etagRef = React.useRef({ tab: '', value: '' })
+
       const load = React.useCallback(async () => {
         try {
-          const response = await fetch(API_STATE, { cache: 'no-store', credentials: 'same-origin' })
+          const headers = {}
+          // The ETag keys the exact bytes for one tab, so a cached validator is
+          // only reusable while the tab stays put. Reset it when the tab moves.
+          if (etagRef.current.tab === tab) {
+            if (etagRef.current.value !== '') headers['if-none-match'] = etagRef.current.value
+          } else {
+            etagRef.current = { tab, value: '' }
+          }
+          const response = await fetch(API_STATE + '?tab=' + encodeURIComponent(tab), {
+            cache: 'no-store',
+            credentials: 'same-origin',
+            headers,
+          })
+          if (response.status === 304) { setError(''); return }
+          const etag = response.headers.get('etag')
           const body = await response.json().catch(() => null)
           if (response.status === 401) { setError(t('loginRequired')); return }
           if (!response.ok || body === null || body.ok !== true) {
             setError((body && body.error) || 'HTTP ' + response.status)
             return
           }
+          if (typeof etag === 'string' && etag !== '') etagRef.current = { tab, value: etag }
           setData(body.value)
           setError('')
         } catch (cause) {
           setError(String(cause && cause.message ? cause.message : cause))
         }
-      }, [t])
+      }, [t, tab])
 
       React.useEffect(() => {
         ensureStyles()
         void load()
-        const timer = setInterval(() => { void load() }, 45_000)
+        // Poll every 45s when idle. While an install/refresh of ours is in
+        // flight, the host writes stage events as it goes, so poll fast enough
+        // for those to reach the button instead of leaving the user counting seconds.
+        const period = busy === '' ? 45_000 : 1_500
+        const timer = setInterval(() => { void load() }, period)
         return () => clearInterval(timer)
-      }, [load])
+      }, [load, busy])
+
+      // Latest stage the host reported for the action we are waiting on.
+      const stage = data === null || busy === '' ? '' : String(
+        (data.events ?? []).find((event) => String(event?.message ?? '').includes('install stage:'))?.message ?? ''
+      ).replace('install stage:', '').trim()
 
       React.useEffect(() => {
         let alive = true
@@ -1185,27 +1396,47 @@ window.__ModuleLoader__.load({
         ),
       )
 
-      const tiles = h('div', { className: 'pc-tiles' },
+      const tiles = h('div', { className: 'pc-tiles', role: 'group', 'aria-label': t('statsLabel') },
         h('div', { className: 'pc-tile' }, h('b', null, String(totals.recommendations ?? recommendations.length)), h('span', null, t('statsRecommend'))),
         h('div', { className: 'pc-tile' }, h('b', null, String(totals.installed ?? installed.length)), h('span', null, t('statsInstalled'))),
         h('div', { className: 'pc-tile' }, h('b', null, String(totals.idle ?? idle.length)), h('span', null, t('statsIdle'))),
         h('div', { className: 'pc-tile' }, h('b', null, numberFmt(totals.calls7 ?? 0, chinese)), h('span', null, t('statsCalls'))),
       )
 
-      const tabs = h('div', { className: 'pc-tabs' },
-        [['recs', t('tabRecs') + ' ' + recommendations.length], ['installed', t('tabInstalled') + ' ' + installed.length], ['insight', t('tabInsight')]]
-          .map(([key, label]) => h('button', {
-            key,
-            type: 'button',
-            className: 'pc-tab',
-            'data-active': tab === key ? 'true' : 'false',
-            onClick: () => setTab(key),
-          }, label)))
+      const tabKeys = ['recs', 'installed', 'insight']
+      const tabLabels = {
+        recs: t('tabRecs') + ' ' + recommendations.length,
+        installed: t('tabInstalled') + ' ' + installed.length,
+        insight: t('tabInsight'),
+      }
+      // Roving focus: arrows move between tabs so the bar is reachable without
+      // a mouse, matching how the host's own segmented controls behave.
+      const onTabKey = (event) => {
+        const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+        if (step === 0) return
+        event.preventDefault()
+        const at = tabKeys.indexOf(tab)
+        setTab(tabKeys[(at + step + tabKeys.length) % tabKeys.length])
+      }
+      const tabs = h('div', { className: 'pc-tabs', role: 'tablist', 'aria-label': t('tabsLabel'), onKeyDown: onTabKey },
+        tabKeys.map((key, index) => h('button', {
+          key,
+          type: 'button',
+          role: 'tab',
+          tabIndex: tab === key ? 0 : -1,
+          'aria-selected': tab === key ? 'true' : 'false',
+          'aria-controls': 'pc-panel-' + key,
+          'aria-posinset': index + 1,
+          'aria-setsize': tabKeys.length,
+          className: 'pc-tab',
+          'data-active': tab === key ? 'true' : 'false',
+          onClick: () => setTab(key),
+        }, tabLabels[key])))
 
       const chatView = h(Card, { title: t('chatTitle'), hint: t('chatHint') },
         h('div', { className: 'pc-chat' },
           messages.length === 0
-            ? h('div', { className: 'pc-empty' }, t('chatEmpty'))
+            ? h(EmptyBox, { title: t('chatEmpty'), hint: t('chatEmptyHint') })
             : messages.map((message, index) => h('div', { key: index, className: 'pc-msg ' + message.role },
               h('div', { className: 'pc-bubble' },
                 h('div', null, message.text),
@@ -1285,27 +1516,58 @@ window.__ModuleLoader__.load({
         paneActions,
         h('div', { className: 'pc-grid' },
           recommendations.length === 0
-            ? h('div', { className: 'pc-empty' }, t('emptyRecommend'))
+            ? h(EmptyBox, { title: t('emptyRecommend'), hint: t('emptyRecommendHint') })
             : recommendations.map((item) => h(RecommendationCard, {
               key: item.id,
               item,
               t,
               chinese,
               busy,
+              stage,
               onInstall: installCard,
               onDismiss: dismissCard,
             }))))
 
+      // Search covers the bundle name and every attributed tool name, which is
+      // what a user actually remembers when they wonder whether a plugin is
+      // installed. Calls are the sum of the tools already counted by the host.
+      const installedShown = (() => {
+        const needle = installedQuery.trim().toLowerCase()
+        const callsOf = (item) => (item.tools ?? []).reduce((sum, tool) => sum + (Number(tool.calls) || 0), 0)
+        const kept = installed.filter((item) => {
+          if (installedFilter === 'active' && item.status !== 'active') return false
+          if (installedFilter === 'idle' && item.status === 'active') return false
+          if (needle === '') return true
+          const haystack = [item.name, item.title, item.titleZh, ...(item.tools ?? []).map((tool) => tool.name)]
+            .filter(Boolean).join(' ').toLowerCase()
+          return haystack.includes(needle)
+        })
+        return installedSort === 'name'
+          ? kept.slice().sort((left, right) => String(left.name).localeCompare(String(right.name)))
+          : kept.slice().sort((left, right) => callsOf(right) - callsOf(left))
+      })()
+
       const installedView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
-        h(Card, { title: t('installedTitle'), count: installed.length, hint: t('installedHint') },
-          installed.length === 0 ? h('div', { className: 'pc-empty' }, '—') : installed.map((item, index) => h(InstalledRow, {
+        h(Card, { title: t('installedTitle'), count: installedShown.length, hint: t('installedHint') },
+          h(InstalledTools, {
+            t,
+            query: installedQuery,
+            sort: installedSort,
+            filter: installedFilter,
+            onChange: (key, value) => {
+              if (key === 'query') setInstalledQuery(value)
+              else if (key === 'sort') setInstalledSort(value)
+              else setInstalledFilter(value)
+            },
+          }),
+          installedShown.length === 0 ? h(EmptyBox, { title: installed.length === 0 ? t('emptyInstalled') : t('installedNone'), hint: installed.length === 0 ? t('emptyInstalledHint') : t('installedNoneHint') }) : installedShown.map((item, index) => h(InstalledRow, {
             key: item.name, item, t, chinese, busy, confirming, first: index === 0,
             onToggle: (name, enabled) => act('toggle', { name, enabled }, enabled ? t('toggleOn') : t('toggleOff')),
             onRemove: (name) => act('remove', { name }, t('removedLive')),
             onConfirm: (name) => setConfirming(name),
           }))),
         h(Card, { title: t('idleTitle'), count: idle.length, hint: t('idleHint') },
-          idle.length === 0 ? h('div', { className: 'pc-empty' }, t('emptyIdle')) : idle.map((item, index) => h(IdleRow, {
+          idle.length === 0 ? h(EmptyBox, { title: t('emptyIdle'), hint: t('emptyIdleHint') }) : idle.map((item, index) => h(IdleRow, {
             key: item.name, item, t, chinese, busy, first: index === 0,
             onSnooze: (name) => act('snooze', { name }, t('snoozed')),
             onRemove: (name) => act('remove', { name }, t('removedLive')),
@@ -1322,6 +1584,7 @@ window.__ModuleLoader__.load({
 
       const insightView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
         paneActions,
+        h(ExplainCard, { t, chinese }),
         h(Card, { title: t('diffTitle'), hint: t('diffHint') },
           h(Chips, { items: diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }] })),
         conflicts.length === 0 ? null : h(Card, { title: t('conflictsTitle'), count: conflicts.length, hint: t('conflictsHint') },
@@ -1375,7 +1638,7 @@ window.__ModuleLoader__.load({
           )))
         ,
         h(Card, { title: t('gapsTitle'), count: gaps.length, hint: t('gapsHint') },
-          gaps.length === 0 ? h('div', { className: 'pc-empty' }, t('gapEmpty')) : gaps.map((gap, index) => h('div', { key: gap.tag, className: 'pc-row', style: index === 0 ? { borderTop: 'none' } : null },
+          gaps.length === 0 ? h(EmptyBox, { title: t('gapEmpty'), hint: t('gapEmptyHint') }) : gaps.map((gap, index) => h('div', { key: gap.tag, className: 'pc-row', style: index === 0 ? { borderTop: 'none' } : null },
             h('div', { className: 'pc-avatar' }, pickText(gap.label, chinese).slice(0, 1)),
             h('div', { className: 'pc-grow' },
               h('div', { style: { display: 'flex', gap: '8px', alignItems: 'baseline', flexWrap: 'wrap' } },
@@ -1392,6 +1655,7 @@ window.__ModuleLoader__.load({
                     t,
                     chinese,
                     busy,
+                    stage,
                     onInstall: installCard,
                     onDismiss: dismissCard,
                   })))

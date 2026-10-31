@@ -25,6 +25,7 @@ import {
   BASELINE_GAPS,
   attributeToolErrors,
   baselineGaps,
+  explainCandidate,
   failingTool,
   capabilityTags,
   groupOverlaps,
@@ -867,12 +868,36 @@ export function apply(ctx, rawConfig) {
     }
   }
 
-  async function readInventory() {
+  /**
+   * The bundle inventory is re-read on every /state poll, but it only changes
+   * when the profile manifest or the node_modules tree changes. Cache the
+   * result for a short window so a 45-second poll does not re-walk the whole
+   * tree each time; an install/remove/refresh call invalidates it explicitly.
+   */
+  let inventoryCache = { at: 0, value: null }
+  const INVENTORY_TTL_MS = 15_000
+  // Fingerprint of the bundle inventory the installed view was last built
+  // from. Installing a bundle re-reads the inventory inside the same call, so
+  // this must live alongside the cache and reset with it.
+  let installedFingerprint = ''
+
+  function invalidateInventory() {
+    inventoryCache = { at: 0, value: null }
+    installedFingerprint = ''
+  }
+
+  async function readInventory(options = {}) {
+    const fresh = options.fresh === true
+    if (!fresh && inventoryCache.value !== null && Date.now() - inventoryCache.at < INVENTORY_TTL_MS) {
+      return inventoryCache.value
+    }
     const engine = manager()
     if (!engine) return { bundles: [], active: null, available: false }
     try {
       const [bundles, active] = await Promise.all([engine.listBundles(), readActiveBundles()])
-      return { bundles: Array.isArray(bundles) ? bundles : [], active, available: true }
+      const value = { bundles: Array.isArray(bundles) ? bundles : [], active, available: true }
+      inventoryCache = { at: Date.now(), value }
+      return value
     } catch (error) {
       warn('inventory read failed: ' + errorMessage(error))
       return { bundles: [], active: null, available: false }
@@ -1407,11 +1432,42 @@ export function apply(ctx, rawConfig) {
   async function syncInstalledFromInventory() {
     try {
       const inventory = await readInventory()
+      // Rebuilding the installed view and the overlap sections on every poll
+      // is wasted work when the bundle list did not change: the inventory cache
+      // hands back the same array identity, so a cheap fingerprint tells us
+      // whether anything actually moved.
+      const fingerprint = inventory.bundles
+        .map((bundle) => String(bundle?.name ?? '') + ':' + (bundle?.installed === true ? '1' : '0') + ':' + String(bundle?.enabled ?? ''))
+        .sort()
+        .join('|') + '#' + String(inventory.active === null ? '' : inventory.active.join(','))
+      if (fingerprint === installedFingerprint && Array.isArray(state.installed) && state.installed.length > 0) {
+        return
+      }
+      installedFingerprint = fingerprint
       state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
       rebuildConflicts()
     } catch {
       // Keep the last known view if the manager is unavailable mid-recompose.
     }
+  }
+
+  // Which top-level keys each sidebar tab actually renders. The recommendations
+  // tab polls every 45s, so shipping insight-only payload (catalog coverage, gap
+  // analysis, pain points) on every tick wasted most of the response.
+  const TAB_SLICES = {
+    recs: ['version', 'enabled', 'today', 'generatedAt', 'lastRunDate', 'lastRunReason', 'nextRunAt', 'busy', 'settings', 'recommendations', 'installed', 'gaps', 'diff', 'modelStatus', 'events', 'totals', 'intents'],
+    installed: ['version', 'enabled', 'today', 'generatedAt', 'busy', 'settings', 'installed', 'idle', 'modelStatus', 'events', 'totals'],
+    insight: null,
+  }
+
+  // Trim a full snapshot down to what one tab paints. An unknown or missing tab
+  // keeps the full payload, so older clients and the report endpoint are unaffected.
+  function projectSnapshot(full, tab) {
+    const keys = TAB_SLICES[tab]
+    if (!Array.isArray(keys)) return full
+    const sliced = { tab }
+    for (const key of keys) if (key in full) sliced[key] = full[key]
+    return sliced
   }
 
   async function snapshot() {
@@ -2105,9 +2161,15 @@ export function apply(ctx, rawConfig) {
     if (PROTECTED_BUNDLES.includes(spec)) throw new Error('Refusing to install a protected package')
 
     note('install (' + origin + '): ' + spec)
+    // An install can legitimately take minutes (npm fetch + bundle activation),
+    // and the UI only has the activity log to explain the wait. Emit the stage
+    // boundaries so the button can say "downloading" instead of counting blind.
+    note(kind === 'bundled' ? 'install stage: enabling bundled bundle' : 'install stage: downloading ' + spec)
     const result = kind === 'bundled'
       ? await engine.setBundleEnabled(spec, true)
       : await withTimeout(engine.installBundle(spec, { enabled: true }), 10 * 60 * 1000, 'install')
+    invalidateInventory()
+    note('install stage: activating ' + spec)
     const alreadyInstalled = result?.error?.code === 'already-installed'
     recommendation.installed = alreadyInstalled || result?.application === 'applied' || result?.application === 'restart-required'
     if (recommendation.installed) {
@@ -2133,6 +2195,7 @@ export function apply(ctx, rawConfig) {
 
     note('remove (' + origin + '): ' + bundleName)
     const result = await engine.removeBundle(bundleName)
+    invalidateInventory()
     delete state.firstSeen[bundleName]
     delete state.snoozed[bundleName]
     if (state.attribution) delete state.attribution[bundleName]
@@ -2156,6 +2219,7 @@ export function apply(ctx, rawConfig) {
     if (target === undefined) throw new Error('Unknown installed bundle: ' + bundleName)
     note('set enabled ' + bundleName + ': ' + enabled)
     const result = await engine.setBundleEnabled(bundleName, enabled === true)
+    invalidateInventory()
     const inventory = await readInventory()
     state.installed = buildInstalledView(inventory.bundles, Date.now(), inventory.active)
     rebuildConflicts()
@@ -2254,6 +2318,46 @@ export function apply(ctx, rawConfig) {
     response.end(JSON.stringify(payload))
   }
 
+  /**
+   * A stable short hash of a JSON payload. Used as the ETag for /state so the
+   * 45-second poll can revalidate instead of re-downloading the whole snapshot:
+   * unchanged data answers 304 with no body, which is the difference between
+   * ~45KB every poll and ~0 bytes when nothing moved.
+   */
+  function weakEtag(text) {
+    let hash = 2166136261
+    for (let index = 0; index < text.length; index += 1) {
+      hash ^= text.charCodeAt(index)
+      hash = Math.imul(hash, 16777619)
+    }
+    return 'W/"' + (hash >>> 0).toString(36) + '-' + text.length.toString(36) + '"'
+  }
+
+  /**
+   * Send a cacheable-by-revalidation JSON response. The client may still be
+   * told no-store, because the payload carries local plugin inventory; the
+   * revalidation path only saves bandwidth, it never lets a proxy reuse it.
+   */
+  function sendJsonWithEtag(request, response, payload) {
+    const text = JSON.stringify(payload)
+    const etag = weakEtag(text)
+    const inm = request.headers['if-none-match']
+    if (typeof inm === 'string' && inm.split(',').some((part) => part.trim() === etag)) {
+      response.writeHead(304, {
+        etag,
+        'cache-control': 'private, no-cache',
+      })
+      response.end()
+      return
+    }
+    response.writeHead(200, {
+      'content-type': 'application/json; charset=utf-8',
+      etag,
+      'cache-control': 'private, no-cache',
+    })
+    response.end(text)
+  }
+
   function loopbackRequest(request) {
     const host = request.headers.host
     if (typeof host === 'string' && host !== '') {
@@ -2333,6 +2437,7 @@ export function apply(ctx, rawConfig) {
           if (!engine) throw new Error('pluginManager service is not available in this profile')
           note('install (chat): ' + spec)
           const result = await withTimeout(engine.installBundle(spec, { enabled: true }), 10 * 60 * 1000, 'install')
+          invalidateInventory()
           const applied =
             result?.application === 'applied' ||
             result?.application === 'restart-required' ||
@@ -2405,7 +2510,56 @@ export function apply(ctx, rawConfig) {
           // First open with no report yet: start the build and answer with the
           // current (empty) snapshot so the tab renders immediately.
           if (state.lastRunAt === 0 && busy === null) void refresh('route')
-          sendJson(response, 200, { ok: true, value: await snapshot() })
+          const tab = String(new URL(request.url ?? '/', 'http://127.0.0.1').searchParams.get('tab') ?? '')
+          sendJsonWithEtag(request, response, { ok: true, value: projectSnapshot(await snapshot(), tab) })
+        } catch (error) {
+          sendJson(response, 500, { ok: false, error: errorMessage(error) })
+        }
+      })()
+      return
+    }
+    if (pathname === ROUTE_PREFIX + '/explain') {
+      if (request.method !== 'GET') {
+        sendJson(response, 405, { ok: false, error: 'GET only' })
+        return
+      }
+      void (async () => {
+        try {
+          await (loaded ? Promise.resolve() : load())
+          const query = String(url.searchParams.get('q') ?? '').trim()
+          if (query === '') {
+            sendJson(response, 400, { ok: false, error: 'q is required' })
+            return
+          }
+          const candidates = await loadIndex()
+          const needle = query.toLowerCase()
+          const exact = candidates.filter((entry) => String(entry?.name ?? '').toLowerCase() === needle)
+          const near = exact.length > 0
+            ? exact
+            : candidates.filter((entry) => String(entry?.name ?? '').toLowerCase().includes(needle)).slice(0, 5)
+          if (near.length === 0) {
+            sendJson(response, 200, { ok: true, value: { query, found: false, matches: [] } })
+            return
+          }
+          // dismissed and snoozed are keyed maps, not lists: dismissed is
+          // id -> timestamp, snoozed is bundle name -> until timestamp. Snooze
+          // only counts while it has not expired.
+          const at = Date.now()
+          const dismissed = Object.keys(state.dismissed ?? {})
+          const snoozed = Object.entries(state.snoozed ?? {})
+            .filter(([, until]) => Number(until) > at)
+            .map(([name]) => name)
+          const installedNames = (state.installed ?? []).map((entry) => ({ name: entry?.name }))
+          const shown = (state.recommendations ?? []).map((entry) => ({ id: entry.id, name: entry.name, score: entry.score }))
+          const matches = near.map((candidate) => explainCandidate(candidate, state.profile ?? {}, {
+            installed: installedNames,
+            dismissed,
+            snoozed,
+            recommendations: shown,
+            now: at,
+            maxRecommendations: config.maxRecommendations,
+          }))
+          sendJson(response, 200, { ok: true, value: { query, found: true, matches } })
         } catch (error) {
           sendJson(response, 500, { ok: false, error: errorMessage(error) })
         }

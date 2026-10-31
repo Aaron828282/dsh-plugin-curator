@@ -224,7 +224,7 @@ picks 会按**精确包名**回到注册表校验（必须声明 `dsh` 字段）
     npmQueries:               # 多查询绕开 npm 的 5000 条回卷
       - keywords:dsh-plugin
       - keywords:deepseek-harness
-    npmPages: 24              # 每个查询翻多少页（250/页）
+    npmPages: 40              # 每个查询翻多少页（250/页）
     npmDelayMs: 300           # 页间隔，防 429
     githubSearch: true
     githubPages: 2

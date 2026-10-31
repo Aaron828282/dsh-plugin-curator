@@ -18,6 +18,7 @@ import {
   maintenanceOf,
   normalizeMarketIndex,
   openGaps,
+  explainCandidate,
   qualityTier,
   normalizeNpmSearch,
   normalizeRegistry,
@@ -25,6 +26,7 @@ import {
   pickText,
   scoreCandidate,
   specKind,
+  tokensOf,
 } from '../core.js'
 
 const DAY = 86_400_000
@@ -208,6 +210,42 @@ test('attribution still guesses when the registry is unavailable', () => {
   // reporting every plugin as unused.
   assert.equal(byBundle['dsh-memory'].calls, 2)
   assert.equal(byBundle['dsh-memory'].how, 'guessed')
+})
+
+test('Chinese terms are words, not sliding bigram debris', () => {
+  const profile = buildProfile({
+    workspaces: [{ title: '项目恢复与新建文件夹', path: '/w/作品集网站' }],
+    now: Date.now(),
+  })
+  const values = profile.terms.map((term) => term.value)
+  // Whole words survive ...
+  assert.ok(values.includes('项目恢复'))
+  assert.ok(values.includes('新建文件夹'))
+  assert.ok(values.includes('作品集网站'))
+  // ... and the meaningless mid-phrase bigrams the old window produced are gone.
+  assert.ok(!values.includes('目恢'))
+  assert.ok(!values.includes('建文'))
+  assert.ok(!values.includes('品集'))
+})
+
+test('a whole-word hit outranks a fragment hit', () => {
+  const profile = buildProfile({
+    workspaces: [{ title: '会话检索', path: '/w/会话检索工具' }],
+    now: Date.now(),
+  })
+  const whole = scoreCandidate({ id: 'whole', name: 'a', description: '会话检索', category: 'memory', downloads: 0, stars: 0 }, profile)
+  const fragment = scoreCandidate({ id: 'frag', name: 'b', description: '会', category: 'memory', downloads: 0, stars: 0 }, profile)
+  assert.ok(whole.score > fragment.score)
+})
+
+test('a generated prefix is flagged so scoring can discount it', () => {
+  const tokens = tokensOf('会话管理与检索')
+  assert.equal(tokens.get('会话管理'), false)
+  assert.equal(tokens.get('检索'), false)
+  // A function word splits the run, so the joined phrase is never a term.
+  assert.equal(tokens.has('会话管理与检索'), false)
+  assert.equal(tokens.get('会话管'), true)
+  assert.equal(tokens.has('与'), false)
 })
 
 test('idle detection honours snooze, disabled and protected bundles', () => {
@@ -395,3 +433,49 @@ test('overlap ignores disabled plugins', () => {
   assert.deepEqual(groups, [])
 })
 
+
+test('explanation names the gate that actually dropped a candidate', () => {
+  const profile = { terms: [], categoryWeights: {} }
+  const now = Date.parse('2026-11-01T00:00:00Z')
+
+  // Healthy adoption but already installed: the reason is installation.
+  const installed = explainCandidate(
+    { name: 'dsh-alpha', downloads: 900, stars: 40, added: '2026-10-20' },
+    profile,
+    { installed: [{ name: 'dsh-alpha' }], now }
+  )
+  assert.equal(installed.admitted, false)
+  assert.equal(installed.tier, 'installed')
+
+  // No adoption signal and older than the new-window: dropped as unused.
+  const unused = explainCandidate(
+    { name: 'dsh-beta', downloads: 0, stars: 0, added: '2026-01-01' },
+    profile,
+    { now }
+  )
+  assert.equal(unused.admitted, false)
+  assert.equal(unused.tier, 'unused')
+  assert.equal(unused.steps[0].gate, 'unused')
+})
+
+test('explanation distinguishes a dismissal from being outranked', () => {
+  const profile = { terms: [], categoryWeights: {} }
+  const now = Date.parse('2026-11-01T00:00:00Z')
+  const base = { name: 'dsh-gamma', id: 'gamma', downloads: 900, stars: 40, added: '2026-10-20' }
+
+  const dismissed = explainCandidate(base, profile, { dismissed: ['gamma'], now })
+  assert.equal(dismissed.steps[0].gate, 'dismissed')
+
+  // Expired snooze must not suppress anything; only a live one does.
+  const staleSnooze = explainCandidate(base, profile, { snoozed: [], now })
+  assert.equal(staleSnooze.steps.length, 1)
+  assert.equal(staleSnooze.steps[0].gate, 'beaten')
+
+  // Being inside the shown list reports its rank instead of a rejection.
+  const shown = explainCandidate(base, profile, {
+    now,
+    recommendations: [{ id: 'other', name: 'dsh-other', score: 90 }, { id: 'gamma', name: 'dsh-gamma', score: 55 }],
+  })
+  assert.equal(shown.admitted, true)
+  assert.equal(shown.rank, 2)
+})

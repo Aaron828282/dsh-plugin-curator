@@ -361,22 +361,61 @@ export function mergeCandidates(lists) {
   return [...byId.values()]
 }
 
-function tokensOf(text) {
-  const lower = String(text ?? '').toLowerCase()
-  const tokens = new Set()
-  for (const match of lower.matchAll(/[a-z][a-z0-9+#._-]{2,}/g)) {
-    const token = match[0].replace(/[._-]+$/g, '')
-    if (token.length >= 3 && !TERM_STOPWORDS.has(token)) tokens.add(token)
+/**
+ * Chinese has no spaces, so a naive sliding bigram window turns 新建文件夹 into
+ * 新建 / 建文 / 文件 / 件夹: half of those are meaningless fragments that then
+ * match unrelated marketplace descriptions and outscore real download
+ * popularity. Split on function words instead, keep the meaningful run whole,
+ * and only add shorter prefixes when the run is long enough for them to be
+ * words rather than debris.
+ */
+const ZH_BREAK_CHARS = new Set([
+  '的', '了', '和', '与', '及', '或', '在', '是', '我', '你', '他', '它', '们', '这', '那',
+  '就', '都', '也', '还', '又', '而', '并', '把', '被', '让', '给', '对', '从', '到', '为',
+  '以', '于', '之', '但', '却', '则', '即', '很', '太', '更', '最', '没', '无',
+  '个', '些', '样', '吧', '呢', '啊', '呀', '吗', '着', '过', '得', '地',
+])
+
+const ZH_MIN_RUN = 2
+const ZH_FRAGMENT_MIN_RUN = 4
+
+export function chineseTokens(run) {
+  const out = new Map()
+  let current = ''
+  const flush = () => {
+    if (current.length >= ZH_MIN_RUN && !TERM_STOPWORDS.has(current)) out.set(current, false)
+    current = ''
   }
-  for (const match of lower.matchAll(/[\u4e00-\u9fa5]{2,}/g)) {
-    const run = match[0]
-    if (!TERM_STOPWORDS.has(run) && run.length <= 6) tokens.add(run)
-    for (let i = 0; i + 2 <= run.length; i += 1) {
-      const bigram = run.slice(i, i + 2)
-      if (!TERM_STOPWORDS.has(bigram)) tokens.add(bigram)
+  for (const char of run) {
+    if (ZH_BREAK_CHARS.has(char)) flush()
+    else current += char
+  }
+  flush()
+  // A long run also yields its leading prefixes, so 会话管理与检索 still matches
+  // a description that only says 会话管理. Prefixes shorter than three chars of
+  // a long run are debris, not words, and prefixes are flagged so scoring can
+  // discount them: a whole word is strong evidence, a prefix is a guess.
+  for (const [token, fragment] of [...out]) {
+    if (fragment || token.length < ZH_FRAGMENT_MIN_RUN) continue
+    for (let size = 3; size < token.length; size += 1) {
+      const prefix = token.slice(0, size)
+      if (!out.has(prefix) && !TERM_STOPWORDS.has(prefix)) out.set(prefix, true)
     }
   }
-  return [...tokens]
+  return out
+}
+
+export function tokensOf(text) {
+  const lower = String(text ?? '').toLowerCase()
+  const tokens = new Map()
+  for (const match of lower.matchAll(/[a-z][a-z0-9+#._-]{2,}/g)) {
+    const token = match[0].replace(/[._-]+$/g, '')
+    if (token.length >= 3 && !TERM_STOPWORDS.has(token)) tokens.set(token, false)
+  }
+  for (const match of lower.matchAll(/[\u4e00-\u9fa5]{2,}/g)) {
+    for (const [token, fragment] of chineseTokens(match[0])) tokens.set(token, fragment)
+  }
+  return tokens
 }
 
 export function toolTags(toolName) {
@@ -423,11 +462,13 @@ export function buildProfile({ usageDays = {}, workspaces = [], now = Date.now()
   }
 
   const termMap = new Map()
-  const addTerm = (value, label, weight) => {
+  const addTerm = (value, label, weight, fragment = false) => {
     const token = String(value ?? '').toLowerCase().trim()
     if (token.length < 2) return
     const existing = termMap.get(token)
-    if (existing === undefined || existing.weight < weight) termMap.set(token, { value: token, label, weight })
+    if (existing === undefined || existing.weight < weight) {
+      termMap.set(token, { value: token, label, weight, fragment: fragment === true })
+    }
   }
   const recentWorkspaces = workspaces.slice(0, 6).map((workspace) => ({
     title: String(workspace?.title ?? workspace?.name ?? workspace?.path ?? ''),
@@ -435,10 +476,10 @@ export function buildProfile({ usageDays = {}, workspaces = [], now = Date.now()
   }))
   for (const workspace of recentWorkspaces) {
     const base = workspace.path.split(/[\\/]/).filter(Boolean).pop() ?? ''
-    for (const token of tokensOf(`${workspace.title} ${base}`)) addTerm(token, token, 3)
+    for (const [token, fragment] of tokensOf(`${workspace.title} ${base}`)) addTerm(token, token, 3, fragment)
   }
   for (const { name } of topTools) {
-    for (const token of tokensOf(name.replace(/_/g, ' '))) addTerm(token, token, 1)
+    for (const [token, fragment] of tokensOf(name.replace(/_/g, ' '))) addTerm(token, token, 1, fragment)
   }
   const terms = [...termMap.values()].sort((a, b) => b.weight - a.weight).slice(0, 40)
 
@@ -482,7 +523,10 @@ export function scoreCandidate(candidate, profile) {
     if (term.value.length < 2) continue
     if (!text.includes(term.value)) continue
     if (!matched.includes(term.label)) matched.push(term.label)
-    termScore += Math.min(6, term.weight * 2)
+    // A whole word that hit is strong evidence; a generated prefix of a longer
+    // word is a guess, and guesses must not rival real download popularity.
+    const gain = term.fragment === true ? Math.round(term.weight) : Math.min(6, term.weight * 2)
+    termScore += Math.max(1, gain)
     if (matched.length >= 4) break
   }
   score += Math.min(18, termScore)
@@ -1425,4 +1469,88 @@ export function normalizeMarketIndex(payload, indexUrl = '') {
     })
   }
   return out
+}
+
+// Answer "why was this bundle not recommended?" for one candidate.
+//
+// The recommender drops candidates for a handful of reasons, and from the
+// outside all of them look the same: the bundle is simply absent. This walks
+// the same gates in the same order the recommender uses, so the explanation is
+// the real reason instead of a second guess written for the UI.
+export function explainCandidate(candidate, profile, options = {}) {
+  const {
+    installed = [],
+    dismissed = [],
+    snoozed = [],
+    recommendations = [],
+    now = Date.now(),
+    maxRecommendations = 8,
+    minDownloads = 100,
+    minStars = 5,
+    newDays = 14,
+  } = options
+
+  const name = String(candidate?.name ?? candidate?.spec ?? '')
+  const lower = name.toLowerCase()
+  const steps = []
+
+  const installedNames = new Set(installed.map((entry) => String(entry?.name ?? '').toLowerCase()))
+  if (installedNames.has(lower)) {
+    return { name, admitted: false, score: 0, tier: 'installed', steps }
+  }
+
+  const quality = qualityTier(candidate, { now, minDownloads, minStars, newDays })
+  const scored = scoreCandidate(candidate, profile)
+  const score = Number(scored?.score) || 0
+
+  if (quality.tier === 'dead') {
+    steps.push({ gate: 'dead', en: 'The package has not shipped an update in over a year', zh: '这个包一年多没更新了' })
+    return { name, admitted: false, score, tier: quality.tier, steps }
+  }
+  if (quality.tier === 'unused') {
+    steps.push({
+      gate: 'unused',
+      en: `Only ${quality.downloads} monthly downloads and ${quality.stars} stars, and it is older than ${newDays} days`,
+      zh: `月下载只有 ${quality.downloads}、星标 ${quality.stars}，且发布超过 ${newDays} 天`,
+    })
+    return { name, admitted: false, score, tier: quality.tier, steps }
+  }
+
+  const dismissedNames = new Set(dismissed.map((entry) => String(entry ?? '').toLowerCase()))
+  if (dismissedNames.has(lower) || dismissedNames.has(String(candidate?.id ?? '').toLowerCase())) {
+    steps.push({ gate: 'dismissed', en: 'You dismissed this recommendation before', zh: '你之前关掉过这条推荐' })
+    return { name, admitted: false, score, tier: quality.tier, steps }
+  }
+  const snoozedNames = new Set(snoozed.map((entry) => String(entry ?? '').toLowerCase()))
+  if (snoozedNames.has(lower)) {
+    steps.push({ gate: 'snoozed', en: 'You snoozed this bundle', zh: '你把这个插件放进了稍后提醒' })
+    return { name, admitted: false, score, tier: quality.tier, steps }
+  }
+
+  // Every gate above passes; whether it shows up depends on how many stronger
+  // candidates won the limited slots.
+  const chosen = recommendations.map((entry) => ({
+    id: String(entry?.id ?? ''),
+    name: String(entry?.name ?? ''),
+    score: Number(entry?.score) || 0,
+  }))
+  const listed = chosen.find((entry) => entry.name.toLowerCase() === lower || entry.id.toLowerCase() === lower)
+  if (listed !== undefined) {
+    return { name, admitted: true, score, tier: quality.tier, rank: chosen.indexOf(listed) + 1, steps, reasons: scored?.reasons ?? [] }
+  }
+
+  const cut = chosen.length >= maxRecommendations
+    ? chosen[chosen.length - 1]?.score ?? 0
+    : 0
+  const overtaken = chosen.filter((entry) => entry.score >= score).length
+  steps.push({
+    gate: 'beaten',
+    en: chosen.length >= maxRecommendations
+      ? `${overtaken} stronger candidate(s) filled the ${maxRecommendations} slots; the weakest shown scored ${cut} against ${score}`
+      : `Scored ${score}, below the ${maxRecommendations} slots filled by stronger candidates`,
+    zh: chosen.length >= maxRecommendations
+      ? `有 ${overtaken} 个更强的候选占满了 ${maxRecommendations} 个位置，最后一条 ${cut} 分，它是 ${score} 分`
+      : `它得了 ${score} 分，排在更强的候选之后没能进榜`,
+  })
+  return { name, admitted: false, score, tier: quality.tier, steps, reasons: scored?.reasons ?? [] }
 }
