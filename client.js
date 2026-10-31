@@ -33,6 +33,35 @@ window.__ModuleLoader__.load({
       nextRun: '下次',
       working: '处理中',
       statsRecommend: '今日推荐',
+      statsGap: '能力缺口',
+      statsPool: '候选池',
+      statsNext: '下次巡检',
+      chartOfficial: '官方内置',
+      chartNpm: 'npm 关键词',
+      chartGithub: 'GitHub 话题',
+      chartRegistry: '社区注册表',
+      statSecondary: '{main}',
+      statInstalledMain: '共 {n} 个已装',
+      statInstalledSub: '{active} 个在用 · {unused} 个未调用',
+      statRecommendSub: 'AI 参与挑选 {n} 条',
+      statCallsSub: '覆盖 {n} 个插件',
+      statGapSub: '{list}',
+      statPoolMain: '{n} 个候选',
+      statPoolSub: '已校验 {n} 个',
+      statNextSub: '上次 {time}',
+      chartUsageTitle: '插件使用分布',
+      chartUsageHint: '按近 {days} 天关联调用划分',
+      chartUsageEmpty: '还没有插件被调用过',
+      chartScoreTitle: '推荐分数分布',
+      chartScoreHint: '分数越高越贴合你当前的使用习惯',
+      chartScoreEmpty: '今天还没有推荐',
+      chartSourceTitle: '采集来源覆盖',
+      chartSourceHint: '发现要宽，展示要窄。条形越长说明该渠道抓取得越完整',
+      chartSourceEmpty: '还没有采集记录',
+      chartActive: '在用',
+      chartWatching: '待观察',
+      chartUnused: '未调用',
+      chartTotal: '合计',
       statsInstalled: '已装插件',
       statsIdle: '闲置提醒',
       statsCalls: '近 7 天调用',
@@ -218,6 +247,35 @@ window.__ModuleLoader__.load({
       nextRun: 'Next',
       working: 'Working',
       statsRecommend: 'Recommendations',
+      statsGap: 'Gaps',
+      statsPool: 'Pool',
+      statsNext: 'Next run',
+      chartOfficial: 'Official',
+      chartNpm: 'npm keyword',
+      chartGithub: 'GitHub topic',
+      chartRegistry: 'Registry',
+      statSecondary: '{main}',
+      statInstalledMain: '{n} installed',
+      statInstalledSub: '{active} active · {unused} unused',
+      statRecommendSub: 'AI picked {n}',
+      statCallsSub: 'across {n} bundles',
+      statGapSub: '{list}',
+      statPoolMain: '{n} candidates',
+      statPoolSub: '{n} verified',
+      statNextSub: 'last {time}',
+      chartUsageTitle: 'Bundle usage',
+      chartUsageHint: 'By attributed calls over the last {days} days',
+      chartUsageEmpty: 'No bundle has been called yet',
+      chartScoreTitle: 'Recommendation scores',
+      chartScoreHint: 'Higher means it fits how you actually work',
+      chartScoreEmpty: 'No recommendations today',
+      chartSourceTitle: 'Source coverage',
+      chartSourceHint: 'Wide discovery, narrow display. Longer bars mean that source was crawled more completely',
+      chartSourceEmpty: 'No crawl records yet',
+      chartActive: 'Active',
+      chartWatching: 'Watching',
+      chartUnused: 'Unused',
+      chartTotal: 'Total',
       statsInstalled: 'Installed',
       statsIdle: 'Idle',
       statsCalls: 'Calls, 7d',
@@ -392,7 +450,7 @@ window.__ModuleLoader__.load({
     }
 
     const CSS = [
-      '.pc-root{--pc-gap:14px;display:flex;flex-direction:column;gap:var(--pc-gap);padding:18px 20px 28px;font-size:12.5px;line-height:1.55;color:var(--dsw-alias-label-primary);}',
+      '.pc-root{--pc-gap:14px;container-type:inline-size;display:flex;flex-direction:column;gap:var(--pc-gap);padding:18px 20px 28px;font-size:12.5px;line-height:1.55;color:var(--dsw-alias-label-primary);}',
       '.pc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}',
       '.pc-title{font-size:19px;font-weight:650;letter-spacing:.2px;margin:0 0 2px;}',
       '.pc-sub{color:var(--dsw-alias-label-secondary);font-size:12.5px;margin:0;}',
@@ -400,6 +458,38 @@ window.__ModuleLoader__.load({
       '.pc-meta{display:flex;gap:10px;color:var(--dsw-alias-label-tertiary);font-size:11.5px;flex-wrap:wrap;}',
       '.pc-actions{display:flex;gap:8px;align-items:center;}',
       '.pc-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}',
+      '.pc-tile small{display:block;color:var(--dsw-alias-label-secondary);font-size:11px;margin-top:5px;line-height:1.4;}',
+      '.pc-card-sub{color:var(--dsw-alias-label-secondary);font-size:11.5px;margin:0 0 10px;}',
+      '.pc-bars{display:flex;flex-direction:column;gap:7px;}',
+      '.pc-bar{display:grid;grid-template-columns:minmax(56px,110px) minmax(0,1fr) auto;align-items:center;gap:9px;}',
+      '.pc-bar-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.pc-bar-track{height:9px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);overflow:hidden;}',
+      '.pc-bar-fill{height:100%;border-radius:999px;transition:width .3s ease;}',
+      '.pc-bar-value{color:var(--dsw-alias-label-secondary);font-size:11.5px;white-space:nowrap;}',
+      '.pc-donut{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}',
+      '.pc-donut-svg{flex:0 0 auto;width:104px;height:104px;}',
+      '.pc-donut-num{font-size:19px;font-weight:650;fill:currentColor;}',
+      '.pc-donut-lab{font-size:9.5px;fill:currentColor;opacity:.62;}',
+      '.pc-legend{flex:1 1 130px;min-width:0;display:flex;flex-direction:column;gap:6px;}',
+      '.pc-legend-row{display:grid;grid-template-columns:9px minmax(0,1fr) auto auto;align-items:center;gap:7px;font-size:11.5px;}',
+      '.pc-legend-dot{width:9px;height:9px;border-radius:3px;}',
+      '.pc-legend-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-secondary);}',
+      '.pc-legend-pct{font-variant-numeric:tabular-nums;}',
+      '.pc-legend-val{color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums;}',
+      '.pc-bar-icon{display:block;width:100%;height:100%;opacity:.35;}',
+      '.pc-bar-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--dsw-alias-border-l1);}',
+      '.pc-bar-row:first-child{border-top:none;}',
+      '.pc-bar-title{display:block;font-size:12px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.pc-bar-sub{display:block;color:var(--dsw-alias-label-tertiary);font-size:10.5px;line-height:1.35;}',
+      '.pc-bar-score{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums;line-height:1;}',
+      '.pc-bar-meter{grid-column:1 / -1;height:6px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);overflow:hidden;}',
+      '.pc-bar-meter span{display:block;height:100%;border-radius:999px;}',
+      '.pc-bar-btn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:8px;padding-left:5px;padding-right:5px;margin-left:-5px;margin-right:-5px;}',
+      '.pc-bar-btn:hover{background:var(--dsw-alias-bg-layer-2);}',
+      '.pc-bar-btn:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px;}',
+      '@container (min-width:620px){.pc-tiles{grid-template-columns:repeat(3,minmax(0,1fr));}.pc-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--pc-gap);align-items:start;}}',
+      '@container (min-width:980px){.pc-tiles{grid-template-columns:repeat(6,minmax(0,1fr));}}',
+      '.pc-charts{display:flex;flex-direction:column;gap:var(--pc-gap);}',
       '.pc-tile{border:1px solid var(--dsw-alias-border-l1);border-radius:12px;padding:12px 14px;background:var(--dsw-alias-bg-layer-2);}',
       '.pc-tile b{display:block;font-size:22px;font-weight:650;line-height:1.15;}',
       '.pc-tile span{color:var(--dsw-alias-label-secondary);font-size:11.5px;}',
@@ -677,6 +767,176 @@ window.__ModuleLoader__.load({
     function Chips(props) {
       return h('div', { className: 'pc-chips' }, (props.items ?? []).filter(Boolean).map((item, index) =>
         h('span', { key: index, className: 'pc-chip' + (item.tone ? ' ' + item.tone : '') }, item.label)))
+    }
+
+    // The dashboard charts are hand-written SVG on purpose: the client ships as a
+    // single bundled file, so pulling in a chart library would mean another build
+    // dependency, and the host theme is expressed as CSS variables that an SVG
+    // inherits for free.
+    const CHART_TONES = [
+      'var(--dsw-alias-brand-primary)',
+      'var(--dsw-alias-state-success-primary,#2f9e44)',
+      'var(--dsw-alias-border-l1)',
+      'var(--dsw-alias-label-tertiary)',
+    ]
+
+    function Donut(props) {
+      const slices = (props.slices ?? []).filter((slice) => Number(slice.value) > 0)
+      const total = slices.reduce((sum, slice) => sum + Number(slice.value), 0)
+      const size = props.size ?? 104
+      const stroke = props.stroke ?? 14
+      const radius = (size - stroke) / 2
+      const circumference = 2 * Math.PI * radius
+      let offset = 0
+      const rings = slices.map((slice, index) => {
+        const share = total === 0 ? 0 : Number(slice.value) / total
+        const dash = share * circumference
+        const ring = h('circle', {
+          key: index,
+          cx: size / 2,
+          cy: size / 2,
+          r: radius,
+          fill: 'none',
+          stroke: slice.color,
+          'stroke-width': stroke,
+          'stroke-dasharray': dash + ' ' + (circumference - dash),
+          'stroke-dashoffset': -offset,
+          transform: 'rotate(-90 ' + size / 2 + ' ' + size / 2 + ')',
+        })
+        offset += dash
+        return ring
+      })
+      return h('div', { className: 'pc-donut' },
+        h('svg', {
+          className: 'pc-donut-svg',
+          viewBox: '0 0 ' + size + ' ' + size,
+          role: 'img',
+          'aria-label': props.label ?? '',
+        },
+          h('circle', {
+            cx: size / 2,
+            cy: size / 2,
+            r: radius,
+            fill: 'none',
+            stroke: 'var(--dsw-alias-bg-layer-2)',
+            'stroke-width': stroke,
+          }),
+          rings,
+          h('text', {
+            x: size / 2,
+            y: size / 2 + 1,
+            'text-anchor': 'middle',
+            className: 'pc-donut-num',
+          }, props.centerValue ?? String(total)),
+          props.centerLabel
+            ? h('text', {
+              x: size / 2,
+              y: size / 2 + 15,
+              'text-anchor': 'middle',
+              className: 'pc-donut-lab',
+            }, props.centerLabel)
+            : null,
+        ),
+        h('div', { className: 'pc-legend' }, (props.slices ?? []).map((slice, index) =>
+          h(props.onPick ? 'button' : 'div', {
+            key: index,
+            type: props.onPick ? 'button' : undefined,
+            className: 'pc-legend-row' + (props.onPick ? ' pc-legend-btn' : ''),
+            onClick: props.onPick,
+          },
+            h('span', { className: 'pc-legend-dot', style: { background: slice.color } }),
+            h('span', { className: 'pc-legend-name' }, slice.label),
+            h('span', { className: 'pc-legend-pct' }, total === 0 ? '0%' : Math.round((Number(slice.value) / total) * 100) + '%'),
+            h('span', { className: 'pc-legend-val' }, numberFmt(slice.value, props.chinese) + (slice.unit ?? '')),
+          ))),
+      )
+    }
+
+    // Sparkbars: the number stays the loudest thing in the row and the meter sits
+    // underneath it, so a narrow sidebar can still show a title, a count and a
+    // relative length without truncating any of them.
+    function BarList(props) {
+      const items = props.items ?? []
+      const max = items.reduce((peak, item) => Math.max(peak, Number(item.value) || 0), 0)
+      return h('div', { className: 'pc-bars' }, items.map((item, index) =>
+        h(item.onPick ? 'button' : 'div', {
+          key: index,
+          type: item.onPick ? 'button' : undefined,
+          className: 'pc-bar-row' + (item.onPick ? ' pc-bar-btn' : ''),
+          title: item.label + (item.sub ? ' · ' + item.sub : ''),
+          onClick: item.onPick,
+        },
+          h('span', { style: { minWidth: '0' } },
+            h('span', { className: 'pc-bar-title' }, item.label),
+            item.sub ? h('span', { className: 'pc-bar-sub' }, item.sub) : null),
+          h('span', { className: 'pc-bar-score' }, item.display ?? String(item.value)),
+          item.icon ? h('span', { className: 'pc-bar-value' }, item.icon) : h('span'),
+          h('span', { className: 'pc-bar-meter' },
+            h('span', {
+              style: {
+                width: (max === 0 ? 0 : Math.max(2, (Number(item.value) / max) * 100)) + '%',
+                background: item.color ?? CHART_TONES[0],
+              },
+            })),
+        )))
+    }
+
+    // Sources report "how much of this channel did we actually crawl", so the bar
+    // is fetched/total rather than a share of a common pool.
+    function SourceBars(props) {
+      const items = (props.items ?? []).map((source) => {
+        const fetched = Number(source.fetched) || 0
+        const total = Number(source.total) || 0
+        const ratio = total > 0 ? Math.min(1, fetched / total) : fetched > 0 ? 1 : 0
+        return {
+          source,
+          ratio,
+          value: ratio,
+          label: source.label ?? source.kind ?? source.id,
+          display: source.status === 'ok'
+            ? numberFmt(fetched, props.chinese) + (total > 0 ? ' / ' + numberFmt(total, props.chinese) : '')
+            : (source.error || 'error'),
+          color: source.status === 'ok'
+            ? 'var(--dsw-alias-state-success-primary,#2f9e44)'
+            : 'var(--dsw-alias-state-error-primary)',
+        }
+      })
+      return h('div', { className: 'pc-bars' }, items.map((item, index) =>
+        h(item.source.onPick ? 'button' : 'div', {
+          key: index,
+          type: item.source.onPick ? 'button' : undefined,
+          className: 'pc-bar' + (item.source.onPick ? ' pc-bar-btn' : ''),
+          title: item.source.id,
+          onClick: item.source.onPick,
+        },
+          h('span', { className: 'pc-bar-label' }, item.label),
+          h('span', { className: 'pc-bar-track' },
+            h('span', {
+              className: 'pc-bar-fill',
+              style: { width: (item.ratio * 100) + '%', background: item.color },
+            })),
+          h('span', { className: 'pc-bar-value' }, item.display),
+        )))
+    }
+
+    function StatTile(props) {
+      return h('div', { className: 'pc-tile' },
+        h('b', null, props.value),
+        h('span', null, props.label),
+        props.sub ? h('small', null, props.sub) : null)
+    }
+
+    function ChartCard(props) {
+      return h('section', { className: 'pc-card' },
+        h('div', { className: 'pc-card-h' },
+          h('h3', null, props.title),
+          props.count !== undefined ? h('span', { className: 'pc-count' }, props.count) : null,
+          props.hint ? h('span', { className: 'pc-hint' }, props.hint) : null,
+        ),
+        h('div', { className: 'pc-card-b' },
+          props.sub ? h('p', { className: 'pc-card-sub' }, props.sub) : null,
+          props.children),
+      )
     }
 
     function CopyCommand(props) {
@@ -1062,7 +1322,8 @@ window.__ModuleLoader__.load({
         const timer = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000)
         return () => clearInterval(timer)
       }, [installing])
-      return h('div', { className: 'pc-card', style: { display: 'flex', flexDirection: 'column' } },
+      // The id is what a score-chart row scrolls to.
+      return h('div', { className: 'pc-card', id: 'pc-rec-' + item.id, style: { display: 'flex', flexDirection: 'column' } },
         h('div', { style: { padding: '13px 15px 10px', display: 'flex', gap: '10px', alignItems: 'flex-start' } },
           h('div', { className: 'pc-avatar' }, (title || item.name).slice(0, 1)),
           h('div', { className: 'pc-grow' },
@@ -1396,11 +1657,115 @@ window.__ModuleLoader__.load({
         ),
       )
 
+      // Counts behind the usage donut. "Active" is the host's own verdict, so the
+      // ring can never disagree with the installed list underneath it.
+      const statusCount = (want) => installed.filter((item) => item.status === want).length
+      const activeCount = statusCount('active')
+      const watchingCount = statusCount('watching')
+      const unusedCount = statusCount('unused')
+      const usageSlices = [
+        { label: t('chartActive'), value: activeCount, color: CHART_TONES[0] },
+        { label: t('chartWatching'), value: watchingCount, color: CHART_TONES[1] },
+        { label: t('chartUnused'), value: unusedCount, color: CHART_TONES[2] },
+      ]
+
+      const scored = [...recommendations].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
+      // A score row is a shortcut to the full card: the card carries install,
+      // dismiss and the reasons behind the number.
+      const scoreItems = scored.map((item) => ({
+        label: pickText(item.title, chinese) || item.name,
+        sub: String(item.downloads ?? 0) > 0
+          ? t('mDownloads') + ' ' + numberFmt(item.downloads, chinese)
+          : (item.category || ''),
+        value: Number(item.score) || 0,
+        display: String(Number(item.score) || 0),
+        color: (Number(item.score) || 0) >= 60 ? CHART_TONES[0] : CHART_TONES[1],
+        onPick: () => {
+          const node = typeof document === 'undefined' ? null : document.getElementById('pc-rec-' + item.id)
+          if (node === null) return
+          if (typeof node.scrollIntoView === 'function') node.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          node.setAttribute('data-flag', 'true')
+          setTimeout(() => node.removeAttribute('data-flag'), 1600)
+        },
+      }))
+
+      const sourceItems = sources.map((source) => ({
+        ...source,
+        onPick: /^https?:\/\//.test(String(source.id ?? ''))
+          ? () => { if (typeof window !== 'undefined') window.open(source.id, '_blank', 'noopener') }
+          : undefined,
+        label: source.kind === 'official' ? t('chartOfficial')
+          : String(source.kind ?? '').startsWith('npm') ? t('chartNpm')
+            : source.kind === 'github' ? t('chartGithub')
+              : source.kind === 'registry' ? t('chartRegistry')
+                : (source.kind || source.id),
+      }))
+
+      const aiPicks = recommendations.filter((item) => item.modelPick === true || (item.reasons ?? []).some((reason) => reason?.code === 'model-pick')).length
+      const callsBundles = installed.filter((item) => (Number(item.calls) || 0) > 0).length
+      const gapNames = gaps.map((gap) => pickText(gap.tag ?? gap.title, chinese) || String(gap.tag ?? '')).filter(Boolean)
+
       const tiles = h('div', { className: 'pc-tiles', role: 'group', 'aria-label': t('statsLabel') },
-        h('div', { className: 'pc-tile' }, h('b', null, String(totals.recommendations ?? recommendations.length)), h('span', null, t('statsRecommend'))),
-        h('div', { className: 'pc-tile' }, h('b', null, String(totals.installed ?? installed.length)), h('span', null, t('statsInstalled'))),
-        h('div', { className: 'pc-tile' }, h('b', null, String(totals.idle ?? idle.length)), h('span', null, t('statsIdle'))),
-        h('div', { className: 'pc-tile' }, h('b', null, numberFmt(totals.calls7 ?? 0, chinese)), h('span', null, t('statsCalls'))),
+        h(StatTile, {
+          value: numberFmt(totals.installed ?? installed.length, chinese),
+          label: t('statsInstalled'),
+          sub: fill(t('statInstalledSub'), { active: activeCount, unused: unusedCount }),
+        }),
+        h(StatTile, {
+          value: numberFmt(totals.recommendations ?? recommendations.length, chinese),
+          label: t('statsRecommend'),
+          sub: fill(t('statRecommendSub'), { n: aiPicks }),
+        }),
+        h(StatTile, {
+          value: numberFmt(totals.calls7 ?? 0, chinese),
+          label: t('statsCalls'),
+          sub: fill(t('statCallsSub'), { n: callsBundles }),
+        }),
+        h(StatTile, {
+          value: numberFmt(gaps.length, chinese),
+          label: t('statsGap'),
+          sub: gapNames.length === 0 ? t('gapEmpty') : gapNames.slice(0, 3).join(' · '),
+        }),
+        h(StatTile, {
+          value: numberFmt(coverage.unique ?? coverage.candidates ?? 0, chinese),
+          label: t('statsPool'),
+          sub: fill(t('statPoolSub'), { n: numberFmt(coverage.verified ?? 0, chinese) }),
+        }),
+        h(StatTile, {
+          value: data.nextRunAt ? clock(data.nextRunAt, chinese) : t('never'),
+          label: t('statsNext'),
+          sub: data.generatedAt ? fill(t('statNextSub'), { time: clock(data.generatedAt, chinese) }) : '',
+        }),
+      )
+
+      const charts = h('div', { className: 'pc-charts' },
+        h(ChartCard, {
+          title: t('chartUsageTitle'),
+          count: String(installed.length),
+          hint: fill(t('chartUsageHint'), { days: (data.profile ?? {}).windowDays ?? 7 }),
+        },
+          installed.length === 0
+            ? h(EmptyBox, { title: t('chartUsageEmpty') })
+            : h(Donut, {
+              slices: usageSlices,
+              chinese,
+              label: t('chartUsageTitle'),
+              centerValue: String(activeCount),
+              centerLabel: t('chartActive'),
+              onPick: () => setTab('installed'),
+            })),
+        h(ChartCard, { title: t('chartScoreTitle'), count: String(scoreItems.length) },
+          scoreItems.length === 0
+            ? h(EmptyBox, { title: t('chartScoreEmpty') })
+            : h(BarList, { items: scoreItems })),
+        h(ChartCard, {
+          title: t('chartSourceTitle'),
+          count: String(sources.length),
+          hint: t('chartSourceHint'),
+        },
+          sourceItems.length === 0
+            ? h(EmptyBox, { title: t('chartSourceEmpty') })
+            : h(SourceBars, { items: sourceItems, chinese })),
       )
 
       const tabKeys = ['recs', 'installed', 'insight']
@@ -1682,6 +2047,7 @@ window.__ModuleLoader__.load({
 
       return h('div', { className: 'pc-root' },
         header,
+        tab === 'recs' ? charts : null,
         tiles,
         tabs,
         tab === 'recs' ? recsView : tab === 'installed' ? installedView : insightView,
