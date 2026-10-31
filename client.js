@@ -506,20 +506,8 @@ window.__ModuleLoader__.load({
     }
 
     const CSS = [
-      '.pc-root{--pc-gap:14px;container-type:inline-size;--cv-accent:var(--dsw-alias-brand-primary);}',
-      '.cv{padding:2px 2px 22px;display:flex;flex-direction:column;gap:12px;color:var(--dsw-alias-label-primary,#1f2328);}',
-      '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start;}',
-      '.cv-main{display:flex;flex-direction:column;gap:12px;min-width:0;}',
-      '.cv-side{display:none;}',
-      '.cv-console{display:flex;flex-direction:column;gap:12px;padding:14px 15px 16px;border:1px solid var(--dsw-alias-border-l1);border-radius:16px;background:var(--dsw-alias-bg-base);}',
-      '.cv-compact{display:flex;flex-direction:column;gap:12px;}',
-      '.cv-full{display:none;}',
-      '.cv-grid2{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
-      '.cv-grid3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}',
-      '.cv-grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}',
-      '.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
-      '@container (min-width:560px){.cv-body{grid-template-columns:158px minmax(0,1fr);gap:16px;}.cv-side{display:flex;flex-direction:column;gap:2px;position:sticky;top:0;padding-top:2px;}.cv-grid3{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-grid4{grid-template-columns:repeat(4,minmax(0,1fr));}}',
-      '@container (min-width:900px){.cv-grid2{grid-template-columns:repeat(2,minmax(0,1fr));}.cv-grid3{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-cols{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);}.cv-compact{display:none;}.cv-full{display:flex;flex-direction:column;gap:12px;}}',
+      '.pc-root{--pc-gap:14px;container-type:inline-size;--cv-accent:var(--dsw-alias-brand-primary);--cv-bg:var(--dsw-alias-bg-base,#fff);--cv-line:var(--dsw-alias-border-l1,#e7e7ea);--cv-line-strong:var(--dsw-alias-border-l2,#d9d9de);--cv-text:var(--dsw-alias-label-primary,#1b1b1f);--cv-text-2:var(--dsw-alias-label-secondary,#5c5c66);--cv-text-3:var(--dsw-alias-label-tertiary,#8e8e99);--cv-fill:var(--dsw-alias-bg-layer-2,#f3f3f5);--cv-radius:10px;}',
+      '.cv{padding:0 0 22px;display:flex;flex-direction:column;gap:12px;color:var(--dsw-alias-label-primary,#1f2328);}',
       '.pc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}',
       '.pc-title{font-size:19px;font-weight:650;letter-spacing:.2px;margin:0 0 2px;}',
       '.pc-sub{color:var(--dsw-alias-label-secondary);font-size:12.5px;margin:0;}',
@@ -664,119 +652,146 @@ window.__ModuleLoader__.load({
     // are tuned for the 260-420px sidebar and grow only when the container
     // itself gets wide, never when the window does.
     const CV_CSS = [
-      '.cv-chip{display:inline-flex;align-items:center;gap:6px;height:29px;padding:0 11px;border-radius:9px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;}',
-      '.cv-chip:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
-      '.cv-chip:disabled{opacity:.55;cursor:default;}',
-      '.cv-chip.primary{background:var(--cv-accent);border-color:var(--cv-accent);color:var(--dsw-alias-brand-on-primary,#fff);font-weight:600;}',
-      '.cv-chip.primary:hover{filter:brightness(1.05);color:var(--dsw-alias-brand-on-primary,#fff);}',
-      '.cv-chip.ghost{background:transparent;}',
-      '.cv-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:27px;padding:0 10px;border-radius:8px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;}',
-      '.cv-btn:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
+      '.cv{display:flex;flex-direction:column;gap:10px;padding:0 0 26px;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}',
+      '.cv-head h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.2px;line-height:1.3;}',
+      '.cv-head p{margin:2px 0 0;font-size:11.5px;color:var(--cv-text-3);}',
+      '.cv-meta{display:flex;flex-wrap:wrap;gap:2px 10px;margin-top:4px;font-size:11px;color:var(--cv-text-3);font-variant-numeric:tabular-nums;}',
+      '.cv-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}',
+      '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
+      '.cv-main{display:flex;flex-direction:column;gap:8px;min-width:0;}',
+      '.cv-side{display:flex;flex-direction:column;gap:1px;}',
+      '.cv-grid2,.cv-grid3,.cv-grid4,.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
+      '.cv-rows{display:flex;flex-direction:column;gap:5px;}',
+      '.cv-split{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
+      '@container (min-width:520px){.cv-grid2,.cv-cols{grid-template-columns:repeat(2,minmax(0,1fr));}}',
+      '@container (min-width:680px){.cv-body{grid-template-columns:132px minmax(0,1fr);gap:14px;}.cv-side{position:sticky;top:0;}.cv-grid3,.cv-grid4{grid-template-columns:repeat(3,minmax(0,1fr));}}',
+
+      '.cv-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:26px;padding:0 10px;border-radius:7px;border:1px solid var(--cv-line);background:var(--cv-bg);color:var(--cv-text);font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:background .12s ease,border-color .12s ease;}',
+      '.cv-btn:hover{border-color:var(--cv-line-strong);background:var(--cv-fill);}',
       '.cv-btn:disabled{opacity:.5;cursor:default;}',
-      '.cv-btn.primary{background:var(--cv-accent);border-color:var(--cv-accent);color:var(--dsw-alias-brand-on-primary,#fff);font-weight:600;}',
-      '.cv-btn.primary:hover{color:var(--dsw-alias-brand-on-primary,#fff);filter:brightness(1.05);}',
-      '.cv-btn.danger{color:var(--dsw-alias-state-error-primary,#c92a2a);}',
-      '.cv-btn.wide{width:100%;height:32px;font-size:12.5px;}',
-      '.cv-btn:focus-visible,.cv-chip:focus-visible,.cv-side-item:focus-visible,.cv-rec-main:focus-visible{outline:2px solid var(--cv-accent);outline-offset:2px;}',
-      '.cv-side-item{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;text-align:left;cursor:pointer;}',
-      '.cv-side-item b{margin-left:auto;font-size:12.5px;font-weight:650;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary);}',
-      '.cv-side-item small{font-size:11px;color:var(--dsw-alias-label-tertiary);}',
-      '.cv-side-item:hover{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);}',
-      '.cv-side-item[data-on=true]{background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-border-l1);color:var(--dsw-alias-label-primary);font-weight:600;}',
-      '.cv-head{display:flex;align-items:flex-start;gap:12px;justify-content:space-between;flex-wrap:wrap;}',
-      '.cv-head h1{margin:0;font-size:18px;font-weight:650;letter-spacing:.2px;}',
-      '.cv-head p{margin:3px 0 0;font-size:12px;line-height:1.5;color:var(--dsw-alias-label-secondary);max-width:60ch;}',
-      '.cv-meta{display:flex;flex-wrap:wrap;gap:3px 11px;margin-top:6px;font-size:11px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums;}',
-      '.cv-head-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}',
-      '.cv-kpi{display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 12px 11px;border-radius:13px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);}',
-      '.cv-kpi-label{font-size:11px;line-height:1.25;color:var(--dsw-alias-label-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-kpi-value{font-size:23px;line-height:1.1;font-weight:650;letter-spacing:-.4px;font-variant-numeric:tabular-nums;}',
-      '.cv-kpi-unit{font-size:11.5px;font-weight:500;color:var(--dsw-alias-label-secondary);margin-left:2px;letter-spacing:0;}',
-      '.cv-kpi-foot{display:flex;align-items:center;gap:5px;font-size:10.5px;line-height:1.3;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-delta{font-weight:650;font-variant-numeric:tabular-nums;}',
-      '.cv-delta.up{color:var(--dsw-alias-state-success-primary,#2f9e44);}',
-      '.cv-delta.down{color:var(--dsw-alias-state-error-primary,#c92a2a);}',
-      '.cv-delta.flat{color:var(--dsw-alias-label-tertiary);}',
-      '.cv-spark{display:flex;align-items:flex-end;gap:2px;height:16px;margin-top:2px;}',
-      '.cv-spark i{display:block;width:5px;border-radius:2px 2px 0 0;background:var(--cv-accent);opacity:.8;}',
-      '.cv-tile{display:flex;align-items:center;gap:11px;min-width:0;padding:10px 13px;border:1px solid var(--dsw-alias-border-l1);border-radius:13px;background:var(--dsw-alias-bg-base);}',
-      '.cv-tile-body{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px;}',
-      '.cv-tile-label{font-size:11px;color:var(--dsw-alias-label-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-tile-main{font-size:16px;line-height:1.2;font-weight:650;font-variant-numeric:tabular-nums;}',
-      '.cv-tile-sub{font-size:10.5px;line-height:1.35;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-bar{height:5px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);overflow:hidden;}',
-      '.cv-bar>i{display:block;height:100%;border-radius:999px;background:var(--cv-accent);}',
-      '.cv-card{border:1px solid var(--dsw-alias-border-l1);border-radius:13px;background:var(--dsw-alias-bg-base);padding:11px 13px 12px;min-width:0;}',
-      '.cv-card-head{display:flex;align-items:baseline;gap:7px;margin-bottom:7px;}',
-      '.cv-card-head h3{margin:0;font-size:12.5px;font-weight:620;letter-spacing:.1px;}',
-      '.cv-card-count{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font-variant-numeric:tabular-nums;}',
-      '.cv-card-note{margin-left:auto;font-size:10.5px;color:var(--dsw-alias-label-tertiary);text-align:right;}',
-      '.cv-card-sub{margin:0 0 7px;font-size:11px;line-height:1.45;color:var(--dsw-alias-label-tertiary);}',
-      '.cv-empty{display:flex;flex-direction:column;gap:2px;padding:11px 11px;border:1px dashed var(--dsw-alias-border-l1);border-radius:10px;color:var(--dsw-alias-label-secondary);}',
-      '.cv-empty b{font-size:12px;font-weight:600;}',
-      '.cv-empty span{font-size:11px;line-height:1.45;color:var(--dsw-alias-label-tertiary);}',
-      '.cv-recs{display:flex;flex-direction:column;gap:7px;}',
-      '.cv-rec{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--dsw-alias-border-l1);border-radius:11px;background:var(--dsw-alias-bg-base);transition:border-color .15s ease,box-shadow .15s ease;}',
-      '.cv-rec:hover{border-color:var(--cv-accent);}',
-      '.cv-rec[data-open=true]{border-color:var(--cv-accent);}',
-      '.cv-rec[data-flag=true]{box-shadow:0 0 0 2px var(--cv-accent);}',
-      '.cv-rec[data-flag=true] .cv-rec-main{border:1px solid var(--cv-accent);border-radius:9px;padding:2px 4px;}',
-      '.cv-rec-main{display:flex;flex-direction:column;gap:2px;min-width:0;}',
-      '.cv-rec-title{font-size:12.5px;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-rec-sub{font-size:10.5px;line-height:1.4;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-rec-ops{display:flex;align-items:center;gap:5px;}',
-      '.cv-tag{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:5px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font-size:10px;line-height:1.7;white-space:nowrap;}',
-      '.cv-tag.ok{background:var(--dsw-alias-state-success-subtle,rgba(47,158,68,.12));color:var(--dsw-alias-state-success-primary,#2f9e44);}',
-      '.cv-tag.warn{background:var(--dsw-alias-state-warn-subtle,rgba(240,140,0,.14));color:var(--dsw-alias-state-warn-primary,#b35c00);}',
-      '.cv-rec-more{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:1px solid var(--dsw-alias-border-l1);border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:9px;cursor:pointer;}',
-      '.cv-rec-more:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
-      '.cv-donut{display:flex;align-items:center;gap:13px;flex-wrap:wrap;}',
+      '.cv-btn.primary{background:var(--cv-text);border-color:var(--cv-text);color:var(--cv-bg);font-weight:600;}',
+      '.cv-btn.primary:hover{background:var(--cv-text);filter:brightness(1.15);}',
+      '.cv-btn.danger{color:#c4314b;}',
+      '.cv-btn.danger:hover{background:rgba(196,49,75,.08);border-color:rgba(196,49,75,.4);}',
+      '.cv-btn.wide{width:100%;height:28px;}',
+      '.cv-btn:focus-visible,.cv-chip:focus-visible,.cv-side-item:focus-visible,.cv-seg button:focus-visible,.cv-row:focus-visible{outline:2px solid var(--cv-accent);outline-offset:1px;}',
+      '.cv-chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--cv-line);background:var(--cv-bg);color:var(--cv-text-2);font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap;}',
+      '.cv-chip:hover{border-color:var(--cv-line-strong);color:var(--cv-text);}',
+      '.cv-chip:disabled{opacity:.5;cursor:default;}',
+      '.cv-chip.primary{background:var(--cv-text);border-color:var(--cv-text);color:var(--cv-bg);font-weight:600;}',
+      '.cv-chip.primary:hover{color:var(--cv-bg);filter:brightness(1.15);}',
+      '.cv-chip.static{cursor:default;}',
+      '.cv-chip.static:hover{border-color:var(--cv-line);color:var(--cv-text-2);}',
+      '.cv-side-item{display:flex;align-items:center;gap:7px;width:100%;padding:6px 9px;border:0;border-radius:7px;background:transparent;color:var(--cv-text-2);font:inherit;font-size:12px;text-align:left;cursor:pointer;}',
+      '.cv-side-item b{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--cv-text);font-variant-numeric:tabular-nums;}',
+      '.cv-side-item:hover{background:var(--cv-fill);color:var(--cv-text);}',
+      '.cv-side-item[data-on=true]{background:var(--cv-fill);color:var(--cv-text);font-weight:600;}',
+      '.cv-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;padding:11px 9px 12px;border:1px solid var(--cv-line);border-radius:var(--cv-radius);background:var(--cv-bg);text-align:center;}',
+      '.cv-stat-label{font-size:11px;line-height:1.3;color:var(--cv-text-2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-stat-value{font-size:25px;line-height:1.12;font-weight:600;letter-spacing:-.8px;font-variant-numeric:tabular-nums;color:var(--cv-text);}',
+      '.cv-stat-unit{font-size:11px;font-weight:500;letter-spacing:0;color:var(--cv-text-3);margin-left:2px;}',
+      '.cv-stat-foot{font-size:10.5px;line-height:1.35;color:var(--cv-text-3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-stat > small{display:block;font-size:10.5px;line-height:1.35;color:var(--cv-text-3);}',
+      '.cv-delta{font-weight:600;font-variant-numeric:tabular-nums;}',
+      '.cv-delta.up{color:#2b8a3e;}',
+      '.cv-delta.down{color:#c4314b;}',
+      '.cv-delta.flat{color:var(--cv-text-3);}',
+      '.cv-spark{display:flex;align-items:flex-end;gap:2px;height:14px;margin-top:2px;}',
+      '.cv-spark i{display:block;width:4px;border-radius:1px 1px 0 0;background:var(--cv-text-2);opacity:.55;}',
+      '.cv-card{border:1px solid var(--cv-line);border-radius:var(--cv-radius);background:var(--cv-bg);padding:10px 12px 11px;min-width:0;}',
+      '.cv-card-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;}',
+      '.cv-card-head h3{margin:0;font-size:12px;font-weight:600;letter-spacing:.1px;color:var(--cv-text);}',
+      '.cv-card-count{font-size:10.5px;font-weight:600;min-width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;border-radius:999px;background:var(--cv-fill);color:var(--cv-text-2);font-variant-numeric:tabular-nums;}',
+      '.cv-card-note{margin-left:auto;font-size:10.5px;color:var(--cv-text-3);text-align:right;}',
+      '.cv-card-sub{margin:0 0 7px;font-size:11px;line-height:1.45;color:var(--cv-text-3);}',
+      '.cv-card.tone-warn{border-color:rgba(196,49,75,.35);}',
+      '.cv-main-inner{display:flex;flex-direction:column;gap:8px;min-width:0;}',
+      '.cv-grid4{grid-template-columns:repeat(2,minmax(0,1fr));}',
+      '@container (min-width:520px){.cv-grid4{grid-template-columns:repeat(3,minmax(0,1fr));}}',
+      '.cv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:16px 10px;border:1px dashed var(--cv-line);border-radius:8px;color:var(--cv-text-3);text-align:center;}',
+      '.cv-empty b{font-size:11.5px;font-weight:600;color:var(--cv-text-2);}',
+      '.cv-empty span{font-size:10.5px;line-height:1.45;}',
+      '.cv-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--cv-line);border-radius:8px;background:var(--cv-bg);transition:border-color .12s ease;}',
+      '.cv-row:hover{border-color:var(--cv-line-strong);}',
+      '.cv-row[data-open=true]{border-color:var(--cv-line-strong);}',
+      '.cv-row[data-flag=true]{border-color:var(--cv-accent);box-shadow:0 0 0 2px var(--cv-accent);}',
+      '.cv-row-main{display:flex;flex-direction:column;gap:1px;min-width:0;}',
+      '.cv-row-title{font-size:12px;font-weight:600;line-height:1.35;color:var(--cv-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-row-sub{font-size:10.5px;line-height:1.4;color:var(--cv-text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-row-ops{display:flex;align-items:center;gap:4px;}',
+      '.cv-row-body{grid-column:1 / -1;margin-top:6px;padding-top:7px;border-top:1px solid var(--cv-line);display:flex;flex-direction:column;gap:5px;}',
+      '.cv-row-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;}',
+      '.cv-tag{display:inline-flex;align-items:center;gap:3px;padding:0 5px;border-radius:4px;background:var(--cv-fill);color:var(--cv-text-2);font-size:10px;line-height:1.7;white-space:nowrap;}',
+      '.cv-tag.ok{background:rgba(43,138,62,.10);color:#2b8a3e;}',
+      '.cv-tag.warn{background:rgba(196,49,75,.10);color:#c4314b;}',
+      '.cv-more{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;border:1px solid var(--cv-line);border-radius:5px;background:transparent;color:var(--cv-text-3);font:inherit;font-size:8px;cursor:pointer;}',
+      '.cv-more:hover{border-color:var(--cv-line-strong);color:var(--cv-text);}',
+      '.cv-score{display:flex;flex-direction:column;align-items:center;line-height:1;min-width:30px;color:var(--cv-text);}',
+      '.cv-score b{font-size:16px;font-weight:600;letter-spacing:-.4px;font-variant-numeric:tabular-nums;}',
+      '.cv-score small{font-size:8.5px;color:var(--cv-text-3);letter-spacing:.2px;}',
+      '.cv-ring{flex:0 0 auto;}',
+      '.cv-ring-txt{font-size:9.5px;font-weight:600;fill:currentColor;font-variant-numeric:tabular-nums;}',
+      '.cv-donut{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}',
       '.cv-donut svg{flex:0 0 auto;}',
-      '.cv-donut-num{font-size:17px;font-weight:650;fill:currentColor;}',
-      '.cv-donut-lab{font-size:9px;fill:currentColor;opacity:.62;}',
-      '.cv-legend{flex:1 1 120px;min-width:0;display:flex;flex-direction:column;gap:4px;}',
-      '.cv-legend-row{display:grid;grid-template-columns:8px minmax(0,1fr) auto auto;align-items:center;gap:6px;font-size:11px;color:var(--dsw-alias-label-secondary);}',
-      '.cv-legend-dot{width:8px;height:8px;border-radius:2px;}',
+      '.cv-donut-num{font-size:16px;font-weight:600;fill:currentColor;letter-spacing:-.3px;}',
+      '.cv-donut-lab{font-size:8.5px;fill:currentColor;opacity:.55;}',
+      '.cv-legend{flex:1 1 110px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:3px 12px;}',
+      '.cv-legend-row{display:grid;grid-template-columns:7px minmax(0,1fr) auto;align-items:center;gap:6px;padding:1px 0;font-size:11px;color:var(--cv-text-2);border:0;background:transparent;font-family:inherit;text-align:left;}',
+      '.cv-legend-row[role=button]{cursor:pointer;}',
+      '.cv-legend-row[role=button]:hover{color:var(--cv-text);}',
+      '.cv-legend-dot{width:7px;height:7px;border-radius:2px;}',
       '.cv-legend-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-legend-pct,.cv-legend-val{font-variant-numeric:tabular-nums;}',
-      '.cv-legend-val{min-width:24px;text-align:right;color:var(--dsw-alias-label-primary);font-weight:600;}',
-      '.cv-bars{display:flex;flex-direction:column;gap:5px;}',
-      '.cv-bar-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:7px;padding:2px 0;}',
-      '.cv-bar-name{font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-      '.cv-bar-val{font-size:11px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary);}',
-      '.cv-bar-track{grid-column:1 / -1;height:5px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);overflow:hidden;}',
-      '.cv-bar-track>i{display:block;height:100%;border-radius:999px;transition:width .3s ease;}',
-      '.cv-chat{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;padding-right:2px;}',
+      '.cv-legend-pct{font-variant-numeric:tabular-nums;color:var(--cv-text);font-weight:600;}',
+      '.cv-legend-val{font-variant-numeric:tabular-nums;color:var(--cv-text-3);}',
+      '.cv-bars{display:flex;flex-direction:column;gap:4px;}',
+      '.cv-bar-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 8px;padding:2px 0;border:0;background:transparent;color:inherit;font-family:inherit;font-size:11.5px;text-align:left;}',
+      '.cv-bar-item[role=button]{cursor:pointer;}',
+      '.cv-bar-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cv-text-2);}',
+      '.cv-bar-item[role=button]:hover .cv-bar-name{color:var(--cv-text);}',
+      '.cv-bar-val{font-size:10.5px;font-variant-numeric:tabular-nums;color:var(--cv-text-3);}',
+      '.cv-bar-track{grid-column:1 / -1;height:4px;border-radius:999px;background:var(--cv-fill);overflow:hidden;}',
+      '.cv-bar-track > i{display:block;height:100%;border-radius:999px;transition:width .3s ease;}',
+      '.cv-bar{height:4px;border-radius:999px;background:var(--cv-fill);overflow:hidden;}',
+      '.cv-bar > i{display:block;height:100%;border-radius:999px;background:var(--cv-accent);}',
+      '.cv-columns{display:flex;align-items:flex-end;gap:6px;height:96px;}',
+      '.cv-column{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%;}',
+      '.cv-column-bar{width:100%;min-height:2px;border-radius:3px 3px 0 0;background:var(--cv-text-2);opacity:.8;}',
+      '.cv-column-val{font-size:9.5px;color:var(--cv-text-3);font-variant-numeric:tabular-nums;}',
+      '.cv-column-lab{font-size:9px;color:var(--cv-text-3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-tools{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;}',
+      '.cv-input{flex:1 1 130px;min-width:0;height:26px;padding:0 9px;border-radius:7px;border:1px solid var(--cv-line);background:var(--cv-bg);color:var(--cv-text);font:inherit;font-size:11.5px;}',
+      '.cv-input::placeholder{color:var(--cv-text-3);}',
+      '.cv-input:focus{outline:2px solid var(--cv-accent);outline-offset:1px;}',
+      '.cv-seg{display:inline-flex;border:1px solid var(--cv-line);border-radius:7px;overflow:hidden;}',
+      '.cv-seg button{height:24px;padding:0 8px;border:0;background:transparent;color:var(--cv-text-3);font:inherit;font-size:11px;cursor:pointer;}',
+      '.cv-seg button[data-on=true]{background:var(--cv-text);color:var(--cv-bg);font-weight:600;}',
+      '.cv-form{display:grid;grid-template-columns:minmax(72px,auto) minmax(0,1fr);gap:7px 9px;align-items:center;font-size:11.5px;}',
+      '.cv-form-label{font-size:11px;color:var(--cv-text-2);}',
+      '.cv-select,.cv-form input[type=number]{height:26px;padding:0 8px;border-radius:7px;border:1px solid var(--cv-line);background:var(--cv-bg);color:var(--cv-text);font:inherit;font-size:11.5px;}',
+      '.cv-dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:11.5px;margin:0;}',
+      '.cv-dl dt{color:var(--cv-text-3);}',
+      '.cv-dl dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--cv-text);}',
+      '.cv-kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;font-size:11px;margin:0;}',
+      '.cv-kv dt{color:var(--cv-text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--cv-text);}',
+      '.cv-note{font-size:11px;line-height:1.45;color:var(--cv-text-3);}',
+      '.cv-err{font-size:11px;line-height:1.45;color:#c4314b;}',
+      '.cv-warn{font-size:11px;line-height:1.45;color:var(--cv-text-2);}',
+      '.cv-chat{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;}',
       '.cv-msg{display:flex;}',
       '.cv-msg.user{justify-content:flex-end;}',
-      '.cv-bubble{max-width:88%;padding:7px 10px;border-radius:10px;font-size:12px;line-height:1.5;background:var(--dsw-alias-bg-layer-2);white-space:pre-wrap;word-break:break-word;}',
-      '.cv-msg.user .cv-bubble{background:var(--cv-accent);color:var(--dsw-alias-brand-on-primary,#fff);}',
-      '.cv-pick{margin-top:7px;padding-top:6px;border-top:1px dashed var(--dsw-alias-border-l1);}',
-      '.cv-suggest{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}',
-      '.cv-suggest button{padding:2px 9px;border-radius:999px;border:1px dashed var(--dsw-alias-border-l1);background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer;}',
-      '.cv-suggest button:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
-      '.cv-composer{display:flex;gap:7px;align-items:flex-end;margin-top:8px;}',
-      '.cv-textarea{flex:1;min-height:34px;max-height:100px;resize:vertical;padding:6px 9px;border-radius:8px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:inherit;font:inherit;font-size:12px;line-height:1.45;}',
+      '.cv-bubble{max-width:90%;padding:6px 9px;border-radius:8px;font-size:11.5px;line-height:1.5;background:var(--cv-fill);color:var(--cv-text);white-space:pre-wrap;word-break:break-word;}',
+      '.cv-msg.user .cv-bubble{background:var(--cv-text);color:var(--cv-bg);}',
+      '.cv-pick{margin-top:5px;padding-top:5px;border-top:1px dashed var(--cv-line);}',
+      '.cv-suggest{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}',
+      '.cv-suggest button{padding:2px 8px;border-radius:999px;border:1px solid var(--cv-line);background:transparent;color:var(--cv-text-3);font:inherit;font-size:10.5px;cursor:pointer;}',
+      '.cv-suggest button:hover{border-color:var(--cv-line-strong);color:var(--cv-text);}',
+      '.cv-composer{display:flex;gap:6px;align-items:flex-end;margin-top:7px;}',
+      '.cv-textarea{flex:1;min-height:32px;max-height:96px;resize:vertical;padding:6px 9px;border-radius:7px;border:1px solid var(--cv-line);background:var(--cv-bg);color:var(--cv-text);font:inherit;font-size:11.5px;line-height:1.45;}',
+      '.cv-textarea::placeholder{color:var(--cv-text-3);}',
       '.cv-textarea:focus{outline:2px solid var(--cv-accent);outline-offset:1px;}',
-      '.cv-tools{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:8px;}',
-      '.cv-input{flex:1 1 150px;height:28px;padding:0 10px;border-radius:8px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:inherit;font:inherit;font-size:11.5px;}',
-      '.cv-input:focus{outline:2px solid var(--cv-accent);outline-offset:1px;}',
-      '.cv-seg{display:inline-flex;border:1px solid var(--dsw-alias-border-l1);border-radius:8px;overflow:hidden;}',
-      '.cv-seg button{height:26px;padding:0 9px;border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer;}',
-      '.cv-seg button[data-on=true]{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font-weight:600;}',
-      '.cv-form{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px 9px;align-items:center;font-size:11.5px;}',
-      '.cv-form-label{font-size:11px;color:var(--dsw-alias-label-secondary);}',
-      '.cv-select,.cv-form input[type=number]{height:26px;padding:0 8px;border-radius:7px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:inherit;font:inherit;font-size:11.5px;}',
-      '.cv-dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;font-size:11.5px;margin:0;}',
-      '.cv-dl dt{color:var(--dsw-alias-label-secondary);}',
-      '.cv-dl dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;}',
-      '.cv-note{font-size:11px;line-height:1.45;color:var(--dsw-alias-label-tertiary);}',
-      '.cv-err{font-size:11px;line-height:1.45;color:var(--dsw-alias-state-error-primary,#c92a2a);}',
-      '.cv-warn{font-size:11px;line-height:1.45;color:var(--dsw-alias-state-warn-primary,#b35c00);}',
-      '.cv-hero{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}',
-      '.cv-hero b{font-size:26px;font-weight:650;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}',
-      '.cv-hero span{font-size:11.5px;color:var(--dsw-alias-label-secondary);}',
-      '@media (max-width:480px){.cv-head h1{font-size:16.5px;}.cv-kpi-value{font-size:21px;}.cv-grid3,.cv-grid4{grid-template-columns:repeat(2,minmax(0,1fr));}}',
+      '@media (max-width:420px){.cv-stat-value{font-size:21px;}.cv-stat{padding:9px 7px 10px;}.cv-head h1{font-size:15.5px;}.cv-grid3,.cv-grid4{grid-template-columns:repeat(2,minmax(0,1fr));}}',
     ].join('')
 
     let stylesInjected = false
@@ -939,108 +954,85 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function Card(props) {
-      return h('section', { className: 'pc-card' },
-        h('div', { className: 'pc-card-h' },
-          h('h3', null, props.title),
-          props.count !== undefined ? h('span', { className: 'pc-count' }, props.count) : null,
-          props.hint ? h('span', { className: 'pc-hint' }, props.hint) : null,
-        ),
-        h('div', { className: 'pc-card-b' }, props.children),
-      )
-    }
-
-    function EmptyBox(props) {
-      const { title, hint } = props
-      return h('div', { className: 'pc-empty-box', role: 'status' },
-        h('b', null, title),
-        hint ? h('span', null, hint) : null)
-    }
-
-    function Chips(props) {
-      return h('div', { className: 'pc-chips' }, (props.items ?? []).filter(Boolean).map((item, index) =>
-        h('span', { key: index, className: 'pc-chip' + (item.tone ? ' ' + item.tone : '') }, item.label)))
-    }
-
     // The dashboard charts are hand-written SVG on purpose: the client ships as a
     // single bundled file, so pulling in a chart library would mean another build
     // dependency, and the host theme is expressed as CSS variables that an SVG
     // inherits for free.
+    // Chart palette. Everything else in the panel is greyscale; colour is a
+    // reading aid for the charts and the state dots only, matching the
+    // harness dashboards rather than competing with them.
     const CHART_TONES = [
-      'var(--dsw-alias-brand-primary)',
-      'var(--dsw-alias-state-success-primary,#2f9e44)',
-      'var(--dsw-alias-border-l1)',
-      'var(--dsw-alias-label-tertiary)',
+      'var(--dsw-alias-label-primary,#1b1b1f)',
+      'var(--dsw-alias-label-tertiary,#8e8e99)',
+      'var(--dsw-alias-border-l2,#d9d9de)',
+      'var(--dsw-alias-border-l1,#e7e7ea)',
     ]
 
-    // A tiny bar chart for the recent days. Bars are normalised to the busiest
-    // day so a quiet week still reads as a shape instead of four flat stubs.
-    function Spark(props) {
-      const { values, height = 16, width = 5 } = props
-      const max = Math.max(1, ...values.map((value) => Number(value) || 0))
-      return h('div', { className: 'cv-spark', style: { height: height + 'px' }, 'aria-hidden': 'true' },
-        values.map((value, index) => {
-          const share = (Number(value) || 0) / max
-          const tall = Math.max(2, Math.round(share * height))
-          return h('i', { key: index, style: { height: tall + 'px', width: width + 'px', opacity: 0.35 + share * 0.65 } })
-        }))
-    }
-
     /**
-     * One headline number. The value carries the reading, the foot line says
+     * One headline number, centred the way the harness dashboard tiles are:
+     * quiet label on top, the number carries the reading, a foot line names
      * what it is measured against so the number is never bare.
      */
-    function Kpi(props) {
+    function Stat(props) {
       const { label, value, unit, foot, delta, spark, onPick } = props
       const tone = delta === null || delta === undefined || delta === 0 ? 'flat' : delta > 0 ? 'up' : 'down'
       const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : '='
       const body = [
-        h('span', { key: 'label', className: 'cv-kpi-label' }, label),
-        h('span', { key: 'value', className: 'cv-kpi-value' },
+        h('span', { key: 'label', className: 'cv-stat-label' }, label),
+        h('span', { key: 'value', className: 'cv-stat-value' },
           String(value),
-          unit ? h('span', { className: 'cv-kpi-unit' }, unit) : null),
+          unit ? h('span', { className: 'cv-stat-unit' }, unit) : null),
         delta === null || delta === undefined
-          ? (foot ? h('span', { key: 'foot', className: 'cv-kpi-foot' }, foot) : null)
-          : h('span', { key: 'foot', className: 'cv-kpi-foot' },
+          ? (foot ? h('span', { key: 'foot', className: 'cv-stat-foot' }, foot) : null)
+          : h('span', { key: 'foot', className: 'cv-stat-foot' },
             h('span', { className: 'cv-delta ' + tone }, arrow + ' ' + Math.abs(delta)),
-            foot ? h('span', null, foot) : null),
+            foot ? h('span', null, ' ' + foot) : null),
         spark && spark.length > 1 ? h(Spark, { key: 'spark', values: spark }) : null,
       ]
-      if (typeof onPick !== 'function') return h('div', { className: 'cv-kpi' }, body)
+      if (typeof onPick !== 'function') return h('div', { className: 'cv-stat' }, body)
       return h('button', {
         type: 'button',
-        className: 'cv-kpi',
-        style: { textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' },
+        className: 'cv-stat',
+        style: { cursor: 'pointer', font: 'inherit', color: 'inherit' },
         onClick: onPick,
       }, body)
     }
 
-    /** Plain label/value tile with an optional meter, used for slower facts. */
-    function Tile(props) {
-      const { label, main, sub, meter, meterColor, onPick } = props
-      const body = [
-        h('span', { key: 'label', className: 'cv-tile-label' }, label),
-        h('span', { key: 'main', className: 'cv-tile-main' }, main),
-        meter === null || meter === undefined
-          ? null
-          : h('div', { key: 'meter', className: 'cv-bar' },
-            h('i', { style: { width: Math.max(0, Math.min(100, meter * 100)) + '%', background: meterColor || undefined } })),
-        sub ? h('span', { key: 'sub', className: 'cv-tile-sub' }, sub) : null,
-      ]
-      if (typeof onPick !== 'function') {
-        return h('div', { className: 'cv-tile' }, h('div', { className: 'cv-tile-body' }, body))
-      }
-      return h('button', {
-        type: 'button',
-        className: 'cv-tile',
-        style: { textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' },
-        onClick: onPick,
-      }, h('div', { className: 'cv-tile-body' }, body))
+    /** A miniature progress ring; the centre carries the reading. */
+    function Ring(props) {
+      const { value, size = 34, stroke = 3.5, color, label, max } = props
+      const top = max !== undefined && Number(max) > 0 ? Number(max) : 100
+      const share = Math.max(0, Math.min(1, (Number(value) || 0) / top))
+      const radius = (size - stroke) / 2
+      const circumference = 2 * Math.PI * radius
+      const dash = share * circumference
+      return h('svg', {
+        className: 'cv-ring',
+        width: size,
+        height: size,
+        viewBox: '0 0 ' + size + ' ' + size,
+        role: 'img',
+        'aria-label': String(label === undefined ? value : label),
+      },
+      h('circle', { cx: size / 2, cy: size / 2, r: radius, fill: 'none', stroke: 'var(--cv-fill)', strokeWidth: stroke }),
+      h('circle', {
+        cx: size / 2,
+        cy: size / 2,
+        r: radius,
+        fill: 'none',
+        stroke: color || 'var(--cv-text)',
+        strokeWidth: stroke,
+        strokeLinecap: 'round',
+        strokeDasharray: dash + ' ' + Math.max(0, circumference - dash),
+        transform: 'rotate(-90 ' + size / 2 + ' ' + size / 2 + ')',
+      }),
+      h('text', { x: '50%', y: '50%', textAnchor: 'middle', dominantBaseline: 'central', className: 'cv-ring-txt' },
+        String(label === undefined ? Math.round(share * 100) + '%' : label)))
     }
 
-    /** Ring chart. Slices are drawn with dash offsets, so no chart library. */
+    /** Ring chart; slices are drawn with dash offsets, so no chart library. */
     function Donut(props) {
-      const { slices, size = 78, stroke = 11, centerValue, centerLabel, onPick } = props
+      const { slices, size = 82, stroke = 12, centerValue, centerLabel, onPick } = props
       const live = slices.filter((slice) => (Number(slice.value) || 0) > 0)
       const total = live.reduce((sum, slice) => sum + (Number(slice.value) || 0), 0)
       const radius = (size - stroke) / 2
@@ -1066,7 +1058,7 @@ window.__ModuleLoader__.load({
       })
       return h('div', { className: 'cv-donut' },
         h('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size, role: 'img', 'aria-label': String(centerLabel || '') },
-          h('circle', { cx: size / 2, cy: size / 2, r: radius, fill: 'none', stroke: 'var(--dsw-alias-bg-layer-2)', strokeWidth: stroke }),
+          h('circle', { cx: size / 2, cy: size / 2, r: radius, fill: 'none', stroke: 'var(--cv-fill)', strokeWidth: stroke }),
           rings,
           centerValue === undefined || centerValue === null
             ? null
@@ -1077,84 +1069,76 @@ window.__ModuleLoader__.load({
             const share = total > 0 ? Math.round(((Number(slice.value) || 0) / total) * 100) : 0
             const row = [
               h('span', { key: 'dot', className: 'cv-legend-dot', style: { background: slice.color } }),
-              h('span', { key: 'name', className: 'cv-legend-name' }, slice.label),
-              h('span', { key: 'pct', className: 'cv-legend-pct' }, share + '%'),
-              h('span', { key: 'val', className: 'cv-legend-val' }, String(slice.value)),
+              h('span', { key: 'name', className: 'cv-legend-name', title: slice.label }, slice.label),
+              h('span', { key: 'val', className: 'cv-legend-pct' }, share + '%'),
             ]
-            return typeof onPick === 'function'
-              ? h('button', {
-                key: index,
-                type: 'button',
-                className: 'cv-legend-row',
-                style: { border: 0, background: 'transparent', font: 'inherit', color: 'inherit', cursor: 'pointer', padding: 0, textAlign: 'left' },
-                onClick: () => onPick(slice),
-              }, row)
-              : h('div', { key: index, className: 'cv-legend-row' }, row)
+            const clickable = typeof onPick === 'function'
+            return h(clickable ? 'button' : 'div', {
+              key: index,
+              type: clickable ? 'button' : undefined,
+              className: 'cv-legend-row',
+              role: clickable ? 'button' : undefined,
+              onClick: clickable ? () => onPick(slice) : undefined,
+            }, row)
           })))
     }
 
     /** Ranked horizontal bars; a row can be a shortcut into the detail below. */
-    function BarList(props) {
+    function Bars(props) {
       const { items, color, max } = props
-      const top = max === undefined ? Math.max(1, ...items.map((item) => Number(item.value) || 0)) : max
+      const top = max === undefined
+        ? Math.max(1, ...items.map((item) => Number(item.value) || 0))
+        : Math.max(1, Number(max) || 1)
       return h('div', { className: 'cv-bars' },
         items.map((item, index) => {
           const share = top > 0 ? Math.max(0.02, (Number(item.value) || 0) / top) : 0
+          const clickable = typeof item.onPick === 'function'
           const body = [
             h('span', { key: 'name', className: 'cv-bar-name', title: item.hint || item.label }, item.label),
             h('span', { key: 'val', className: 'cv-bar-val' }, item.display === undefined ? String(item.value) : item.display),
             h('div', { key: 'track', className: 'cv-bar-track' },
-              h('i', { style: { width: share * 100 + '%', background: item.color || color || 'var(--cv-accent)' } })),
+              h('i', { style: { width: share * 100 + '%', background: item.color || color || 'var(--cv-text-2)' } })),
           ]
-          if (typeof item.onPick !== 'function') return h('div', { key: index, className: 'cv-bar-item' }, body)
-          return h('button', {
+          return h(clickable ? 'button' : 'div', {
             key: index,
-            type: 'button',
+            type: clickable ? 'button' : undefined,
             className: 'cv-bar-item',
-            style: { border: 0, background: 'transparent', font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left' },
-            onClick: item.onPick,
+            role: clickable ? 'button' : undefined,
+            onClick: clickable ? item.onPick : undefined,
           }, body)
         }))
     }
 
-    /** Card shell: a title, an optional count, a note, and a body. */
-    function Panel(props) {
-      const { title, count, note, sub, children, id, tone } = props
-      return h('section', { className: 'cv-card' + (tone ? ' ' + tone : ''), id },
-        h('div', { className: 'cv-card-head' },
-          h('h3', null, title),
-          count === undefined || count === null ? null : h('span', { className: 'cv-card-count' }, String(count)),
-          note ? h('span', { className: 'cv-card-note' }, note) : null),
-        sub ? h('p', { className: 'cv-card-sub' }, sub) : null,
-        children)
+    /** Vertical column chart, used for the per-day call breakdown. */
+    function Columns(props) {
+      const { items, max } = props
+      const top = max === undefined
+        ? Math.max(1, ...items.map((item) => Number(item.value) || 0))
+        : Math.max(1, Number(max) || 1)
+      return h('div', { className: 'cv-columns' },
+        items.map((item, index) => h('div', { key: index, className: 'cv-column', title: item.hint || item.label },
+          h('span', { className: 'cv-column-val' }, item.display === undefined ? String(item.value) : item.display),
+          h('div', {
+            className: 'cv-column-bar',
+            style: {
+              height: Math.max(2, ((Number(item.value) || 0) / top) * 74) + 'px',
+              background: item.color || 'var(--cv-text-2)',
+            },
+          }),
+          h('span', { className: 'cv-column-lab' }, item.label))))
     }
 
-    function Bare(props) {
-      const { title, count, note, sub, children } = props
-      return h('div', null,
-        h('div', { className: 'cv-card-head' },
-          h('h3', null, title),
-          count === undefined || count === null ? null : h('span', { className: 'cv-card-count' }, String(count)),
-          note ? h('span', { className: 'cv-card-note' }, note) : null),
-        sub ? h('p', { className: 'cv-card-sub' }, sub) : null,
-        children)
-    }
-
-    function EmptyBox(props) {
-      return h('div', { className: 'cv-empty', role: 'status' },
-        h('b', null, props.title),
-        props.hint ? h('span', null, props.hint) : null)
-    }
-
-    function Chips(props) {
-      return h('div', { className: 'pc-chips' },
-        (props.items || []).map((item, index) => h('span', {
+    function Spark(props) {
+      const values = props.values || []
+      const top = Math.max(1, ...values.map((value) => Number(value) || 0))
+      return h('div', { className: 'cv-spark', 'aria-hidden': 'true' },
+        values.map((value, index) => h('i', {
           key: index,
-          className: 'pc-chip' + (item.tone ? ' ' + item.tone : ''),
-        }, item.label)))
+          style: { height: Math.max(2, ((Number(value) || 0) / top) * (props.height || 14)) + 'px' },
+        })))
     }
 
-    /** Left rail of the wide layout: one row per block, count on the right. */
+    /** Card shell: a title, an optional count, a note, and a body. */
     function Rail(props) {
       const { items, active, onPick, foot } = props
       return h('nav', { className: 'cv-side', 'aria-label': props.label || '' },
@@ -1166,10 +1150,34 @@ window.__ModuleLoader__.load({
           'aria-current': active === item.key ? 'true' : 'false',
           onClick: () => onPick(item.key),
         },
-          h('span', null, item.label),
-          item.count === undefined || item.count === null ? null : h('b', null, String(item.count)))),
-        foot ? h('div', { className: 'cv-note', style: { marginTop: '10px', paddingLeft: '10px' } }, foot) : null)
+        h('span', null, item.label),
+        item.count === undefined || item.count === null ? null : h('b', null, String(item.count)))),
+        foot ? h('div', { className: 'cv-note', style: { marginTop: '8px', paddingLeft: '9px' } }, foot) : null)
     }
+
+    /** Card shell: a title, an optional count, a note, and a body. */
+    function Card(props) {
+      const { title, count, note, sub, children, id, tone } = props
+      return h('section', { className: 'cv-card' + (tone ? ' ' + tone : ''), id },
+        h('div', { className: 'cv-card-head' },
+          h('h3', null, title),
+          count === undefined || count === null ? null : h('span', { className: 'cv-card-count' }, String(count)),
+          note ? h('span', { className: 'cv-card-note' }, note) : null),
+        sub ? h('p', { className: 'cv-card-sub' }, sub) : null,
+        children)
+    }
+
+    /** Placeholder for an empty card body: a headline plus an optional hint. */
+    function EmptyBox(props) {
+      const { title, hint } = props
+      return h('div', { className: 'cv-empty', role: 'status' },
+        h('b', null, title),
+        hint ? h('span', null, hint) : null)
+    }
+
+    /** v3 names for the same primitives; keeps the call sites readable. */
+    const Panel = Card
+    const Bare = Card
 
     /** A recommendation, collapsed to one line until the reader asks for more. */
     function RecRow(props) {
@@ -1184,18 +1192,20 @@ window.__ModuleLoader__.load({
       if (item.modelPick) tags.push({ label: t('aiChip'), tone: 'warn' })
       if (item.forced) tags.push({ label: t('classChip'), tone: 'warn' })
       if (item.tier === 'new') tags.push({ label: t('tierNew'), tone: 'warn' })
-      return h('div', { className: 'cv-rec', id: 'pc-rec-' + item.id, 'data-open': open ? 'true' : 'false' },
-        h('div', { className: 'pc-score', style: { fontSize: '17px', minWidth: '32px' } }, String(item.score),
-          h('small', { style: { fontSize: '9px' } }, chinese ? '匹配' : 'fit')),
-        h('div', { className: 'cv-rec-main' },
-          h('div', { className: 'cv-rec-title', title: item.name }, title),
-          h('div', { className: 'cv-rec-sub', title: sub || '' }, sub || t('mNoSignal')),
-          tags.length === 0 ? null : h('div', { style: { display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '3px' } },
+      const score = Number(item.score) || 0
+      return h('div', { className: 'cv-row', id: 'pc-rec-' + item.id, 'data-open': open ? 'true' : 'false' },
+        h('div', { className: 'cv-score', title: String(score) },
+          h('b', null, String(score)),
+          h('small', null, chinese ? '匹配' : 'fit')),
+        h('div', { className: 'cv-row-main' },
+          h('div', { className: 'cv-row-title', title: item.name }, title),
+          h('div', { className: 'cv-row-sub', title: sub || '' }, sub || t('mNoSignal')),
+          tags.length === 0 ? null : h('div', { className: 'cv-row-tags' },
             tags.map((tag, index) => h('span', { key: index, className: 'cv-tag' + (tag.tone ? ' ' + tag.tone : '') }, tag.label)))),
-        h('div', { className: 'cv-rec-ops' },
+        h('div', { className: 'cv-row-ops' },
           h('button', {
             type: 'button',
-            className: 'cv-rec-more',
+            className: 'cv-more',
             'aria-expanded': open ? 'true' : 'false',
             'aria-label': open ? t('cvCollapse') : t('cvDetail'),
             title: open ? t('cvCollapse') : t('cvDetail'),
@@ -1210,16 +1220,16 @@ window.__ModuleLoader__.load({
             ? t('installing') + (stage !== '' ? ' · ' + stage : '')
             : t('install'))),
         open
-          ? h('div', { style: { gridColumn: '1 / -1', borderTop: '1px solid var(--dsw-alias-border-l1)', marginTop: '4px', paddingTop: '8px' } },
-            description ? h('div', { className: 'pc-desc', style: { whiteSpace: 'normal' } }, description) : null,
-            reasons.length === 0 ? null : h('div', { style: { display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '6px' } },
+          ? h('div', { className: 'cv-row-body' },
+            description ? h('div', { className: 'cv-note', style: { color: 'var(--cv-text-2)', whiteSpace: 'normal' } }, description) : null,
+            reasons.length === 0 ? null : h('div', { style: { display: 'flex', gap: '4px', flexWrap: 'wrap' } },
               reasons.map((label, index) => h('span', { key: index, className: 'cv-tag' }, label))),
-            metricsFor(item, t, chinese).length === 0 ? null : h('div', { className: 'pc-metrics' },
-              metricsFor(item, t, chinese).map((metric, index) => h('span', { key: index, className: 'pc-metric' }, metric))),
+            metricsFor(item, t, chinese).length === 0 ? null : h('div', { style: { display: 'flex', gap: '4px', flexWrap: 'wrap' } },
+              metricsFor(item, t, chinese).map((metric, index) => h('span', { key: index, className: 'cv-tag' }, metric))),
             item.install ? h(CopyCommand, { label: t('howInstall'), command: item.install.command, copyLabel: t('copy'), copiedLabel: t('copied') }) : null,
-            item.use ? h('div', { className: 'pc-line', style: { alignItems: 'flex-start' } },
-              h('b', null, t('howUse') + ':'), h('span', { style: { whiteSpace: 'normal' } }, pickText(item.use, chinese))) : null,
-            h('div', { style: { display: 'flex', gap: '6px', marginTop: '8px' } },
+            item.use ? h('div', { className: 'cv-kv' },
+              h('dt', null, t('howUse')), h('dd', { style: { textAlign: 'left' } }, pickText(item.use, chinese))) : null,
+            h('div', { style: { display: 'flex', gap: '5px' } },
               h('button', { type: 'button', className: 'cv-btn', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss'))))
           : null)
     }
@@ -1230,14 +1240,16 @@ window.__ModuleLoader__.load({
       const title = pickText(item.titleI18n, chinese) || item.title || item.name
       const tone = item.status === 'active' ? 'ok' : item.status === 'watching' ? '' : 'warn'
       const label = item.status === 'active' ? t('active') : item.status === 'watching' ? t('watching') : t('unused')
-      const tools = (item.tools ?? []).slice(0, 3).map((tool) => tool.name + ' ' + tool.calls).join(' · ')
+      const tools = (item.tools ?? []).slice(0, 2).map((tool) => tool.name + ' ' + tool.calls).join(' · ')
+      const calls = Number(item.calls) || 0
       const toggling = busy === 'toggle:' + item.name
-      return h('div', { className: 'cv-rec' },
-        h('span', { className: 'cv-tag ' + tone, style: { minWidth: '40px', justifyContent: 'center' } }, label),
-        h('div', { className: 'cv-rec-main' },
-          h('div', { className: 'cv-rec-title', title: item.name }, title),
-          h('div', { className: 'cv-rec-sub', title: tools }, numberFmt(item.calls ?? 0, chinese) + ' ' + t('installedCalls') + (tools ? ' · ' + tools : ''))),
-        h('div', { className: 'cv-rec-ops' },
+      return h('div', { className: 'cv-row' },
+        h('span', { className: 'cv-tag ' + tone, style: { minWidth: '38px', justifyContent: 'center' } }, label),
+        h('div', { className: 'cv-row-main' },
+          h('div', { className: 'cv-row-title', title: item.name }, title),
+          h('div', { className: 'cv-row-sub', title: tools },
+            numberFmt(calls, chinese) + ' ' + t('installedCalls') + (tools ? ' · ' + tools : ''))),
+        h('div', { className: 'cv-row-ops' },
           item.update ? h('span', { className: 'cv-tag warn' }, item.update.latest) : null,
           item.removable
             ? h('button', {
@@ -1256,12 +1268,12 @@ window.__ModuleLoader__.load({
 
     function IdleRow(props) {
       const { item, t, chinese, busy, onRemove, onSnooze } = props
-      return h('div', { className: 'cv-rec' },
+      return h('div', { className: 'cv-row' },
         h('span', { className: 'cv-tag warn' }, String(item.daysInactive ?? '?') + 'd'),
-        h('div', { className: 'cv-rec-main' },
-          h('div', { className: 'cv-rec-title' }, item.title || item.name),
-          h('div', { className: 'cv-rec-sub' }, item.reason ? pickText(item.reason, chinese) : fill(t('daysAgo'), { n: item.daysInactive }))),
-        h('div', { className: 'cv-rec-ops' },
+        h('div', { className: 'cv-row-main' },
+          h('div', { className: 'cv-row-title' }, item.title || item.name),
+          h('div', { className: 'cv-row-sub' }, item.reason ? pickText(item.reason, chinese) : fill(t('daysAgo'), { n: item.daysInactive }))),
+        h('div', { className: 'cv-row-ops' },
           h('button', { type: 'button', className: 'cv-btn', disabled: busy !== '', onClick: () => onSnooze(item.name) }, t('snooze')),
           h('button', { type: 'button', className: 'cv-btn danger', disabled: busy !== '', onClick: () => onRemove(item.name) }, t('remove'))))
     }
@@ -1350,24 +1362,6 @@ window.__ModuleLoader__.load({
               onClick: () => (confirming === item.name ? onRemove(item.name) : onConfirm(item.name)),
             }, confirming === item.name ? t('confirmRemove') : t('remove'))
             : null,
-        ),
-      )
-    }
-
-    function IdleRow(props) {
-      const { item, t, chinese, busy, onRemove, onSnooze } = props
-      return h('div', { className: 'pc-row' },
-        h('div', { className: 'pc-avatar' }, (item.title || item.name).slice(0, 1)),
-        h('div', { className: 'pc-grow' },
-          h('div', { style: { display: 'flex', gap: '8px', alignItems: 'baseline' } },
-            h('span', { className: 'pc-name' }, item.title || item.name),
-            item.version ? h('span', { className: 'pc-chip' }, 'v' + item.version) : null,
-          ),
-          h('div', { className: 'pc-desc' }, item.reason ? pickText(item.reason, chinese) : fill(t('daysAgo'), { n: item.daysInactive })),
-        ),
-        h('div', { style: { display: 'flex', gap: '6px' } },
-          h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => onSnooze(item.name) }, t('snooze')),
-          h(Button, { variant: 'danger', disabled: busy !== '', onClick: () => onRemove(item.name) }, t('remove')),
         ),
       )
     }
@@ -1947,6 +1941,7 @@ window.__ModuleLoader__.load({
       const installedCount = Number(totals.installed ?? installed.length) || 0
       const recCount = Number(totals.recommendations ?? recommendations.length) || 0
       const callsTotal = Number(totals.calls7 ?? profile.totalCalls ?? 0) || 0
+      const callsBundles = installed.filter((item) => (Number(item.calls) || 0) > 0).length
       const aiPicks = recommendations.filter(
         (item) => item.modelPick === true || (item.reasons ?? []).some((reason) => reason?.code === 'model-pick'),
       ).length
@@ -1969,6 +1964,16 @@ window.__ModuleLoader__.load({
         display: numberFmt(tool.calls, chinese),
       }))
 
+
+      const poolSize = Number(coverage.unique ?? coverage.candidates ?? 0)
+      const verifiedCount = Number(coverage.verified ?? 0)
+
+      // The host publishes no per-day series, so the usage chart reads the
+      // tool ranking it does publish instead of inventing a daily curve.
+      const usageColumnsItems = (Array.isArray(topTools) ? topTools : []).slice(0, 6).map((tool) => ({
+        label: String(tool.name || '').length > 8 ? String(tool.name).slice(0, 7) + '…' : String(tool.name || ''),
+        value: Number(tool.calls) || 0,
+      }))
       const scored = [...recommendations].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
       const scoreItems = scored.slice(0, 6).map((item) => ({
         label: pickText(item.title, chinese) || item.name,
@@ -2006,33 +2011,44 @@ window.__ModuleLoader__.load({
 
       // ---- pieces shared by every section ------------------------------
       const kpis = h('div', { className: 'cv-grid4', role: 'group', 'aria-label': t('statsLabel') },
-        h(Kpi, {
+        h(Stat, {
           label: t('statsRecommend'),
           value: numberFmt(recCount, chinese),
           foot: fill(t('statRecommendSub'), { n: aiPicks }),
           delta: recDelta,
+          onPick: () => setView('recs'),
         }),
-        h(Kpi, {
+        h(Stat, {
           label: t('statsInstalled'),
           value: numberFmt(installedCount, chinese),
           foot: fill(t('statInstalledSub'), { active: activeCount, unused: unusedCount }),
           onPick: () => setView('installed'),
         }),
-        h(Kpi, {
+        h(Stat, {
           label: t('statsCalls'),
           value: numberFmt(callsTotal, chinese),
-          foot: fill(t('statCallsSub'), { n: installed.filter((item) => (Number(item.calls) || 0) > 0).length }),
+          foot: fill(t('statCallsSub'), { n: callsBundles }),
           delta: callsDelta,
         }),
-        h(Kpi, {
+        h(Stat, {
           label: t('statsGap'),
           value: numberFmt(gaps.length, chinese),
           foot: gaps.length === 0
             ? t('gapEmpty')
             : gaps.slice(0, 2).map((gap) => pickText(gap.label, chinese)).join(' · '),
           onPick: () => setView('gaps'),
+        }),
+        h(Stat, {
+          label: t('statsPool'),
+          value: numberFmt(poolSize, chinese),
+          foot: fill(t('statPoolSub'), { n: numberFmt(verifiedCount, chinese) }),
+          onPick: () => setView('insight'),
+        }),
+        h(Stat, {
+          label: t('statsNext'),
+          value: data.nextRunAt ? clock(data.nextRunAt, chinese) : '—',
+          foot: latestRun ? fill(t('statNextSub'), { time: clock(data.generatedAt, chinese) }) : t('never'),
         }))
-
       const head = h('div', { className: 'cv-head' },
         h('div', { style: { minWidth: 0 } },
           h('h1', null, t('title')),
@@ -2090,12 +2106,12 @@ window.__ModuleLoader__.load({
       const topCard = h(Panel, { title: t('cvTop'), note: fill(t('chartUsageHint'), { days }) },
         topTools.length === 0
           ? h(EmptyBox, { title: fill(t('cvTopEmpty'), { days }) })
-          : h(BarList, { items: topTools }))
+          : h(Bars, { items: topTools }))
 
       const adhocCard = h(Panel, { title: t('chartSourceTitle'), note: t('chartSourceHint') },
         sourceItems.length === 0
           ? h(EmptyBox, { title: t('chartSourceEmpty') })
-          : h(BarList, { items: sourceItems }))
+          : h(Bars, { items: sourceItems }))
 
       const modelCard = (() => {
         const catalog = settingsValue && settingsValue.catalog
@@ -2119,13 +2135,18 @@ window.__ModuleLoader__.load({
           note !== '' ? h('div', { className: 'cv-warn', style: { marginTop: '6px' } }, note) : null)
       })()
 
-      const overviewCards = h('div', { className: 'cv-grid3' },
+      const usageColumns = h(Columns, {
+        items: usageColumnsItems,
+        label: fill(t('chartUsageHint'), { days }),
+      })
+
+      const overviewCards = h('div', { className: 'cv-grid2' },
+        h(Panel, { title: t('cvTop'), count: usageColumnsItems.length, note: fill(t('chartUsageHint'), { days }) }, usageColumns),
+        h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut),
         topCard,
-        h(Panel, { title: t('chartUsageTitle'), note: t('cvSplit') }, usageDonut),
         healthCard,
         modelCard,
         adhocCard)
-
       const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
         h('div', { className: 'cv-chat' },
           messages.length === 0
@@ -2184,21 +2205,12 @@ window.__ModuleLoader__.load({
           })))
 
       const scoreCard = h(Panel, { title: t('chartScoreTitle'), count: scoreItems.length, note: t('chartScoreHint') },
-        scoreItems.length === 0 ? h(EmptyBox, { title: t('chartScoreEmpty') }) : h(BarList, { items: scoreItems }))
+        scoreItems.length === 0 ? h(EmptyBox, { title: t('chartScoreEmpty') }) : h(Bars, { items: scoreItems }))
 
-      const recsSection = h('div', { className: 'cv-compact' },
-        chatCard,
+      const recsSection = h('div', { className: 'cv-main-inner' },
+        h(Panel, { title: t('recommendTitle'), count: recommendations.length, note: t('recommendHint') }, recList),
         scoreCard,
-        h(Panel, { title: t('recommendTitle'), count: recommendations.length, note: t('recommendHint') }, recList))
-
-      // Wide layout: the list is the page, the score chart sits beside it.
-      const recsWide = h('div', { className: 'cv-full' },
-        h('div', { className: 'cv-cols' },
-          h(Panel, { title: t('recommendTitle'), count: recommendations.length, note: t('recommendHint') }, recList),
-          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
-            scoreCard,
-            chatCard)))
-
+        chatCard)
       const installedShown = (() => {
         const needle = installedQuery.trim().toLowerCase()
         const callsOf = (item) => (item.tools ?? []).reduce((sum, tool) => sum + (Number(tool.calls) || 0), 0)
@@ -2215,7 +2227,7 @@ window.__ModuleLoader__.load({
           : kept.slice().sort((left, right) => callsOf(right) - callsOf(left))
       })()
 
-      const installedSection = h('div', { className: 'cv-compact' },
+      const installedSection = h('div', { className: 'cv-main-inner' },
         h(Panel, { title: t('installedTitle'), count: installedShown.length, note: t('installedHint') },
           h('div', { className: 'cv-tools' },
             h('input', {
@@ -2249,7 +2261,7 @@ window.__ModuleLoader__.load({
               title: installed.length === 0 ? t('emptyInstalled') : t('installedNone'),
               hint: installed.length === 0 ? t('emptyInstalledHint') : t('installedNoneHint'),
             })
-            : h('div', { className: 'cv-recs' }, installedShown.map((item) => h(InstRow, {
+            : h('div', { className: 'cv-rows' }, installedShown.map((item) => h(InstRow, {
               key: item.name,
               item,
               t,
@@ -2263,7 +2275,7 @@ window.__ModuleLoader__.load({
         h(Panel, { title: t('idleTitle'), count: idle.length, note: t('idleHint') },
           idle.length === 0
             ? h(EmptyBox, { title: t('emptyIdle'), hint: t('emptyIdleHint') })
-            : h('div', { className: 'cv-recs' }, idle.map((item) => h(IdleRow, {
+            : h('div', { className: 'cv-rows' }, idle.map((item) => h(IdleRow, {
               key: item.name,
               item,
               t,
@@ -2273,62 +2285,9 @@ window.__ModuleLoader__.load({
               onRemove: (name) => act('remove', { name }, t('removedLive')),
             })))))
 
-      const installedWide = h('div', { className: 'cv-full' },
-        h('div', { className: 'cv-cols' },
-          h(Panel, { title: t('installedTitle'), count: installedShown.length, note: t('installedHint') },
-            h('div', { className: 'cv-tools' },
-              h('input', {
-                className: 'cv-input',
-                type: 'search',
-                value: installedQuery,
-                placeholder: t('installedSearch'),
-                'aria-label': t('installedSearch'),
-                onChange: (event) => setInstalledQuery(event.target.value),
-              }),
-              h('div', { className: 'cv-seg', role: 'group', 'aria-label': t('installedSortActive') },
-                [['calls', t('installedSortActive')], ['name', t('installedSortName')]].map(([key, label]) =>
-                  h('button', {
-                    key,
-                    type: 'button',
-                    'data-on': installedSort === key ? 'true' : 'false',
-                    onClick: () => setInstalledSort(key),
-                  }, label))),
-              h('div', { className: 'cv-seg', role: 'group', 'aria-label': t('installedFilterAll') },
-                [['all', t('installedFilterAll')], ['active', t('installedFilterActive')], ['idle', t('installedFilterIdle')]].map(([key, label]) =>
-                  h('button', {
-                    key,
-                    type: 'button',
-                    'data-on': installedFilter === key ? 'true' : 'false',
-                    onClick: () => setInstalledFilter(key),
-                  }, label)))),
-            installedShown.length === 0
-              ? h(EmptyBox, { title: installed.length === 0 ? t('emptyInstalled') : t('installedNone') })
-              : h('div', { className: 'cv-recs' }, installedShown.map((item) => h(InstRow, {
-                key: item.name,
-                item,
-                t,
-                chinese,
-                busy,
-                confirming,
-                onToggle: (name, enabled) => act('toggle', { name, enabled }, enabled ? t('toggleOn') : t('toggleOff')),
-                onRemove: (name) => act('remove', { name }, t('removedLive')),
-                onConfirm: (name) => setConfirming(name),
-              })))),
-          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
-            h(Panel, { title: t('chartUsageTitle'), note: t('cvSplit') }, usageDonut),
-            h(Panel, { title: t('idleTitle'), count: idle.length, note: t('idleHint') },
-              idle.length === 0
-                ? h(EmptyBox, { title: t('emptyIdle'), hint: t('emptyIdleHint') })
-                : h('div', { className: 'cv-recs' }, idle.map((item) => h(IdleRow, {
-                  key: item.name,
-                  item,
-                  t,
-                  chinese,
-                  busy,
-                  onSnooze: (name) => act('snooze', { name }, t('snoozed')),
-                  onRemove: (name) => act('remove', { name }, t('removedLive')),
-                })))))))
-
+      // No wide twin any more: the panel lives in a ~420px sidebar, so one
+      // well-packed column is the layout rather than a fallback.
+      const installedWide = null
       const diffItems = []
       if (diff) {
         if (diff.added.length > 0) diffItems.push({ label: t('diffAdded') + ' ' + diff.added.length, tone: 'ok' })
@@ -2459,35 +2418,23 @@ window.__ModuleLoader__.load({
         note: t('conflictsHint'),
       }, conflicts.map(conflictBlock))
 
-      const sourcesNode = h(BarList, { items: sourceItems })
+      const sourcesNode = h(Bars, { items: sourceItems })
 
-      const insightSection = h('div', { className: 'cv-compact' },
+      const insightSection = h('div', { className: 'cv-main-inner' },
         diffCard,
-        conflictsCard,
-        fold('explain', t('explainTitle'), explainNode),
-        fold('gaps', t('gapsTitle'), gapsNode, gaps.length),
-        fold('model', t('modelTitle'), settingsNode),
-        fold('sources', t('coverageTitle'), h('div', null,
-          h('p', { className: 'cv-card-sub' }, t('coverageHint')),
-          sourcesNode)))
+        h(Panel, { title: t('explainTitle'), note: t('explainHint') }, explainNode),
+        h(Panel, { title: t('gapsTitle'), count: gaps.length, note: t('gapsHint') }, gapsNode),
+        h(Panel, { title: t('modelTitle'), note: t('modelHint') }, settingsNode),
+        h(Panel, { title: t('coverageTitle'), note: t('coverageHint') }, sourcesNode),
+        conflictsCard)
 
-      const insightWide = h('div', { className: 'cv-full' },
-        h('div', { className: 'cv-cols' },
-          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
-            diffCard,
-            h(Panel, { title: t('explainTitle') }, explainNode),
-            h(Panel, { title: t('gapsTitle'), count: gaps.length }, gapsNode)),
-          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
-            h(Panel, { title: t('modelTitle') }, settingsNode),
-            h(Panel, { title: t('coverageTitle'), note: t('coverageHint') }, sourcesNode),
-            conflictsCard)))
-
-      const gapsSection = h(Panel, { title: t('gapsTitle'), count: gaps.length, note: t('gapsHint') }, gapsNode)
+      const insightWide = null
+      const gapsSection = h('div', { className: 'cv-main-inner' }, h(Panel, { title: t('gapsTitle'), count: gaps.length, note: t('gapsHint') }, gapsNode))
 
       const body =
-        view === 'recs' ? [recsSection, recsWide]
-          : view === 'installed' ? [installedSection, installedWide]
-            : view === 'insight' ? [insightSection, insightWide]
+        view === 'recs' ? [recsSection]
+          : view === 'installed' ? [installedSection]
+            : view === 'insight' ? [insightSection]
               : view === 'gaps' ? [gapsSection]
                 : [overviewCards]
 
