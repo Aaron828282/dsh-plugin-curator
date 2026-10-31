@@ -233,6 +233,34 @@ window.__ModuleLoader__.load({
       snoozed: '已延后 30 天',
       autoOn: '自动安装已开启（阈值 {score}）',
       autoOff: '自动安装关闭：需要你点「启用」',
+
+      railOverview: '概览',
+      railRecs: '推荐',
+      railInstalled: '已装',
+      railInsight: '洞察',
+      railGap: '缺口',
+      cvToday: '今日',
+      cvOver: '较昨日',
+      cvPrev: '昨天',
+      cvFlat: '与昨日持平',
+      cvPanel: '总览',
+      cvPanelHint: '四个数字讲完今天的状态，下面的卡片才是细节。',
+      cvNext: '下次巡检',
+      cvLast: '上次生成',
+      cvTop: '调用最多的插件',
+      cvTopEmpty: '近 {days} 天还没有插件被调用',
+      cvSplit: '已装构成',
+      cvExcluded: '未进推荐',
+      cvExcludedHint: '被门槛挡在外面，点开看每一档各有多少。',
+      cvHealth: '体检',
+      cvHealthGood: '没有发现需要处理的问题。',
+      cvHealthIdle: '{n} 个插件装上后没被调用',
+      cvHealthConflict: '{n} 组插件能力重叠',
+      cvHealthModel: 'AI 分析没有成功：{reason}',
+      cvHealthSource: '{n} 个采集渠道异常',
+      cvDetail: '详情',
+      cvCollapse: '收起',
+      cvSidebarHint: '宽屏时显示左侧分组导航',
     }
 
     const en = {
@@ -447,10 +475,51 @@ window.__ModuleLoader__.load({
       snoozed: 'Snoozed for 30 days',
       autoOn: 'Auto-install on (threshold {score})',
       autoOff: 'Auto-install off: you press Enable',
+
+      railOverview: 'Overview',
+      railRecs: 'Picks',
+      railInstalled: 'Installed',
+      railInsight: 'Insight',
+      railGap: 'Gaps',
+      cvToday: 'Today',
+      cvOver: 'vs yesterday',
+      cvPrev: 'Yesterday',
+      cvFlat: 'unchanged from yesterday',
+      cvPanel: 'At a glance',
+      cvPanelHint: 'Four numbers cover the state of today; the cards below carry the detail.',
+      cvNext: 'Next run',
+      cvLast: 'Last built',
+      cvTop: 'Most-called bundles',
+      cvTopEmpty: 'No bundle was called in the last few days',
+      cvSplit: 'Installed mix',
+      cvExcluded: 'Kept out',
+      cvExcludedHint: 'Filtered by the gates. Open to see how many fell in each.',
+      cvHealth: 'Checkup',
+      cvHealthGood: 'Nothing needs attention.',
+      cvHealthIdle: '{n} bundles installed but never called',
+      cvHealthConflict: '{n} groups of overlapping bundles',
+      cvHealthModel: 'AI analysis failed: {reason}',
+      cvHealthSource: '{n} source channels errored',
+      cvDetail: 'Detail',
+      cvCollapse: 'Collapse',
+      cvSidebarHint: 'The group rail appears on wide panels',
     }
 
     const CSS = [
-      '.pc-root{--pc-gap:14px;container-type:inline-size;display:flex;flex-direction:column;gap:var(--pc-gap);padding:18px 20px 28px;font-size:12.5px;line-height:1.55;color:var(--dsw-alias-label-primary);}',
+      '.pc-root{--pc-gap:14px;container-type:inline-size;--cv-accent:var(--dsw-alias-brand-primary);}',
+      '.cv{padding:2px 2px 22px;display:flex;flex-direction:column;gap:12px;color:var(--dsw-alias-label-primary,#1f2328);}',
+      '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start;}',
+      '.cv-main{display:flex;flex-direction:column;gap:12px;min-width:0;}',
+      '.cv-side{display:none;}',
+      '.cv-console{display:flex;flex-direction:column;gap:12px;padding:14px 15px 16px;border:1px solid var(--dsw-alias-border-l1);border-radius:16px;background:var(--dsw-alias-bg-base);}',
+      '.cv-compact{display:flex;flex-direction:column;gap:12px;}',
+      '.cv-full{display:none;}',
+      '.cv-grid2{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
+      '.cv-grid3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}',
+      '.cv-grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}',
+      '.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
+      '@container (min-width:560px){.cv-body{grid-template-columns:158px minmax(0,1fr);gap:16px;}.cv-side{display:flex;flex-direction:column;gap:2px;position:sticky;top:0;padding-top:2px;}.cv-grid3{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-grid4{grid-template-columns:repeat(4,minmax(0,1fr));}}',
+      '@container (min-width:900px){.cv-grid2{grid-template-columns:repeat(2,minmax(0,1fr));}.cv-grid3{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-cols{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);}.cv-compact{display:none;}.cv-full{display:flex;flex-direction:column;gap:12px;}}',
       '.pc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}',
       '.pc-title{font-size:19px;font-weight:650;letter-spacing:.2px;margin:0 0 2px;}',
       '.pc-sub{color:var(--dsw-alias-label-secondary);font-size:12.5px;margin:0;}',
@@ -487,8 +556,6 @@ window.__ModuleLoader__.load({
       '.pc-bar-btn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:8px;padding-left:5px;padding-right:5px;margin-left:-5px;margin-right:-5px;}',
       '.pc-bar-btn:hover{background:var(--dsw-alias-bg-layer-2);}',
       '.pc-bar-btn:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px;}',
-      '@container (min-width:620px){.pc-tiles{grid-template-columns:repeat(3,minmax(0,1fr));}.pc-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--pc-gap);align-items:start;}}',
-      '@container (min-width:980px){.pc-tiles{grid-template-columns:repeat(6,minmax(0,1fr));}}',
       '.pc-charts{display:flex;flex-direction:column;gap:var(--pc-gap);}',
       '.pc-tile{border:1px solid var(--dsw-alias-border-l1);border-radius:12px;padding:12px 14px;background:var(--dsw-alias-bg-layer-2);}',
       '.pc-tile b{display:block;font-size:22px;font-weight:650;line-height:1.15;}',
@@ -503,7 +570,7 @@ window.__ModuleLoader__.load({
       '.pc-row:first-child{border-top:none;padding-top:4px;}',
       '.pc-avatar{flex:0 0 26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);}',
       '.pc-grow{flex:1 1 auto;min-width:0;}',
-      '.pc-name{font-weight:600;font-size:12.8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.pc-name{font-weight:600;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
       '.pc-desc{color:var(--dsw-alias-label-secondary);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
       '.pc-line{margin-top:6px;color:var(--dsw-alias-label-secondary);display:flex;gap:6px;align-items:baseline;}',
       '.pc-line b{font-weight:600;color:var(--dsw-alias-label-primary);}',
@@ -592,13 +659,133 @@ window.__ModuleLoader__.load({
       '.pc-suggest button:hover{border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-brand-primary);}',
     ].join('')
 
+
+    // Compact panel system: one rail, four KPI tiles, stacked cards. Sizes
+    // are tuned for the 260-420px sidebar and grow only when the container
+    // itself gets wide, never when the window does.
+    const CV_CSS = [
+      '.cv-chip{display:inline-flex;align-items:center;gap:6px;height:29px;padding:0 11px;border-radius:9px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;}',
+      '.cv-chip:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
+      '.cv-chip:disabled{opacity:.55;cursor:default;}',
+      '.cv-chip.primary{background:var(--cv-accent);border-color:var(--cv-accent);color:var(--dsw-alias-brand-on-primary,#fff);font-weight:600;}',
+      '.cv-chip.primary:hover{filter:brightness(1.05);color:var(--dsw-alias-brand-on-primary,#fff);}',
+      '.cv-chip.ghost{background:transparent;}',
+      '.cv-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:27px;padding:0 10px;border-radius:8px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;}',
+      '.cv-btn:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
+      '.cv-btn:disabled{opacity:.5;cursor:default;}',
+      '.cv-btn.primary{background:var(--cv-accent);border-color:var(--cv-accent);color:var(--dsw-alias-brand-on-primary,#fff);font-weight:600;}',
+      '.cv-btn.primary:hover{color:var(--dsw-alias-brand-on-primary,#fff);filter:brightness(1.05);}',
+      '.cv-btn.danger{color:var(--dsw-alias-state-error-primary,#c92a2a);}',
+      '.cv-btn.wide{width:100%;height:32px;font-size:12.5px;}',
+      '.cv-btn:focus-visible,.cv-chip:focus-visible,.cv-side-item:focus-visible,.cv-rec-main:focus-visible{outline:2px solid var(--cv-accent);outline-offset:2px;}',
+      '.cv-side-item{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;text-align:left;cursor:pointer;}',
+      '.cv-side-item b{margin-left:auto;font-size:12.5px;font-weight:650;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary);}',
+      '.cv-side-item small{font-size:11px;color:var(--dsw-alias-label-tertiary);}',
+      '.cv-side-item:hover{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);}',
+      '.cv-side-item[data-on=true]{background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-border-l1);color:var(--dsw-alias-label-primary);font-weight:600;}',
+      '.cv-head{display:flex;align-items:flex-start;gap:12px;justify-content:space-between;flex-wrap:wrap;}',
+      '.cv-head h1{margin:0;font-size:18px;font-weight:650;letter-spacing:.2px;}',
+      '.cv-head p{margin:3px 0 0;font-size:12px;line-height:1.5;color:var(--dsw-alias-label-secondary);max-width:60ch;}',
+      '.cv-meta{display:flex;flex-wrap:wrap;gap:3px 11px;margin-top:6px;font-size:11px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums;}',
+      '.cv-head-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}',
+      '.cv-kpi{display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 12px 11px;border-radius:13px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);}',
+      '.cv-kpi-label{font-size:11px;line-height:1.25;color:var(--dsw-alias-label-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-kpi-value{font-size:23px;line-height:1.1;font-weight:650;letter-spacing:-.4px;font-variant-numeric:tabular-nums;}',
+      '.cv-kpi-unit{font-size:11.5px;font-weight:500;color:var(--dsw-alias-label-secondary);margin-left:2px;letter-spacing:0;}',
+      '.cv-kpi-foot{display:flex;align-items:center;gap:5px;font-size:10.5px;line-height:1.3;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-delta{font-weight:650;font-variant-numeric:tabular-nums;}',
+      '.cv-delta.up{color:var(--dsw-alias-state-success-primary,#2f9e44);}',
+      '.cv-delta.down{color:var(--dsw-alias-state-error-primary,#c92a2a);}',
+      '.cv-delta.flat{color:var(--dsw-alias-label-tertiary);}',
+      '.cv-spark{display:flex;align-items:flex-end;gap:2px;height:16px;margin-top:2px;}',
+      '.cv-spark i{display:block;width:5px;border-radius:2px 2px 0 0;background:var(--cv-accent);opacity:.8;}',
+      '.cv-tile{display:flex;align-items:center;gap:11px;min-width:0;padding:10px 13px;border:1px solid var(--dsw-alias-border-l1);border-radius:13px;background:var(--dsw-alias-bg-base);}',
+      '.cv-tile-body{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px;}',
+      '.cv-tile-label{font-size:11px;color:var(--dsw-alias-label-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-tile-main{font-size:16px;line-height:1.2;font-weight:650;font-variant-numeric:tabular-nums;}',
+      '.cv-tile-sub{font-size:10.5px;line-height:1.35;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-bar{height:5px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);overflow:hidden;}',
+      '.cv-bar>i{display:block;height:100%;border-radius:999px;background:var(--cv-accent);}',
+      '.cv-card{border:1px solid var(--dsw-alias-border-l1);border-radius:13px;background:var(--dsw-alias-bg-base);padding:11px 13px 12px;min-width:0;}',
+      '.cv-card-head{display:flex;align-items:baseline;gap:7px;margin-bottom:7px;}',
+      '.cv-card-head h3{margin:0;font-size:12.5px;font-weight:620;letter-spacing:.1px;}',
+      '.cv-card-count{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font-variant-numeric:tabular-nums;}',
+      '.cv-card-note{margin-left:auto;font-size:10.5px;color:var(--dsw-alias-label-tertiary);text-align:right;}',
+      '.cv-card-sub{margin:0 0 7px;font-size:11px;line-height:1.45;color:var(--dsw-alias-label-tertiary);}',
+      '.cv-empty{display:flex;flex-direction:column;gap:2px;padding:11px 11px;border:1px dashed var(--dsw-alias-border-l1);border-radius:10px;color:var(--dsw-alias-label-secondary);}',
+      '.cv-empty b{font-size:12px;font-weight:600;}',
+      '.cv-empty span{font-size:11px;line-height:1.45;color:var(--dsw-alias-label-tertiary);}',
+      '.cv-recs{display:flex;flex-direction:column;gap:7px;}',
+      '.cv-rec{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--dsw-alias-border-l1);border-radius:11px;background:var(--dsw-alias-bg-base);transition:border-color .15s ease,box-shadow .15s ease;}',
+      '.cv-rec:hover{border-color:var(--cv-accent);}',
+      '.cv-rec[data-open=true]{border-color:var(--cv-accent);}',
+      '.cv-rec[data-flag=true]{box-shadow:0 0 0 2px var(--cv-accent);}',
+      '.cv-rec[data-flag=true] .cv-rec-main{border:1px solid var(--cv-accent);border-radius:9px;padding:2px 4px;}',
+      '.cv-rec-main{display:flex;flex-direction:column;gap:2px;min-width:0;}',
+      '.cv-rec-title{font-size:12.5px;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-rec-sub{font-size:10.5px;line-height:1.4;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-rec-ops{display:flex;align-items:center;gap:5px;}',
+      '.cv-tag{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:5px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font-size:10px;line-height:1.7;white-space:nowrap;}',
+      '.cv-tag.ok{background:var(--dsw-alias-state-success-subtle,rgba(47,158,68,.12));color:var(--dsw-alias-state-success-primary,#2f9e44);}',
+      '.cv-tag.warn{background:var(--dsw-alias-state-warn-subtle,rgba(240,140,0,.14));color:var(--dsw-alias-state-warn-primary,#b35c00);}',
+      '.cv-rec-more{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:1px solid var(--dsw-alias-border-l1);border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:9px;cursor:pointer;}',
+      '.cv-rec-more:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
+      '.cv-donut{display:flex;align-items:center;gap:13px;flex-wrap:wrap;}',
+      '.cv-donut svg{flex:0 0 auto;}',
+      '.cv-donut-num{font-size:17px;font-weight:650;fill:currentColor;}',
+      '.cv-donut-lab{font-size:9px;fill:currentColor;opacity:.62;}',
+      '.cv-legend{flex:1 1 120px;min-width:0;display:flex;flex-direction:column;gap:4px;}',
+      '.cv-legend-row{display:grid;grid-template-columns:8px minmax(0,1fr) auto auto;align-items:center;gap:6px;font-size:11px;color:var(--dsw-alias-label-secondary);}',
+      '.cv-legend-dot{width:8px;height:8px;border-radius:2px;}',
+      '.cv-legend-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-legend-pct,.cv-legend-val{font-variant-numeric:tabular-nums;}',
+      '.cv-legend-val{min-width:24px;text-align:right;color:var(--dsw-alias-label-primary);font-weight:600;}',
+      '.cv-bars{display:flex;flex-direction:column;gap:5px;}',
+      '.cv-bar-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:7px;padding:2px 0;}',
+      '.cv-bar-name{font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.cv-bar-val{font-size:11px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary);}',
+      '.cv-bar-track{grid-column:1 / -1;height:5px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);overflow:hidden;}',
+      '.cv-bar-track>i{display:block;height:100%;border-radius:999px;transition:width .3s ease;}',
+      '.cv-chat{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;padding-right:2px;}',
+      '.cv-msg{display:flex;}',
+      '.cv-msg.user{justify-content:flex-end;}',
+      '.cv-bubble{max-width:88%;padding:7px 10px;border-radius:10px;font-size:12px;line-height:1.5;background:var(--dsw-alias-bg-layer-2);white-space:pre-wrap;word-break:break-word;}',
+      '.cv-msg.user .cv-bubble{background:var(--cv-accent);color:var(--dsw-alias-brand-on-primary,#fff);}',
+      '.cv-pick{margin-top:7px;padding-top:6px;border-top:1px dashed var(--dsw-alias-border-l1);}',
+      '.cv-suggest{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}',
+      '.cv-suggest button{padding:2px 9px;border-radius:999px;border:1px dashed var(--dsw-alias-border-l1);background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer;}',
+      '.cv-suggest button:hover{border-color:var(--cv-accent);color:var(--cv-accent);}',
+      '.cv-composer{display:flex;gap:7px;align-items:flex-end;margin-top:8px;}',
+      '.cv-textarea{flex:1;min-height:34px;max-height:100px;resize:vertical;padding:6px 9px;border-radius:8px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:inherit;font:inherit;font-size:12px;line-height:1.45;}',
+      '.cv-textarea:focus{outline:2px solid var(--cv-accent);outline-offset:1px;}',
+      '.cv-tools{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:8px;}',
+      '.cv-input{flex:1 1 150px;height:28px;padding:0 10px;border-radius:8px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:inherit;font:inherit;font-size:11.5px;}',
+      '.cv-input:focus{outline:2px solid var(--cv-accent);outline-offset:1px;}',
+      '.cv-seg{display:inline-flex;border:1px solid var(--dsw-alias-border-l1);border-radius:8px;overflow:hidden;}',
+      '.cv-seg button{height:26px;padding:0 9px;border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer;}',
+      '.cv-seg button[data-on=true]{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font-weight:600;}',
+      '.cv-form{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px 9px;align-items:center;font-size:11.5px;}',
+      '.cv-form-label{font-size:11px;color:var(--dsw-alias-label-secondary);}',
+      '.cv-select,.cv-form input[type=number]{height:26px;padding:0 8px;border-radius:7px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:inherit;font:inherit;font-size:11.5px;}',
+      '.cv-dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;font-size:11.5px;margin:0;}',
+      '.cv-dl dt{color:var(--dsw-alias-label-secondary);}',
+      '.cv-dl dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;}',
+      '.cv-note{font-size:11px;line-height:1.45;color:var(--dsw-alias-label-tertiary);}',
+      '.cv-err{font-size:11px;line-height:1.45;color:var(--dsw-alias-state-error-primary,#c92a2a);}',
+      '.cv-warn{font-size:11px;line-height:1.45;color:var(--dsw-alias-state-warn-primary,#b35c00);}',
+      '.cv-hero{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}',
+      '.cv-hero b{font-size:26px;font-weight:650;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}',
+      '.cv-hero span{font-size:11.5px;color:var(--dsw-alias-label-secondary);}',
+      '@media (max-width:480px){.cv-head h1{font-size:16.5px;}.cv-kpi-value{font-size:21px;}.cv-grid3,.cv-grid4{grid-template-columns:repeat(2,minmax(0,1fr));}}',
+    ].join('')
+
     let stylesInjected = false
     function ensureStyles() {
       if (stylesInjected || typeof document === 'undefined') return
       stylesInjected = true
       const el = document.createElement('style')
       el.dataset.curator = 'client'
-      el.textContent = CSS
+      el.textContent = CSS + CV_CSS
       document.head.appendChild(el)
     }
 
@@ -617,14 +804,23 @@ window.__ModuleLoader__.load({
     const fill = (template, params) => String(template).replace(/\{(\w+)\}/g, (m, key) => (key in params ? String(params[key]) : m))
     const clock = (at, chinese) => (at ? new Date(at).toLocaleString(chinese ? 'zh-CN' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '')
 
+    // One button, three weights: primary carries the action the panel wants
+    // the reader to take, ghost is neutral, danger deletes something.
     function Button(props) {
-      const cls = 'pc-btn' + (props.variant ? ' ' + props.variant : '')
+      const variant = props.variant || 'ghost'
+      const className = [
+        'cv-btn',
+        variant === 'primary' ? 'primary' : '',
+        variant === 'danger' ? 'danger' : '',
+        variant === 'wide' ? 'wide' : '',
+      ].filter(Boolean).join(' ')
       return h('button', {
         type: 'button',
-        className: cls,
+        className,
         disabled: props.disabled === true,
-        title: props.title,
-        onClick: props.onClick,
+        title: props.title || undefined,
+        'aria-label': props.label || undefined,
+        onClick: props.disabled === true ? undefined : props.onClick,
       }, props.children)
     }
 
@@ -632,17 +828,14 @@ window.__ModuleLoader__.load({
       return h('button', {
         type: 'button',
         className: 'pc-switch',
-        role: 'switch',
-        'aria-checked': props.checked === true,
         'data-on': props.checked === true ? 'true' : 'false',
-        title: props.title,
+        'aria-pressed': props.checked === true ? 'true' : 'false',
+        'aria-label': props.title || '',
+        title: props.title || '',
         onClick: props.onToggle,
-      }, h('i'))
+      }, h('i', null))
     }
 
-    // Ask the host why one candidate did or did not make today's picks.
-    // The host replays its real gates, so this reports the actual reason rather
-    // than a second guess invented for the UI.
     function ExplainCard(props) {
       const { t, chinese } = props
       const [query, setQuery] = React.useState('')
@@ -780,16 +973,81 @@ window.__ModuleLoader__.load({
       'var(--dsw-alias-label-tertiary)',
     ]
 
+    // A tiny bar chart for the recent days. Bars are normalised to the busiest
+    // day so a quiet week still reads as a shape instead of four flat stubs.
+    function Spark(props) {
+      const { values, height = 16, width = 5 } = props
+      const max = Math.max(1, ...values.map((value) => Number(value) || 0))
+      return h('div', { className: 'cv-spark', style: { height: height + 'px' }, 'aria-hidden': 'true' },
+        values.map((value, index) => {
+          const share = (Number(value) || 0) / max
+          const tall = Math.max(2, Math.round(share * height))
+          return h('i', { key: index, style: { height: tall + 'px', width: width + 'px', opacity: 0.35 + share * 0.65 } })
+        }))
+    }
+
+    /**
+     * One headline number. The value carries the reading, the foot line says
+     * what it is measured against so the number is never bare.
+     */
+    function Kpi(props) {
+      const { label, value, unit, foot, delta, spark, onPick } = props
+      const tone = delta === null || delta === undefined || delta === 0 ? 'flat' : delta > 0 ? 'up' : 'down'
+      const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : '='
+      const body = [
+        h('span', { key: 'label', className: 'cv-kpi-label' }, label),
+        h('span', { key: 'value', className: 'cv-kpi-value' },
+          String(value),
+          unit ? h('span', { className: 'cv-kpi-unit' }, unit) : null),
+        delta === null || delta === undefined
+          ? (foot ? h('span', { key: 'foot', className: 'cv-kpi-foot' }, foot) : null)
+          : h('span', { key: 'foot', className: 'cv-kpi-foot' },
+            h('span', { className: 'cv-delta ' + tone }, arrow + ' ' + Math.abs(delta)),
+            foot ? h('span', null, foot) : null),
+        spark && spark.length > 1 ? h(Spark, { key: 'spark', values: spark }) : null,
+      ]
+      if (typeof onPick !== 'function') return h('div', { className: 'cv-kpi' }, body)
+      return h('button', {
+        type: 'button',
+        className: 'cv-kpi',
+        style: { textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' },
+        onClick: onPick,
+      }, body)
+    }
+
+    /** Plain label/value tile with an optional meter, used for slower facts. */
+    function Tile(props) {
+      const { label, main, sub, meter, meterColor, onPick } = props
+      const body = [
+        h('span', { key: 'label', className: 'cv-tile-label' }, label),
+        h('span', { key: 'main', className: 'cv-tile-main' }, main),
+        meter === null || meter === undefined
+          ? null
+          : h('div', { key: 'meter', className: 'cv-bar' },
+            h('i', { style: { width: Math.max(0, Math.min(100, meter * 100)) + '%', background: meterColor || undefined } })),
+        sub ? h('span', { key: 'sub', className: 'cv-tile-sub' }, sub) : null,
+      ]
+      if (typeof onPick !== 'function') {
+        return h('div', { className: 'cv-tile' }, h('div', { className: 'cv-tile-body' }, body))
+      }
+      return h('button', {
+        type: 'button',
+        className: 'cv-tile',
+        style: { textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' },
+        onClick: onPick,
+      }, h('div', { className: 'cv-tile-body' }, body))
+    }
+
+    /** Ring chart. Slices are drawn with dash offsets, so no chart library. */
     function Donut(props) {
-      const slices = (props.slices ?? []).filter((slice) => Number(slice.value) > 0)
-      const total = slices.reduce((sum, slice) => sum + Number(slice.value), 0)
-      const size = props.size ?? 104
-      const stroke = props.stroke ?? 14
+      const { slices, size = 78, stroke = 11, centerValue, centerLabel, onPick } = props
+      const live = slices.filter((slice) => (Number(slice.value) || 0) > 0)
+      const total = live.reduce((sum, slice) => sum + (Number(slice.value) || 0), 0)
       const radius = (size - stroke) / 2
       const circumference = 2 * Math.PI * radius
       let offset = 0
-      const rings = slices.map((slice, index) => {
-        const share = total === 0 ? 0 : Number(slice.value) / total
+      const rings = live.map((slice, index) => {
+        const share = total > 0 ? (Number(slice.value) || 0) / total : 0
         const dash = share * circumference
         const ring = h('circle', {
           key: index,
@@ -798,145 +1056,214 @@ window.__ModuleLoader__.load({
           r: radius,
           fill: 'none',
           stroke: slice.color,
-          'stroke-width': stroke,
-          'stroke-dasharray': dash + ' ' + (circumference - dash),
-          'stroke-dashoffset': -offset,
+          strokeWidth: stroke,
+          strokeDasharray: dash + ' ' + Math.max(0, circumference - dash),
+          strokeDashoffset: -offset,
           transform: 'rotate(-90 ' + size / 2 + ' ' + size / 2 + ')',
         })
         offset += dash
         return ring
       })
-      return h('div', { className: 'pc-donut' },
-        h('svg', {
-          className: 'pc-donut-svg',
-          viewBox: '0 0 ' + size + ' ' + size,
-          role: 'img',
-          'aria-label': props.label ?? '',
-        },
-          h('circle', {
-            cx: size / 2,
-            cy: size / 2,
-            r: radius,
-            fill: 'none',
-            stroke: 'var(--dsw-alias-bg-layer-2)',
-            'stroke-width': stroke,
-          }),
+      return h('div', { className: 'cv-donut' },
+        h('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size, role: 'img', 'aria-label': String(centerLabel || '') },
+          h('circle', { cx: size / 2, cy: size / 2, r: radius, fill: 'none', stroke: 'var(--dsw-alias-bg-layer-2)', strokeWidth: stroke }),
           rings,
-          h('text', {
-            x: size / 2,
-            y: size / 2 + 1,
-            'text-anchor': 'middle',
-            className: 'pc-donut-num',
-          }, props.centerValue ?? String(total)),
-          props.centerLabel
-            ? h('text', {
-              x: size / 2,
-              y: size / 2 + 15,
-              'text-anchor': 'middle',
-              className: 'pc-donut-lab',
-            }, props.centerLabel)
-            : null,
-        ),
-        h('div', { className: 'pc-legend' }, (props.slices ?? []).map((slice, index) =>
-          h(props.onPick ? 'button' : 'div', {
-            key: index,
-            type: props.onPick ? 'button' : undefined,
-            className: 'pc-legend-row' + (props.onPick ? ' pc-legend-btn' : ''),
-            onClick: props.onPick,
-          },
-            h('span', { className: 'pc-legend-dot', style: { background: slice.color } }),
-            h('span', { className: 'pc-legend-name' }, slice.label),
-            h('span', { className: 'pc-legend-pct' }, total === 0 ? '0%' : Math.round((Number(slice.value) / total) * 100) + '%'),
-            h('span', { className: 'pc-legend-val' }, numberFmt(slice.value, props.chinese) + (slice.unit ?? '')),
-          ))),
-      )
+          centerValue === undefined || centerValue === null
+            ? null
+            : h('text', { x: '50%', y: '50%', textAnchor: 'middle', dominantBaseline: 'central', className: 'cv-donut-num' }, String(centerValue)),
+          centerLabel ? h('text', { x: '50%', y: '66%', textAnchor: 'middle', className: 'cv-donut-lab' }, centerLabel) : null),
+        h('div', { className: 'cv-legend' },
+          slices.map((slice, index) => {
+            const share = total > 0 ? Math.round(((Number(slice.value) || 0) / total) * 100) : 0
+            const row = [
+              h('span', { key: 'dot', className: 'cv-legend-dot', style: { background: slice.color } }),
+              h('span', { key: 'name', className: 'cv-legend-name' }, slice.label),
+              h('span', { key: 'pct', className: 'cv-legend-pct' }, share + '%'),
+              h('span', { key: 'val', className: 'cv-legend-val' }, String(slice.value)),
+            ]
+            return typeof onPick === 'function'
+              ? h('button', {
+                key: index,
+                type: 'button',
+                className: 'cv-legend-row',
+                style: { border: 0, background: 'transparent', font: 'inherit', color: 'inherit', cursor: 'pointer', padding: 0, textAlign: 'left' },
+                onClick: () => onPick(slice),
+              }, row)
+              : h('div', { key: index, className: 'cv-legend-row' }, row)
+          })))
     }
 
-    // Sparkbars: the number stays the loudest thing in the row and the meter sits
-    // underneath it, so a narrow sidebar can still show a title, a count and a
-    // relative length without truncating any of them.
+    /** Ranked horizontal bars; a row can be a shortcut into the detail below. */
     function BarList(props) {
-      const items = props.items ?? []
-      const max = items.reduce((peak, item) => Math.max(peak, Number(item.value) || 0), 0)
-      return h('div', { className: 'pc-bars' }, items.map((item, index) =>
-        h(item.onPick ? 'button' : 'div', {
+      const { items, color, max } = props
+      const top = max === undefined ? Math.max(1, ...items.map((item) => Number(item.value) || 0)) : max
+      return h('div', { className: 'cv-bars' },
+        items.map((item, index) => {
+          const share = top > 0 ? Math.max(0.02, (Number(item.value) || 0) / top) : 0
+          const body = [
+            h('span', { key: 'name', className: 'cv-bar-name', title: item.hint || item.label }, item.label),
+            h('span', { key: 'val', className: 'cv-bar-val' }, item.display === undefined ? String(item.value) : item.display),
+            h('div', { key: 'track', className: 'cv-bar-track' },
+              h('i', { style: { width: share * 100 + '%', background: item.color || color || 'var(--cv-accent)' } })),
+          ]
+          if (typeof item.onPick !== 'function') return h('div', { key: index, className: 'cv-bar-item' }, body)
+          return h('button', {
+            key: index,
+            type: 'button',
+            className: 'cv-bar-item',
+            style: { border: 0, background: 'transparent', font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left' },
+            onClick: item.onPick,
+          }, body)
+        }))
+    }
+
+    /** Card shell: a title, an optional count, a note, and a body. */
+    function Panel(props) {
+      const { title, count, note, sub, children, id, tone } = props
+      return h('section', { className: 'cv-card' + (tone ? ' ' + tone : ''), id },
+        h('div', { className: 'cv-card-head' },
+          h('h3', null, title),
+          count === undefined || count === null ? null : h('span', { className: 'cv-card-count' }, String(count)),
+          note ? h('span', { className: 'cv-card-note' }, note) : null),
+        sub ? h('p', { className: 'cv-card-sub' }, sub) : null,
+        children)
+    }
+
+    function Bare(props) {
+      const { title, count, note, sub, children } = props
+      return h('div', null,
+        h('div', { className: 'cv-card-head' },
+          h('h3', null, title),
+          count === undefined || count === null ? null : h('span', { className: 'cv-card-count' }, String(count)),
+          note ? h('span', { className: 'cv-card-note' }, note) : null),
+        sub ? h('p', { className: 'cv-card-sub' }, sub) : null,
+        children)
+    }
+
+    function EmptyBox(props) {
+      return h('div', { className: 'cv-empty', role: 'status' },
+        h('b', null, props.title),
+        props.hint ? h('span', null, props.hint) : null)
+    }
+
+    function Chips(props) {
+      return h('div', { className: 'pc-chips' },
+        (props.items || []).map((item, index) => h('span', {
           key: index,
-          type: item.onPick ? 'button' : undefined,
-          className: 'pc-bar-row' + (item.onPick ? ' pc-bar-btn' : ''),
-          title: item.label + (item.sub ? ' · ' + item.sub : ''),
-          onClick: item.onPick,
+          className: 'pc-chip' + (item.tone ? ' ' + item.tone : ''),
+        }, item.label)))
+    }
+
+    /** Left rail of the wide layout: one row per block, count on the right. */
+    function Rail(props) {
+      const { items, active, onPick, foot } = props
+      return h('nav', { className: 'cv-side', 'aria-label': props.label || '' },
+        items.map((item) => h('button', {
+          key: item.key,
+          type: 'button',
+          className: 'cv-side-item',
+          'data-on': active === item.key ? 'true' : 'false',
+          'aria-current': active === item.key ? 'true' : 'false',
+          onClick: () => onPick(item.key),
         },
-          h('span', { style: { minWidth: '0' } },
-            h('span', { className: 'pc-bar-title' }, item.label),
-            item.sub ? h('span', { className: 'pc-bar-sub' }, item.sub) : null),
-          h('span', { className: 'pc-bar-score' }, item.display ?? String(item.value)),
-          item.icon ? h('span', { className: 'pc-bar-value' }, item.icon) : h('span'),
-          h('span', { className: 'pc-bar-meter' },
-            h('span', {
-              style: {
-                width: (max === 0 ? 0 : Math.max(2, (Number(item.value) / max) * 100)) + '%',
-                background: item.color ?? CHART_TONES[0],
-              },
-            })),
-        )))
+          h('span', null, item.label),
+          item.count === undefined || item.count === null ? null : h('b', null, String(item.count)))),
+        foot ? h('div', { className: 'cv-note', style: { marginTop: '10px', paddingLeft: '10px' } }, foot) : null)
     }
 
-    // Sources report "how much of this channel did we actually crawl", so the bar
-    // is fetched/total rather than a share of a common pool.
-    function SourceBars(props) {
-      const items = (props.items ?? []).map((source) => {
-        const fetched = Number(source.fetched) || 0
-        const total = Number(source.total) || 0
-        const ratio = total > 0 ? Math.min(1, fetched / total) : fetched > 0 ? 1 : 0
-        return {
-          source,
-          ratio,
-          value: ratio,
-          label: source.label ?? source.kind ?? source.id,
-          display: source.status === 'ok'
-            ? numberFmt(fetched, props.chinese) + (total > 0 ? ' / ' + numberFmt(total, props.chinese) : '')
-            : (source.error || 'error'),
-          color: source.status === 'ok'
-            ? 'var(--dsw-alias-state-success-primary,#2f9e44)'
-            : 'var(--dsw-alias-state-error-primary)',
-        }
-      })
-      return h('div', { className: 'pc-bars' }, items.map((item, index) =>
-        h(item.source.onPick ? 'button' : 'div', {
-          key: index,
-          type: item.source.onPick ? 'button' : undefined,
-          className: 'pc-bar' + (item.source.onPick ? ' pc-bar-btn' : ''),
-          title: item.source.id,
-          onClick: item.source.onPick,
-        },
-          h('span', { className: 'pc-bar-label' }, item.label),
-          h('span', { className: 'pc-bar-track' },
-            h('span', {
-              className: 'pc-bar-fill',
-              style: { width: (item.ratio * 100) + '%', background: item.color },
-            })),
-          h('span', { className: 'pc-bar-value' }, item.display),
-        )))
+    /** A recommendation, collapsed to one line until the reader asks for more. */
+    function RecRow(props) {
+      const { item, t, chinese, busy, stage, open, onToggle, onInstall, onDismiss } = props
+      const title = pickText(item.title, chinese) || item.name
+      const description = (chinese && item.descriptionZh) ? item.descriptionZh : pickText(item.description, chinese)
+      const reasons = (item.reasons ?? []).map((reason) => pickText(reason, chinese)).filter(Boolean)
+      const installing = busy === 'install:' + item.id
+      const sub = reasons.length > 0 ? reasons[0] : description
+      const tags = []
+      if (item.verified) tags.push({ label: t('verified'), tone: 'ok' })
+      if (item.modelPick) tags.push({ label: t('aiChip'), tone: 'warn' })
+      if (item.forced) tags.push({ label: t('classChip'), tone: 'warn' })
+      if (item.tier === 'new') tags.push({ label: t('tierNew'), tone: 'warn' })
+      return h('div', { className: 'cv-rec', id: 'pc-rec-' + item.id, 'data-open': open ? 'true' : 'false' },
+        h('div', { className: 'pc-score', style: { fontSize: '17px', minWidth: '32px' } }, String(item.score),
+          h('small', { style: { fontSize: '9px' } }, chinese ? '匹配' : 'fit')),
+        h('div', { className: 'cv-rec-main' },
+          h('div', { className: 'cv-rec-title', title: item.name }, title),
+          h('div', { className: 'cv-rec-sub', title: sub || '' }, sub || t('mNoSignal')),
+          tags.length === 0 ? null : h('div', { style: { display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '3px' } },
+            tags.map((tag, index) => h('span', { key: index, className: 'cv-tag' + (tag.tone ? ' ' + tag.tone : '') }, tag.label)))),
+        h('div', { className: 'cv-rec-ops' },
+          h('button', {
+            type: 'button',
+            className: 'cv-rec-more',
+            'aria-expanded': open ? 'true' : 'false',
+            'aria-label': open ? t('cvCollapse') : t('cvDetail'),
+            title: open ? t('cvCollapse') : t('cvDetail'),
+            onClick: () => onToggle(item.id),
+          }, open ? '▲' : '▼'),
+          h('button', {
+            type: 'button',
+            className: 'cv-btn primary',
+            disabled: busy !== '',
+            onClick: () => onInstall(item),
+          }, installing
+            ? t('installing') + (stage !== '' ? ' · ' + stage : '')
+            : t('install'))),
+        open
+          ? h('div', { style: { gridColumn: '1 / -1', borderTop: '1px solid var(--dsw-alias-border-l1)', marginTop: '4px', paddingTop: '8px' } },
+            description ? h('div', { className: 'pc-desc', style: { whiteSpace: 'normal' } }, description) : null,
+            reasons.length === 0 ? null : h('div', { style: { display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '6px' } },
+              reasons.map((label, index) => h('span', { key: index, className: 'cv-tag' }, label))),
+            metricsFor(item, t, chinese).length === 0 ? null : h('div', { className: 'pc-metrics' },
+              metricsFor(item, t, chinese).map((metric, index) => h('span', { key: index, className: 'pc-metric' }, metric))),
+            item.install ? h(CopyCommand, { label: t('howInstall'), command: item.install.command, copyLabel: t('copy'), copiedLabel: t('copied') }) : null,
+            item.use ? h('div', { className: 'pc-line', style: { alignItems: 'flex-start' } },
+              h('b', null, t('howUse') + ':'), h('span', { style: { whiteSpace: 'normal' } }, pickText(item.use, chinese))) : null,
+            h('div', { style: { display: 'flex', gap: '6px', marginTop: '8px' } },
+              h('button', { type: 'button', className: 'cv-btn', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss'))))
+          : null)
     }
 
-    function StatTile(props) {
-      return h('div', { className: 'pc-tile' },
-        h('b', null, props.value),
-        h('span', null, props.label),
-        props.sub ? h('small', null, props.sub) : null)
+    /** Installed bundle as a dense row: state on the left, controls on the right. */
+    function InstRow(props) {
+      const { item, t, chinese, busy, confirming, onToggle, onRemove, onConfirm } = props
+      const title = pickText(item.titleI18n, chinese) || item.title || item.name
+      const tone = item.status === 'active' ? 'ok' : item.status === 'watching' ? '' : 'warn'
+      const label = item.status === 'active' ? t('active') : item.status === 'watching' ? t('watching') : t('unused')
+      const tools = (item.tools ?? []).slice(0, 3).map((tool) => tool.name + ' ' + tool.calls).join(' · ')
+      const toggling = busy === 'toggle:' + item.name
+      return h('div', { className: 'cv-rec' },
+        h('span', { className: 'cv-tag ' + tone, style: { minWidth: '40px', justifyContent: 'center' } }, label),
+        h('div', { className: 'cv-rec-main' },
+          h('div', { className: 'cv-rec-title', title: item.name }, title),
+          h('div', { className: 'cv-rec-sub', title: tools }, numberFmt(item.calls ?? 0, chinese) + ' ' + t('installedCalls') + (tools ? ' · ' + tools : ''))),
+        h('div', { className: 'cv-rec-ops' },
+          item.update ? h('span', { className: 'cv-tag warn' }, item.update.latest) : null,
+          item.removable
+            ? h('button', {
+              type: 'button',
+              className: 'cv-btn danger',
+              disabled: busy !== '',
+              onClick: () => (confirming === item.name ? onRemove(item.name) : onConfirm(item.name)),
+            }, confirming === item.name ? t('confirmRemove') : t('remove'))
+            : null,
+          h(Switch, {
+            checked: item.enabled === true,
+            title: item.enabled ? t('disable') : t('enable'),
+            onToggle: () => { if (!toggling) onToggle(item.name, !item.enabled) },
+          })))
     }
 
-    function ChartCard(props) {
-      return h('section', { className: 'pc-card' },
-        h('div', { className: 'pc-card-h' },
-          h('h3', null, props.title),
-          props.count !== undefined ? h('span', { className: 'pc-count' }, props.count) : null,
-          props.hint ? h('span', { className: 'pc-hint' }, props.hint) : null,
-        ),
-        h('div', { className: 'pc-card-b' },
-          props.sub ? h('p', { className: 'pc-card-sub' }, props.sub) : null,
-          props.children),
-      )
+    function IdleRow(props) {
+      const { item, t, chinese, busy, onRemove, onSnooze } = props
+      return h('div', { className: 'cv-rec' },
+        h('span', { className: 'cv-tag warn' }, String(item.daysInactive ?? '?') + 'd'),
+        h('div', { className: 'cv-rec-main' },
+          h('div', { className: 'cv-rec-title' }, item.title || item.name),
+          h('div', { className: 'cv-rec-sub' }, item.reason ? pickText(item.reason, chinese) : fill(t('daysAgo'), { n: item.daysInactive }))),
+        h('div', { className: 'cv-rec-ops' },
+          h('button', { type: 'button', className: 'cv-btn', disabled: busy !== '', onClick: () => onSnooze(item.name) }, t('snooze')),
+          h('button', { type: 'button', className: 'cv-btn danger', disabled: busy !== '', onClick: () => onRemove(item.name) }, t('remove'))))
     }
 
     function CopyCommand(props) {
@@ -1309,48 +1636,6 @@ window.__ModuleLoader__.load({
       return out
     }
 
-    function RecommendationCard(props) {
-      const { item, t, chinese, busy, stage, onInstall, onDismiss } = props
-      const title = pickText(item.title, chinese) || item.name
-      const description = (chinese && item.descriptionZh) ? item.descriptionZh : pickText(item.description, chinese)
-      const reasons = (item.reasons ?? []).map((reason) => pickText(reason, chinese)).filter(Boolean).slice(0, 3)
-      const installing = busy === 'install:' + item.id
-      const [elapsed, setElapsed] = React.useState(0)
-      React.useEffect(() => {
-        if (!installing) { setElapsed(0); return undefined }
-        const started = Date.now()
-        const timer = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000)
-        return () => clearInterval(timer)
-      }, [installing])
-      // The id is what a score-chart row scrolls to.
-      return h('div', { className: 'pc-card', id: 'pc-rec-' + item.id, style: { display: 'flex', flexDirection: 'column' } },
-        h('div', { style: { padding: '13px 15px 10px', display: 'flex', gap: '10px', alignItems: 'flex-start' } },
-          h('div', { className: 'pc-avatar' }, (title || item.name).slice(0, 1)),
-          h('div', { className: 'pc-grow' },
-            h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline', flexWrap: 'wrap' } },
-              h('span', { className: 'pc-name' }, title),
-              item.verified ? h('span', { className: 'pc-chip ok' }, t('verified')) : null,
-              item.modelPick ? h('span', { className: 'pc-chip warn' }, t('aiChip')) : null,
-              item.forced ? h('span', { className: 'pc-chip warn' }, t('classChip')) : null,
-            ),
-            description ? h('div', { className: 'pc-desc', style: { marginTop: '4px' } }, description) : null,
-            h('div', { className: 'pc-metrics' }, metricsFor(item, t, chinese).map((metric, index) =>
-              h('span', { key: index, className: 'pc-metric' }, metric))),
-          ),
-          h('div', { className: 'pc-score' }, String(item.score), h('small', null, chinese ? '匹配' : 'fit')),
-        ),
-        h('div', { style: { padding: '0 15px 12px' } },
-          h(Chips, { items: reasons.map((label) => ({ label })) }),
-          item.install ? h(CopyCommand, { label: t('howInstall'), command: item.install.command, copyLabel: t('copy'), copiedLabel: t('copied') }) : null,
-          item.use ? h('div', { className: 'pc-line' }, h('b', null, t('howUse') + ':'), h('span', null, pickText(item.use, chinese))) : null,
-        ),
-        h('div', { style: { marginTop: 'auto', padding: '10px 15px 13px', display: 'flex', gap: '8px', borderTop: '1px solid var(--dsw-alias-border-l1)' } },
-          h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => onInstall(item) }, installing ? t('installing') + (stage !== '' ? ' · ' + stage : elapsed > 3 ? ' ' + elapsed + 's' : '') : t('install')),
-          h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => onDismiss(item.id) }, t('dismiss')),
-        ),
-      )
-    }
-
     function CuratorTab(props) {
       const t = props.t
       const locale = props.locale
@@ -1367,7 +1652,8 @@ window.__ModuleLoader__.load({
       const [confirming, setConfirming] = React.useState('')
       const [settingsValue, setSettingsValue] = React.useState(null)
       const [testing, setTesting] = React.useState(false)
-      const [tab, setTab] = React.useState('recs')
+      const [view, setView] = React.useState('overview')
+      const [openRec, setOpenRec] = React.useState('')
       const [installedQuery, setInstalledQuery] = React.useState('')
       const [installedSort, setInstalledSort] = React.useState('calls')
       const [installedFilter, setInstalledFilter] = React.useState('all')
@@ -1376,25 +1662,22 @@ window.__ModuleLoader__.load({
       const [sending, setSending] = React.useState(false)
       const [busyFor, setBusyFor] = React.useState(0)
       const [dismissedLocal, setDismissedLocal] = React.useState([])
+      const [accordion, setAccordion] = React.useState('')
+      const [explainQuery, setExplainQuery] = React.useState('')
+      const [explainBusy, setExplainBusy] = React.useState(false)
+      const [explainAnswer, setExplainAnswer] = React.useState(null)
+      const [explainError, setExplainError] = React.useState('')
 
-
-      // Remember the validator of the last body we rendered so the 45-second
-      // poll can ask for a 304 instead of re-downloading (and re-parsing) the
-      // whole snapshot every time nothing changed. Kept per tab: the validator
-      // describes the bytes of one tab's slice.
-      const etagRef = React.useRef({ tab: '', value: '' })
+      // The whole snapshot now rides on one request: the KPI band is shared by
+      // every section, so a per-section slice would only save bytes and then
+      // force a refetch the moment the reader switches section.
+      const etagRef = React.useRef({ tab: 'all', value: '' })
 
       const load = React.useCallback(async () => {
         try {
           const headers = {}
-          // The ETag keys the exact bytes for one tab, so a cached validator is
-          // only reusable while the tab stays put. Reset it when the tab moves.
-          if (etagRef.current.tab === tab) {
-            if (etagRef.current.value !== '') headers['if-none-match'] = etagRef.current.value
-          } else {
-            etagRef.current = { tab, value: '' }
-          }
-          const response = await fetch(API_STATE + '?tab=' + encodeURIComponent(tab), {
+          if (etagRef.current.value !== '') headers['if-none-match'] = etagRef.current.value
+          const response = await fetch(API_STATE + '?tab=insight', {
             cache: 'no-store',
             credentials: 'same-origin',
             headers,
@@ -1407,26 +1690,24 @@ window.__ModuleLoader__.load({
             setError((body && body.error) || 'HTTP ' + response.status)
             return
           }
-          if (typeof etag === 'string' && etag !== '') etagRef.current = { tab, value: etag }
+          if (typeof etag === 'string' && etag !== '') etagRef.current = { tab: 'all', value: etag }
           setData(body.value)
           setError('')
         } catch (cause) {
           setError(String(cause && cause.message ? cause.message : cause))
         }
-      }, [t, tab])
+      }, [t])
 
       React.useEffect(() => {
         ensureStyles()
         void load()
-        // Poll every 45s when idle. While an install/refresh of ours is in
-        // flight, the host writes stage events as it goes, so poll fast enough
-        // for those to reach the button instead of leaving the user counting seconds.
+        // Poll slowly while idle; fast enough while an action is in flight that
+        // the stage events the host writes reach the button.
         const period = busy === '' ? 45_000 : 1_500
         const timer = setInterval(() => { void load() }, period)
         return () => clearInterval(timer)
       }, [load, busy])
 
-      // Latest stage the host reported for the action we are waiting on.
       const stage = data === null || busy === '' ? '' : String(
         (data.events ?? []).find((event) => String(event?.message ?? '').includes('install stage:'))?.message ?? ''
       ).replace('install stage:', '').trim()
@@ -1539,7 +1820,25 @@ window.__ModuleLoader__.load({
         }
       }, [sending, t])
 
-      /** Install straight from a card: the server validates the spec, so no id lookup is needed. */
+      const askExplain = React.useCallback(async (raw) => {
+        const needle = String(raw ?? '').trim()
+        if (needle === '' || explainBusy) return
+        setExplainBusy(true)
+        setExplainError('')
+        try {
+          const response = await fetch(API_EXPLAIN + '?q=' + encodeURIComponent(needle), { credentials: 'same-origin' })
+          const body = await response.json().catch(() => null)
+          if (!body || body.ok !== true) throw new Error(body && body.error ? body.error : 'failed')
+          setExplainAnswer(body.value)
+        } catch (failure) {
+          setExplainError(String(failure && failure.message ? failure.message : failure))
+          setExplainAnswer(null)
+        } finally {
+          setExplainBusy(false)
+        }
+      }, [explainBusy])
+
+      /** Install straight from a row: the server validates the spec itself. */
       const installCard = React.useCallback(async (item) => {
         setBusy('install:' + item.id)
         setToast(null)
@@ -1593,11 +1892,18 @@ window.__ModuleLoader__.load({
       }, [load, t])
 
       if (error !== '' && data === null) {
-        return h('div', { className: 'pc-root' }, h('div', { className: 'pc-empty' }, error),
-          h(Button, { onClick: () => { setError(''); void load() } }, t('refresh')))
+        return h('div', { className: 'cv' },
+          h(EmptyBox, { title: error }),
+          h('button', { type: 'button', className: 'cv-btn wide', onClick: () => { setError(''); void load() } }, t('refresh')))
       }
       if (data === null) {
-        return h('div', { className: 'pc-root' }, h('div', { className: 'pc-empty' }, t('loading')))
+        return h('div', { className: 'cv' }, h(EmptyBox, { title: t('loading') }))
+      }
+
+      const groupLabel = (tag, translate) => {
+        const key = groupKey(tag)
+        const label = translate(key)
+        return label === key ? tag : label
       }
 
       const pkgOf = (value) => {
@@ -1607,6 +1913,7 @@ window.__ModuleLoader__.load({
         const plain = /^([a-z0-9._-]+)/.exec(text)
         return plain === null ? text : plain[1]
       }
+
       const installed = data.installed || []
       const installedKeys = new Set(installed.map((item) => pkgOf(item.name)))
       const isInstalled = (item) =>
@@ -1615,12 +1922,6 @@ window.__ModuleLoader__.load({
         installedKeys.has(pkgOf(item.name)) ||
         installedKeys.has(pkgOf(item.npm))
 
-      const groupKey = (tag) => 'overlapGroup_' + tag
-      const groupLabel = (tag) => {
-        const key = groupKey(tag)
-        const label = t(key)
-        return label === key ? tag : label
-      }
       const hiddenLocal = new Set(dismissedLocal)
       const recommendations = (data.recommendations || []).filter(
         (item) => !isInstalled(item) && !hiddenLocal.has(item.id),
@@ -1628,274 +1929,276 @@ window.__ModuleLoader__.load({
       const idle = data.idle || []
       const gaps = (data.gaps || []).map((gap) => ({
         ...gap,
-        suggestions: (gap.suggestions || []).filter(
-          (item) => !isInstalled(item) && !hiddenLocal.has(item.id),
-        ),
+        suggestions: (gap.suggestions || []).filter((item) => !isInstalled(item) && !hiddenLocal.has(item.id)),
       }))
       const diff = data.diff
       const conflicts = data.conflicts || []
       const coverage = data.coverage || {}
       const totals = data.totals || {}
       const settings = data.settings || {}
+      const profile = data.profile || {}
       const sources = (coverage.sources || data.sourceStatus || [])
+      const days = profile.windowDays || 7
 
-      const header = h('div', { className: 'pc-head' },
-        h('div', null,
-          h('h2', { className: 'pc-title' }, t('title')),
-          h('p', { className: 'pc-sub' }, t('subtitle')),
-        ),
-        h('div', { className: 'pc-headmeta' },
-          h('div', { className: 'pc-meta' },
-            h('span', null, data.generatedAt ? t('updated') + ' ' + clock(data.generatedAt, chinese) : t('never')),
-            data.nextRunAt ? h('span', null, t('nextRun') + ' ' + clock(data.nextRunAt, chinese)) : null,
-            running ? h('span', { style: { color: 'var(--dsw-alias-brand-primary)' } }, t('refreshing') + ' ' + busyFor + 's') : null,
-          ),
-          h('div', { className: 'pc-actions' },
-            h(Button, { variant: 'primary', disabled: busy !== '', onClick: () => act('refresh', {}, t('refresh')) },
-              busy === 'refresh' ? t('refreshing') + '…' : t('refresh')),
-          ),
-        ),
-      )
-
-      // Counts behind the usage donut. "Active" is the host's own verdict, so the
-      // ring can never disagree with the installed list underneath it.
       const statusCount = (want) => installed.filter((item) => item.status === want).length
       const activeCount = statusCount('active')
       const watchingCount = statusCount('watching')
       const unusedCount = statusCount('unused')
-      const usageSlices = [
-        { label: t('chartActive'), value: activeCount, color: CHART_TONES[0] },
-        { label: t('chartWatching'), value: watchingCount, color: CHART_TONES[1] },
-        { label: t('chartUnused'), value: unusedCount, color: CHART_TONES[2] },
-      ]
+      const installedCount = Number(totals.installed ?? installed.length) || 0
+      const recCount = Number(totals.recommendations ?? recommendations.length) || 0
+      const callsTotal = Number(totals.calls7 ?? profile.totalCalls ?? 0) || 0
+      const aiPicks = recommendations.filter(
+        (item) => item.modelPick === true || (item.reasons ?? []).some((reason) => reason?.code === 'model-pick'),
+      ).length
+      const latestRun = data.generatedAt ? new Date(data.generatedAt) : null
+      const prevRun = data.prevAt ? new Date(data.prevAt) : null
+      // The host only keeps today and the last run, so a delta is shown only
+      // when both numbers exist. A missing baseline reads as "unchanged".
+      const prevTotals = data.prevTotals || null
+      const deltaOf = (now, before) => {
+        if (prevTotals === null || before === undefined || before === null) return null
+        return (Number(now) || 0) - (Number(before) || 0)
+      }
+      const idleDelta = deltaOf(installedCount - activeCount, prevTotals && prevTotals.installed !== undefined ? prevTotals.installed - (prevTotals.active ?? 0) : null)
+      const recDelta = deltaOf(recCount, prevTotals ? prevTotals.recommendations : null)
+      const callsDelta = deltaOf(callsTotal, prevTotals ? prevTotals.calls : null)
+
+      const topTools = (profile.topTools || []).slice(0, 4).map((tool) => ({
+        label: pickText(tool.name, chinese) || String(tool.name || ''),
+        value: Number(tool.calls) || 0,
+        display: numberFmt(tool.calls, chinese),
+      }))
 
       const scored = [...recommendations].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
-      // A score row is a shortcut to the full card: the card carries install,
-      // dismiss and the reasons behind the number.
-      const scoreItems = scored.map((item) => ({
+      const scoreItems = scored.slice(0, 6).map((item) => ({
         label: pickText(item.title, chinese) || item.name,
-        sub: String(item.downloads ?? 0) > 0
-          ? t('mDownloads') + ' ' + numberFmt(item.downloads, chinese)
-          : (item.category || ''),
+        hint: item.name,
         value: Number(item.score) || 0,
         display: String(Number(item.score) || 0),
         color: (Number(item.score) || 0) >= 60 ? CHART_TONES[0] : CHART_TONES[1],
         onPick: () => {
-          const node = typeof document === 'undefined' ? null : document.getElementById('pc-rec-' + item.id)
-          if (node === null) return
-          if (typeof node.scrollIntoView === 'function') node.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          node.setAttribute('data-flag', 'true')
-          setTimeout(() => node.removeAttribute('data-flag'), 1600)
+          setView('recs')
+          setOpenRec(item.id)
+          setTimeout(() => {
+            const node = typeof document === 'undefined' ? null : document.getElementById('pc-rec-' + item.id)
+            if (node === null) return
+            if (typeof node.scrollIntoView === 'function') node.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            node.setAttribute('data-flag', 'true')
+            setTimeout(() => node.removeAttribute('data-flag'), 1600)
+          }, 40)
         },
       }))
 
       const sourceItems = sources.map((source) => ({
-        ...source,
-        onPick: /^https?:\/\//.test(String(source.id ?? ''))
-          ? () => { if (typeof window !== 'undefined') window.open(source.id, '_blank', 'noopener') }
-          : undefined,
         label: source.kind === 'official' ? t('chartOfficial')
           : String(source.kind ?? '').startsWith('npm') ? t('chartNpm')
             : source.kind === 'github' ? t('chartGithub')
               : source.kind === 'registry' ? t('chartRegistry')
                 : (source.kind || source.id),
+        hint: String(source.id),
+        value: source.total > 0 ? Math.round((Number(source.fetched) || 0) / Number(source.total) * 100) : 0,
+        display: numberFmt(source.fetched, chinese) + (source.total ? '/' + numberFmt(source.total, chinese) : ''),
+        color: source.status === 'ok' ? CHART_TONES[0] : 'var(--dsw-alias-state-error-primary,#c92a2a)',
+        onPick: /^https?:\/\//.test(String(source.id ?? ''))
+          ? () => { if (typeof window !== 'undefined') window.open(source.id, '_blank', 'noopener') }
+          : undefined,
       }))
 
-      const aiPicks = recommendations.filter((item) => item.modelPick === true || (item.reasons ?? []).some((reason) => reason?.code === 'model-pick')).length
-      const callsBundles = installed.filter((item) => (Number(item.calls) || 0) > 0).length
-      const gapNames = gaps.map((gap) => pickText(gap.tag ?? gap.title, chinese) || String(gap.tag ?? '')).filter(Boolean)
-
-      const tiles = h('div', { className: 'pc-tiles', role: 'group', 'aria-label': t('statsLabel') },
-        h(StatTile, {
-          value: numberFmt(totals.installed ?? installed.length, chinese),
-          label: t('statsInstalled'),
-          sub: fill(t('statInstalledSub'), { active: activeCount, unused: unusedCount }),
-        }),
-        h(StatTile, {
-          value: numberFmt(totals.recommendations ?? recommendations.length, chinese),
+      // ---- pieces shared by every section ------------------------------
+      const kpis = h('div', { className: 'cv-grid4', role: 'group', 'aria-label': t('statsLabel') },
+        h(Kpi, {
           label: t('statsRecommend'),
-          sub: fill(t('statRecommendSub'), { n: aiPicks }),
+          value: numberFmt(recCount, chinese),
+          foot: fill(t('statRecommendSub'), { n: aiPicks }),
+          delta: recDelta,
         }),
-        h(StatTile, {
-          value: numberFmt(totals.calls7 ?? 0, chinese),
+        h(Kpi, {
+          label: t('statsInstalled'),
+          value: numberFmt(installedCount, chinese),
+          foot: fill(t('statInstalledSub'), { active: activeCount, unused: unusedCount }),
+          onPick: () => setView('installed'),
+        }),
+        h(Kpi, {
           label: t('statsCalls'),
-          sub: fill(t('statCallsSub'), { n: callsBundles }),
+          value: numberFmt(callsTotal, chinese),
+          foot: fill(t('statCallsSub'), { n: installed.filter((item) => (Number(item.calls) || 0) > 0).length }),
+          delta: callsDelta,
         }),
-        h(StatTile, {
-          value: numberFmt(gaps.length, chinese),
+        h(Kpi, {
           label: t('statsGap'),
-          sub: gapNames.length === 0 ? t('gapEmpty') : gapNames.slice(0, 3).join(' · '),
-        }),
-        h(StatTile, {
-          value: numberFmt(coverage.unique ?? coverage.candidates ?? 0, chinese),
-          label: t('statsPool'),
-          sub: fill(t('statPoolSub'), { n: numberFmt(coverage.verified ?? 0, chinese) }),
-        }),
-        h(StatTile, {
-          value: data.nextRunAt ? clock(data.nextRunAt, chinese) : t('never'),
-          label: t('statsNext'),
-          sub: data.generatedAt ? fill(t('statNextSub'), { time: clock(data.generatedAt, chinese) }) : '',
-        }),
-      )
+          value: numberFmt(gaps.length, chinese),
+          foot: gaps.length === 0
+            ? t('gapEmpty')
+            : gaps.slice(0, 2).map((gap) => pickText(gap.label, chinese)).join(' · '),
+          onPick: () => setView('gaps'),
+        }))
 
-      const charts = h('div', { className: 'pc-charts' },
-        h(ChartCard, {
-          title: t('chartUsageTitle'),
-          count: String(installed.length),
-          hint: fill(t('chartUsageHint'), { days: (data.profile ?? {}).windowDays ?? 7 }),
-        },
-          installed.length === 0
-            ? h(EmptyBox, { title: t('chartUsageEmpty') })
-            : h(Donut, {
-              slices: usageSlices,
-              chinese,
-              label: t('chartUsageTitle'),
-              centerValue: String(activeCount),
-              centerLabel: t('chartActive'),
-              onPick: () => setTab('installed'),
-            })),
-        h(ChartCard, { title: t('chartScoreTitle'), count: String(scoreItems.length) },
-          scoreItems.length === 0
-            ? h(EmptyBox, { title: t('chartScoreEmpty') })
-            : h(BarList, { items: scoreItems })),
-        h(ChartCard, {
-          title: t('chartSourceTitle'),
-          count: String(sources.length),
-          hint: t('chartSourceHint'),
-        },
-          sourceItems.length === 0
-            ? h(EmptyBox, { title: t('chartSourceEmpty') })
-            : h(SourceBars, { items: sourceItems, chinese })),
-      )
+      const head = h('div', { className: 'cv-head' },
+        h('div', { style: { minWidth: 0 } },
+          h('h1', null, t('title')),
+          h('p', null, t('subtitle')),
+          h('div', { className: 'cv-meta' },
+            h('span', null, (latestRun ? t('updated') + ' ' + clock(data.generatedAt, chinese) : t('never'))),
+            data.nextRunAt ? h('span', null, t('nextRun') + ' ' + clock(data.nextRunAt, chinese)) : null,
+            running ? h('span', { style: { color: 'var(--cv-accent)' } }, t('refreshing') + ' ' + busyFor + 's') : null)),
+        h('div', { className: 'cv-head-actions' },
+          h('button', { type: 'button', className: 'cv-chip', disabled: busy !== '', onClick: () => act('rotate', {}, t('rotated')) },
+            busy === 'rotate' ? t('rotating') : t('rotate')),
+          h('button', { type: 'button', className: 'cv-chip primary', disabled: busy !== '', onClick: () => act('refresh', {}, t('refresh')) },
+            busy === 'refresh' ? t('refreshing') + '…' : t('refresh'))))
 
-      const tabKeys = ['recs', 'installed', 'insight']
-      const tabLabels = {
-        recs: t('tabRecs') + ' ' + recommendations.length,
-        installed: t('tabInstalled') + ' ' + installed.length,
-        insight: t('tabInsight'),
+      const railItems = [
+        { key: 'overview', label: t('railOverview'), count: null },
+        { key: 'recs', label: t('railRecs'), count: recommendations.length },
+        { key: 'installed', label: t('railInstalled'), count: installedCount },
+        { key: 'insight', label: t('railInsight'), count: null },
+        { key: 'gaps', label: t('railGap'), count: gaps.length },
+      ]
+
+      const usageDonut = h(Donut, {
+        slices: [
+          { label: t('chartActive'), value: activeCount, color: CHART_TONES[0] },
+          { label: t('chartWatching'), value: watchingCount, color: CHART_TONES[1] },
+          { label: t('chartUnused'), value: unusedCount, color: CHART_TONES[2] },
+        ],
+        centerValue: String(activeCount),
+        centerLabel: t('chartActive'),
+        onPick: () => setView('installed'),
+      })
+
+      const healthItems = []
+      if (unusedCount > 0) healthItems.push({ tone: 'warn', text: fill(t('cvHealthIdle'), { n: unusedCount }), go: 'installed' })
+      if (conflicts.length > 0) healthItems.push({ tone: 'warn', text: fill(t('cvHealthConflict'), { n: conflicts.length }), go: 'insight' })
+      if (data.modelStatus && data.modelStatus.ok === false) {
+        healthItems.push({ tone: 'warn', text: fill(t('cvHealthModel'), { reason: String(data.modelStatus.reason || 'unknown') }), go: 'insight' })
       }
-      // Roving focus: arrows move between tabs so the bar is reachable without
-      // a mouse, matching how the host's own segmented controls behave.
-      const onTabKey = (event) => {
-        const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
-        if (step === 0) return
-        event.preventDefault()
-        const at = tabKeys.indexOf(tab)
-        setTab(tabKeys[(at + step + tabKeys.length) % tabKeys.length])
-      }
-      const tabs = h('div', { className: 'pc-tabs', role: 'tablist', 'aria-label': t('tabsLabel'), onKeyDown: onTabKey },
-        tabKeys.map((key, index) => h('button', {
-          key,
-          type: 'button',
-          role: 'tab',
-          tabIndex: tab === key ? 0 : -1,
-          'aria-selected': tab === key ? 'true' : 'false',
-          'aria-controls': 'pc-panel-' + key,
-          'aria-posinset': index + 1,
-          'aria-setsize': tabKeys.length,
-          className: 'pc-tab',
-          'data-active': tab === key ? 'true' : 'false',
-          onClick: () => setTab(key),
-        }, tabLabels[key])))
+      const badSources = sources.filter((source) => source.status !== 'ok')
+      if (badSources.length > 0) healthItems.push({ tone: 'warn', text: fill(t('cvHealthSource'), { n: badSources.length }), go: 'insight' })
 
-      const chatView = h(Card, { title: t('chatTitle'), hint: t('chatHint') },
-        h('div', { className: 'pc-chat' },
-          messages.length === 0
-            ? h(EmptyBox, { title: t('chatEmpty'), hint: t('chatEmptyHint') })
-            : messages.map((message, index) => h('div', { key: index, className: 'pc-msg ' + message.role },
-              h('div', { className: 'pc-bubble' },
-                h('div', null, message.text),
-                (message.picks || []).map((pick, pickIndex) => h('div', { key: pickIndex, className: 'pc-pick' },
-                  h('div', { style: { display: 'flex', gap: '8px', alignItems: 'baseline' } },
-                    h('span', { className: 'pc-name' }, pick.name),
-                    h('span', { className: 'pc-mono', style: { color: 'var(--dsw-alias-label-tertiary)' } }, pick.spec),
-                  ),
-                  pick.why ? h('div', { className: 'pc-desc' }, pick.why) : null,
-                  h('div', { style: { marginTop: '6px' } },
-                    h(Button, {
-                      variant: 'primary',
-                      disabled: busy !== '',
-                      onClick: () => installSpec(pick),
-                    }, t('install')),
-                  ),
-                )),
-              ))),
-        ),
-        h('div', { className: 'pc-suggest' },
-          [t('chatSuggest1'), t('chatSuggest2'), t('chatSuggest3')].map((text, index) =>
-            h('button', { key: index, type: 'button', onClick: () => { setDraft(text) } }, text))),
-        h('div', { className: 'pc-composer' },
-          h('textarea', {
-            className: 'pc-textarea',
-            placeholder: t('chatPlaceholder'),
-            value: draft,
-            onChange: (event) => setDraft(event.target.value),
-            onKeyDown: (event) => {
-              if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault()
-                void sendChat(draft)
-              }
-            },
-          }),
-          h(Button, { variant: 'primary', disabled: sending || draft.trim() === '', onClick: () => sendChat(draft) },
-            sending ? t('chatThinking') : t('chatSend')),
-        ),
-      )
+      const healthCard = h(Panel, { title: t('cvHealth'), count: healthItems.length === 0 ? undefined : healthItems.length },
+        healthItems.length === 0
+          ? h(EmptyBox, { title: t('cvHealthGood') })
+          : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '5px' } },
+            healthItems.map((item, index) => h('button', {
+              key: index,
+              type: 'button',
+              className: 'cv-bar-item',
+              style: { border: 0, background: 'transparent', font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left', gridTemplateColumns: 'minmax(0,1fr)' },
+              onClick: () => setView(item.go),
+            }, h('span', { className: 'cv-warn' }, '· ' + item.text)))))
 
-      const paneActions = h('div', { className: 'pc-pane-actions' },
-        h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => act('rotate', {}, t('rotated')) },
-          busy === 'rotate' ? t('rotating') : t('rotate')),
-        h(Button, { variant: 'ghost', disabled: busy !== '', onClick: () => act('refresh', {}, t('refresh')) },
-          busy === 'refresh' ? t('refreshing') + '…' : t('refresh')),
-      )
+      const topCard = h(Panel, { title: t('cvTop'), note: fill(t('chartUsageHint'), { days }) },
+        topTools.length === 0
+          ? h(EmptyBox, { title: fill(t('cvTopEmpty'), { days }) })
+          : h(BarList, { items: topTools }))
 
-      const modelBadge = (() => {
+      const adhocCard = h(Panel, { title: t('chartSourceTitle'), note: t('chartSourceHint') },
+        sourceItems.length === 0
+          ? h(EmptyBox, { title: t('chartSourceEmpty') })
+          : h(BarList, { items: sourceItems }))
+
+      const modelCard = (() => {
         const catalog = settingsValue && settingsValue.catalog
         if (!catalog || catalog.available !== true) return null
         const picked = settings.model || {}
-        const provider = (catalog.providers || []).find((item) => item.id === picked.provider)
-        const chosen = provider && (provider.models || []).find((item) => item.id === picked.model)
+        const provider = (catalog.providers || []).find((entry) => entry.id === picked.provider)
+        const chosen = provider && (provider.models || []).find((entry) => entry.id === picked.model)
         const status = data.modelStatus
         const failed = status && status.ok === false
         const reason = failed ? String(status.reason || '') : ''
         const note = reason === 'provider-missing'
           ? fill(t('modelMissing'), { p: String(status.detail || picked.provider || '') })
           : reason !== '' ? fill(t('modelFailed'), { reason }) : ''
-        return h(Card, { title: t('modelTitle'), hint: t('modelHint') },
-          h('div', { className: 'pc-model-head' },
-            chosen
-              ? h('span', { className: 'pc-model-name' }, chosen.name || chosen.id)
-              : h('span', { className: 'pc-chip warn' }, t('modelUnset')),
-            chosen && provider ? h('span', { className: 'pc-chip' }, provider.name || provider.id) : null,
-            chosen && chosen.image === true ? h('span', { className: 'pc-chip' }, '图片') : null,
-            h('span', { className: 'pc-grow' }),
-            h(Button, { variant: 'ghost', onClick: () => setTab('insight') }, t('modelPick')),
-          ),
-          note !== '' ? h('div', { className: 'pc-desc', style: { color: 'var(--dsw-alias-state-warn-primary)' } }, note) : null,
-        )
+        return h(Panel, { title: t('modelTitle') },
+          h('div', { className: 'cv-rec', style: { padding: '8px 10px' } },
+            h('span', { className: 'cv-tag ' + (chosen ? 'ok' : 'warn') }, chosen ? t('chartActive') : t('modelNone')),
+            h('div', { className: 'cv-rec-main' },
+              h('div', { className: 'cv-rec-title' }, chosen ? (chosen.name || chosen.id) : t('modelUnset')),
+              h('div', { className: 'cv-rec-sub' }, provider ? (provider.name || provider.id) : '')),
+            h('button', { type: 'button', className: 'cv-btn', onClick: () => { setView('insight'); setAccordion('model') } }, t('modelPick'))),
+          note !== '' ? h('div', { className: 'cv-warn', style: { marginTop: '6px' } }, note) : null)
       })()
 
-      const recsView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
-        chatView,
-        modelBadge,
-        paneActions,
-        h('div', { className: 'pc-grid' },
-          recommendations.length === 0
-            ? h(EmptyBox, { title: t('emptyRecommend'), hint: t('emptyRecommendHint') })
-            : recommendations.map((item) => h(RecommendationCard, {
-              key: item.id,
-              item,
-              t,
-              chinese,
-              busy,
-              stage,
-              onInstall: installCard,
-              onDismiss: dismissCard,
-            }))))
+      const overviewCards = h('div', { className: 'cv-grid3' },
+        topCard,
+        h(Panel, { title: t('chartUsageTitle'), note: t('cvSplit') }, usageDonut),
+        healthCard,
+        modelCard,
+        adhocCard)
 
-      // Search covers the bundle name and every attributed tool name, which is
-      // what a user actually remembers when they wonder whether a plugin is
-      // installed. Calls are the sum of the tools already counted by the host.
+      const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
+        h('div', { className: 'cv-chat' },
+          messages.length === 0
+            ? h(EmptyBox, { title: t('chatEmpty'), hint: t('chatEmptyHint') })
+            : messages.map((message, index) => h('div', { key: index, className: 'cv-msg ' + message.role },
+              h('div', { className: 'cv-bubble' },
+                h('div', null, message.text),
+                (message.picks || []).map((pick, pickIndex) => h('div', { key: pickIndex, className: 'cv-pick' },
+                  h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline', flexWrap: 'wrap' } },
+                    h('b', null, pick.name),
+                    h('span', { className: 'pc-mono', style: { fontSize: '10.5px', color: 'var(--dsw-alias-label-tertiary)' } }, pick.spec)),
+                  pick.why ? h('div', { style: { fontSize: '11px', marginTop: '2px' } }, pick.why) : null,
+                  h('button', {
+                    type: 'button',
+                    className: 'cv-btn primary',
+                    style: { marginTop: '5px' },
+                    disabled: busy !== '',
+                    onClick: () => installSpec(pick),
+                  }, t('install'))))))),
+        h('div', { className: 'cv-suggest' },
+          [t('chatSuggest1'), t('chatSuggest2'), t('chatSuggest3')].map((suggestion, index) =>
+            h('button', { key: index, type: 'button', onClick: () => { setDraft(suggestion) } }, suggestion))),
+        h('div', { className: 'cv-composer' },
+          h('textarea', {
+            className: 'cv-textarea',
+            placeholder: t('chatPlaceholder'),
+            'aria-label': t('chatPlaceholder'),
+            value: draft,
+            onChange: (event) => setDraft(event.target.value),
+            onKeyDown: (event) => {
+              if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void sendChat(draft) }
+            },
+          }),
+          h('button', {
+            type: 'button',
+            className: 'cv-btn primary',
+            style: { height: '32px' },
+            disabled: sending || draft.trim() === '',
+            onClick: () => { void sendChat(draft) },
+          }, sending ? t('chatThinking') : t('chatSend')))))
+
+      const recList = h('div', { className: 'cv-recs' },
+        recommendations.length === 0
+          ? h(EmptyBox, { title: t('emptyRecommend'), hint: t('emptyRecommendHint') })
+          : recommendations.map((item) => h(RecRow, {
+            key: item.id,
+            item,
+            t,
+            chinese,
+            busy,
+            stage,
+            open: openRec === item.id,
+            onToggle: (id) => setOpenRec(openRec === id ? '' : id),
+            onInstall: installCard,
+            onDismiss: dismissCard,
+          })))
+
+      const scoreCard = h(Panel, { title: t('chartScoreTitle'), count: scoreItems.length, note: t('chartScoreHint') },
+        scoreItems.length === 0 ? h(EmptyBox, { title: t('chartScoreEmpty') }) : h(BarList, { items: scoreItems }))
+
+      const recsSection = h('div', { className: 'cv-compact' },
+        chatCard,
+        scoreCard,
+        h(Panel, { title: t('recommendTitle'), count: recommendations.length, note: t('recommendHint') }, recList))
+
+      // Wide layout: the list is the page, the score chart sits beside it.
+      const recsWide = h('div', { className: 'cv-full' },
+        h('div', { className: 'cv-cols' },
+          h(Panel, { title: t('recommendTitle'), count: recommendations.length, note: t('recommendHint') }, recList),
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            scoreCard,
+            chatCard)))
+
       const installedShown = (() => {
         const needle = installedQuery.trim().toLowerCase()
         const callsOf = (item) => (item.tools ?? []).reduce((sum, tool) => sum + (Number(tool.calls) || 0), 0)
@@ -1912,32 +2215,119 @@ window.__ModuleLoader__.load({
           : kept.slice().sort((left, right) => callsOf(right) - callsOf(left))
       })()
 
-      const installedView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
-        h(Card, { title: t('installedTitle'), count: installedShown.length, hint: t('installedHint') },
-          h(InstalledTools, {
-            t,
-            query: installedQuery,
-            sort: installedSort,
-            filter: installedFilter,
-            onChange: (key, value) => {
-              if (key === 'query') setInstalledQuery(value)
-              else if (key === 'sort') setInstalledSort(value)
-              else setInstalledFilter(value)
-            },
-          }),
-          installedShown.length === 0 ? h(EmptyBox, { title: installed.length === 0 ? t('emptyInstalled') : t('installedNone'), hint: installed.length === 0 ? t('emptyInstalledHint') : t('installedNoneHint') }) : installedShown.map((item, index) => h(InstalledRow, {
-            key: item.name, item, t, chinese, busy, confirming, first: index === 0,
-            onToggle: (name, enabled) => act('toggle', { name, enabled }, enabled ? t('toggleOn') : t('toggleOff')),
-            onRemove: (name) => act('remove', { name }, t('removedLive')),
-            onConfirm: (name) => setConfirming(name),
-          }))),
-        h(Card, { title: t('idleTitle'), count: idle.length, hint: t('idleHint') },
-          idle.length === 0 ? h(EmptyBox, { title: t('emptyIdle'), hint: t('emptyIdleHint') }) : idle.map((item, index) => h(IdleRow, {
-            key: item.name, item, t, chinese, busy, first: index === 0,
-            onSnooze: (name) => act('snooze', { name }, t('snoozed')),
-            onRemove: (name) => act('remove', { name }, t('removedLive')),
-          }))),
-      )
+      const installedSection = h('div', { className: 'cv-compact' },
+        h(Panel, { title: t('installedTitle'), count: installedShown.length, note: t('installedHint') },
+          h('div', { className: 'cv-tools' },
+            h('input', {
+              className: 'cv-input',
+              type: 'search',
+              value: installedQuery,
+              placeholder: t('installedSearch'),
+              'aria-label': t('installedSearch'),
+              onChange: (event) => setInstalledQuery(event.target.value),
+            }),
+            h('div', { className: 'cv-seg', role: 'group', 'aria-label': t('installedSortActive') },
+              [['calls', t('installedSortActive')], ['name', t('installedSortName')]].map(([key, label]) =>
+                h('button', {
+                  key,
+                  type: 'button',
+                  'data-on': installedSort === key ? 'true' : 'false',
+                  'aria-pressed': installedSort === key ? 'true' : 'false',
+                  onClick: () => setInstalledSort(key),
+                }, label))),
+            h('div', { className: 'cv-seg', role: 'group', 'aria-label': t('installedFilterAll') },
+              [['all', t('installedFilterAll')], ['active', t('installedFilterActive')], ['idle', t('installedFilterIdle')]].map(([key, label]) =>
+                h('button', {
+                  key,
+                  type: 'button',
+                  'data-on': installedFilter === key ? 'true' : 'false',
+                  'aria-pressed': installedFilter === key ? 'true' : 'false',
+                  onClick: () => setInstalledFilter(key),
+                }, label)))),
+          installedShown.length === 0
+            ? h(EmptyBox, {
+              title: installed.length === 0 ? t('emptyInstalled') : t('installedNone'),
+              hint: installed.length === 0 ? t('emptyInstalledHint') : t('installedNoneHint'),
+            })
+            : h('div', { className: 'cv-recs' }, installedShown.map((item) => h(InstRow, {
+              key: item.name,
+              item,
+              t,
+              chinese,
+              busy,
+              confirming,
+              onToggle: (name, enabled) => act('toggle', { name, enabled }, enabled ? t('toggleOn') : t('toggleOff')),
+              onRemove: (name) => act('remove', { name }, t('removedLive')),
+              onConfirm: (name) => setConfirming(name),
+            })))),
+        h(Panel, { title: t('idleTitle'), count: idle.length, note: t('idleHint') },
+          idle.length === 0
+            ? h(EmptyBox, { title: t('emptyIdle'), hint: t('emptyIdleHint') })
+            : h('div', { className: 'cv-recs' }, idle.map((item) => h(IdleRow, {
+              key: item.name,
+              item,
+              t,
+              chinese,
+              busy,
+              onSnooze: (name) => act('snooze', { name }, t('snoozed')),
+              onRemove: (name) => act('remove', { name }, t('removedLive')),
+            })))))
+
+      const installedWide = h('div', { className: 'cv-full' },
+        h('div', { className: 'cv-cols' },
+          h(Panel, { title: t('installedTitle'), count: installedShown.length, note: t('installedHint') },
+            h('div', { className: 'cv-tools' },
+              h('input', {
+                className: 'cv-input',
+                type: 'search',
+                value: installedQuery,
+                placeholder: t('installedSearch'),
+                'aria-label': t('installedSearch'),
+                onChange: (event) => setInstalledQuery(event.target.value),
+              }),
+              h('div', { className: 'cv-seg', role: 'group', 'aria-label': t('installedSortActive') },
+                [['calls', t('installedSortActive')], ['name', t('installedSortName')]].map(([key, label]) =>
+                  h('button', {
+                    key,
+                    type: 'button',
+                    'data-on': installedSort === key ? 'true' : 'false',
+                    onClick: () => setInstalledSort(key),
+                  }, label))),
+              h('div', { className: 'cv-seg', role: 'group', 'aria-label': t('installedFilterAll') },
+                [['all', t('installedFilterAll')], ['active', t('installedFilterActive')], ['idle', t('installedFilterIdle')]].map(([key, label]) =>
+                  h('button', {
+                    key,
+                    type: 'button',
+                    'data-on': installedFilter === key ? 'true' : 'false',
+                    onClick: () => setInstalledFilter(key),
+                  }, label)))),
+            installedShown.length === 0
+              ? h(EmptyBox, { title: installed.length === 0 ? t('emptyInstalled') : t('installedNone') })
+              : h('div', { className: 'cv-recs' }, installedShown.map((item) => h(InstRow, {
+                key: item.name,
+                item,
+                t,
+                chinese,
+                busy,
+                confirming,
+                onToggle: (name, enabled) => act('toggle', { name, enabled }, enabled ? t('toggleOn') : t('toggleOff')),
+                onRemove: (name) => act('remove', { name }, t('removedLive')),
+                onConfirm: (name) => setConfirming(name),
+              })))),
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h(Panel, { title: t('chartUsageTitle'), note: t('cvSplit') }, usageDonut),
+            h(Panel, { title: t('idleTitle'), count: idle.length, note: t('idleHint') },
+              idle.length === 0
+                ? h(EmptyBox, { title: t('emptyIdle'), hint: t('emptyIdleHint') })
+                : h('div', { className: 'cv-recs' }, idle.map((item) => h(IdleRow, {
+                  key: item.name,
+                  item,
+                  t,
+                  chinese,
+                  busy,
+                  onSnooze: (name) => act('snooze', { name }, t('snoozed')),
+                  onRemove: (name) => act('remove', { name }, t('removedLive')),
+                })))))))
 
       const diffItems = []
       if (diff) {
@@ -1947,112 +2337,188 @@ window.__ModuleLoader__.load({
         if (diff.removed.length > 0) diffItems.push({ label: t('diffRemoved') + ' ' + diff.removed.length, tone: 'warn' })
       }
 
-      const insightView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
-        paneActions,
-        h(ExplainCard, { t, chinese }),
-        h(Card, { title: t('diffTitle'), hint: t('diffHint') },
-          h(Chips, { items: diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }] })),
-        conflicts.length === 0 ? null : h(Card, { title: t('conflictsTitle'), count: conflicts.length, hint: t('conflictsHint') },
-          conflicts.map((conflict, index) => h('div', {
-            key: conflict.tag,
-            className: 'pc-overlap',
-            style: index === 0 ? { borderTop: 'none' } : null,
-          },
-            h('div', { className: 'pc-overlap-head' },
-              h('span', { className: 'pc-name' }, groupLabel(conflict.tag)),
-              h('span', { className: 'pc-chip' }, fill(t('overlapCount'), { n: (conflict.plugins ?? []).length })),
-            ),
-            conflict.reason
-              ? h('div', { className: 'pc-desc', style: { marginTop: '4px' } }, pickText(conflict.reason, chinese))
-              : null,
-            (conflict.plugins ?? []).map((plugin) => h('div', { key: plugin.name, className: 'pc-overlap-item' },
-              h('div', { className: 'pc-grow' },
-                h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline', flexWrap: 'wrap' } },
-                  h('span', { className: 'pc-name' }, plugin.title || plugin.name),
-                  plugin.version ? h('span', { className: 'pc-chip' }, 'v' + plugin.version) : null,
-                  plugin.primary ? h('span', { className: 'pc-chip ok' }, t('overlapPrimary')) : null,
-                  plugin.enabled === false ? h('span', { className: 'pc-chip' }, t('disabledTag')) : null,
-                ),
-                (chinese && plugin.descriptionZh) || plugin.description
-                  ? h('div', { className: 'pc-desc' }, (chinese && plugin.descriptionZh) || plugin.description)
-                  : null,
-                (plugin.evidence ?? []).length > 0
-                  ? h('div', { className: 'pc-metrics' },
-                    h('span', { className: 'pc-metric' }, fill(t('overlapEvidenceTool'), { list: plugin.evidence.join('、') })))
-                  : plugin.evidenceKind === 'name'
-                    ? h('div', { className: 'pc-metrics' },
-                      h('span', { className: 'pc-metric' }, t('overlapEvidenceName')))
-                    : null,
-                h('div', { className: 'pc-metrics' },
-                  h('span', { className: 'pc-metric' }, fill(t('overlapCalls'), { n: plugin.calls })),
-                  h('span', { className: 'pc-metric' }, fill(t('overlapTools'), { n: plugin.toolCount })),
-                  plugin.lastUsed ? h('span', { className: 'pc-metric' }, t('overlapLastUsed') + ' ' + plugin.lastUsed) : null,
-                  plugin.daysInactive === null || plugin.daysInactive === undefined ? null : h('span', { className: 'pc-metric' }, fill(t('overlapIdle'), { n: plugin.daysInactive })),
-                ),
-              ),
-              plugin.removable
-                ? h(Button, {
-                  variant: 'danger',
-                  disabled: busy !== '',
-                  onClick: () => (confirming === plugin.name
-                    ? act('remove', { name: plugin.name }, t('removedLive'))
-                    : setConfirming(plugin.name)),
-                }, confirming === plugin.name ? t('confirmRemove') : t('remove'))
-                : null,
-            )),
-          )))
-        ,
-        h(Card, { title: t('gapsTitle'), count: gaps.length, hint: t('gapsHint') },
-          gaps.length === 0 ? h(EmptyBox, { title: t('gapEmpty'), hint: t('gapEmptyHint') }) : gaps.map((gap, index) => h('div', { key: gap.tag, className: 'pc-row', style: index === 0 ? { borderTop: 'none' } : null },
-            h('div', { className: 'pc-avatar' }, pickText(gap.label, chinese).slice(0, 1)),
-            h('div', { className: 'pc-grow' },
-              h('div', { style: { display: 'flex', gap: '8px', alignItems: 'baseline', flexWrap: 'wrap' } },
-                h('span', { className: 'pc-name' }, pickText(gap.label, chinese)),
-                h('span', { className: 'pc-chip' + (gap.source === 'baseline' ? ' warn' : '') },
-                  gap.source === 'baseline' ? t('gapBaseline') : gap.source === 'behavior' ? t('gapBehavior') : gap.source === 'model' ? t('gapModel') : fill(t('gapSessions'), { n: gap.sessions, hits: gap.hits })),
-              ),
-              gap.evidence && gap.evidence[0] ? h('div', { className: 'pc-desc' }, '“' + gap.evidence[0] + '”') : null,
-              (gap.suggestions ?? []).length > 0
-                ? h('div', { className: 'pc-gap-picks' },
-                  (gap.suggestions ?? []).map((suggestion) => h(RecommendationCard, {
-                    key: suggestion.id,
-                    item: suggestion,
-                    t,
-                    chinese,
-                    busy,
-                    stage,
-                    onInstall: installCard,
-                    onDismiss: dismissCard,
-                  })))
-                : h('div', { className: 'pc-desc' }, t('gapNoPlugin')),
-            ))),
-        ),
-        h(SettingsCard, { t, chinese, value: settingsValue, status: data.modelStatus, testing, onSave: saveSettings, onTest: testModel }),
-        h(Card, { title: t('coverageTitle'), hint: t('coverageHint') },
-          h('div', { className: 'pc-meta', style: { marginBottom: '6px' } },
-            h('span', null, t('coverageCandidates') + ' ' + numberFmt(coverage.candidates ?? 0, chinese)),
-            h('span', null, t('coverageVerified') + ' ' + numberFmt(coverage.verified ?? 0, chinese)),
-            h('span', null, t('coverageRejected') + ' ' + numberFmt(coverage.rejected ?? 0, chinese)),
-            h('span', null, t('coverageLowSignal') + ' ' + numberFmt(coverage.lowSignal ?? 0, chinese)),
-            h('span', null, t('coverageNew') + ' ' + numberFmt(coverage.newThisWeek ?? 0, chinese))),
-          sources.map((source, index) => h('div', { key: index, className: 'pc-row', style: { padding: '6px 0' } },
-            h('span', { style: { width: '7px', height: '7px', borderRadius: '50%', marginTop: '6px', background: source.status === 'ok' ? 'var(--dsw-alias-state-success-primary,#2f9e44)' : 'var(--dsw-alias-state-error-primary)' } }),
-            h('span', { className: 'pc-mono', style: { color: 'var(--dsw-alias-label-secondary)' } }, source.kind),
-            h('span', { className: 'pc-grow', title: source.id, style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, source.id),
-            h('span', { className: 'pc-mono', style: { color: 'var(--dsw-alias-label-secondary)' } },
-              source.status === 'ok' ? numberFmt(source.fetched ?? 0, chinese) + (source.total ? ' / ' + numberFmt(source.total, chinese) : '') : (source.error || 'error'))))),
-      )
+      const fold = (key, title, node, count) => h(Panel, { title, count },
+        h('button', {
+          type: 'button',
+          className: 'cv-btn wide',
+          'aria-expanded': accordion === key ? 'true' : 'false',
+          onClick: () => setAccordion(accordion === key ? '' : key),
+        }, accordion === key ? t('cvCollapse') : t('cvDetail')),
+        accordion === key ? h('div', { style: { marginTop: '9px' } }, node) : null)
 
-      const toastCard = toast === null ? null : h('div', { className: 'pc-toast' + (toast.kind === 'err' ? ' err' : '') }, toast.text)
+      const explainNode = (() => {
+        const rows = []
+        if (explainError !== '') {
+          rows.push(h('div', { key: 'err', className: 'cv-err' }, explainError))
+        }
+        if (explainAnswer !== null && explainAnswer.found !== true) {
+          rows.push(h('div', { key: 'none', className: 'cv-note' }, t('explainNotFound')))
+        } else if (explainAnswer !== null) {
+          for (const match of explainAnswer.matches ?? []) {
+            const badges = match.admitted === true
+              ? [t('explainAdmitted') + ' · ' + t('explainRank') + ' ' + match.rank]
+              : (match.steps ?? []).map((step) => pickText(step, chinese))
+            rows.push(h('div', {
+              key: match.name,
+              style: { borderTop: '1px solid var(--dsw-alias-border-l1)', paddingTop: '6px' },
+            },
+            h('div', { style: { display: 'flex', gap: '5px', alignItems: 'baseline', flexWrap: 'wrap' } },
+              h('b', { style: { fontSize: '12px' } }, match.name),
+              h('span', { className: 'cv-tag' }, t('explainScore') + ' ' + match.score),
+              h('span', { className: 'cv-tag' }, t('explainTier') + ' ' + match.tier)),
+            h('div', { style: { display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' } },
+              badges.map((badge, index) => h('span', { key: index, className: 'cv-tag warn' }, badge)))))
+          }
+        }
+        return h('div', null,
+          h('p', { className: 'cv-card-sub' }, t('explainHint')),
+          h('div', { className: 'cv-tools', style: { marginBottom: 0 } },
+            h('input', {
+              className: 'cv-input',
+              type: 'search',
+              value: explainQuery,
+              placeholder: t('explainSearch'),
+              'aria-label': t('explainSearch'),
+              onChange: (event) => setExplainQuery(event.target.value),
+              onKeyDown: (event) => { if (event.key === 'Enter') void askExplain(explainQuery) },
+            }),
+            h('button', {
+              type: 'button',
+              className: 'cv-btn primary',
+              disabled: explainBusy || explainQuery.trim() === '',
+              onClick: () => { void askExplain(explainQuery) },
+            }, explainBusy ? t('loading') : t('explainBtn'))),
+          rows.length === 0 ? null : h('div', { style: { marginTop: '8px' } }, rows))
+      })()
 
-      return h('div', { className: 'pc-root' },
-        header,
-        tab === 'recs' ? charts : null,
-        tiles,
-        tabs,
-        tab === 'recs' ? recsView : tab === 'installed' ? installedView : insightView,
-        toastCard,
-      )
+      const gapSuggestion = (item) => h('div', { key: item.id, className: 'cv-rec' },
+        h('span', { className: 'pc-score', style: { fontSize: '14px', minWidth: '26px' } }, String(item.score)),
+        h('div', { className: 'cv-rec-main' },
+          h('div', { className: 'cv-rec-title' }, pickText(item.title, chinese) || item.name),
+          h('div', { className: 'cv-rec-sub' }, pickText(item.description, chinese) || item.name)),
+        h('button', {
+          type: 'button',
+          className: 'cv-btn primary',
+          disabled: busy !== '',
+          onClick: () => installCard(item),
+        }, t('install')))
+
+      const gapBlock = (gap) => h('div', {
+        key: gap.tag,
+        style: { borderTop: '1px solid var(--dsw-alias-border-l1)', paddingTop: '7px' },
+      },
+      h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline', flexWrap: 'wrap' } },
+        h('b', { style: { fontSize: '12.5px' } }, pickText(gap.label, chinese)),
+        gap.evidence ? h('span', { className: 'cv-tag' }, pickText(gap.evidence, chinese)) : null),
+      (gap.suggestions ?? []).length === 0
+        ? h('div', { className: 'cv-note', style: { marginTop: '4px' } }, t('gapNoPlugin'))
+        : h('div', { className: 'cv-recs', style: { marginTop: '6px' } }, (gap.suggestions ?? []).map(gapSuggestion)))
+
+      const gapsNode = gaps.length === 0
+        ? h(EmptyBox, { title: t('gapEmpty'), hint: t('gapEmptyHint') })
+        : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } }, gaps.map(gapBlock))
+
+      const settingsNode = h(SettingsCard, {
+        t,
+        chinese,
+        value: settingsValue,
+        status: data.modelStatus,
+        testing,
+        onSave: saveSettings,
+        onTest: testModel,
+      })
+
+      const diffCard = h(Panel, { title: t('diffTitle'), note: t('diffHint') },
+        h('div', { style: { display: 'flex', gap: '5px', flexWrap: 'wrap' } },
+          (diffItems.length > 0 ? diffItems : [{ label: t('diffEmpty') }]).map((item, index) =>
+            h('span', { key: index, className: 'cv-tag' + (item.tone ? ' ' + item.tone : '') }, item.label))))
+
+      const conflictPlugin = (plugin) => h('div', { key: plugin.name, style: { paddingTop: '4px' } },
+        h('div', { style: { display: 'flex', gap: '5px', alignItems: 'baseline', flexWrap: 'wrap' } },
+          h('span', { className: 'cv-rec-title' }, plugin.title || plugin.name),
+          plugin.primary ? h('span', { className: 'cv-tag ok' }, t('overlapPrimary')) : null,
+          plugin.enabled === false ? h('span', { className: 'cv-tag' }, t('disabledTag')) : null,
+          h('span', { className: 'cv-tag' }, fill(t('overlapCalls'), { n: plugin.calls }))),
+        (plugin.evidence ?? []).length > 0
+          ? h('div', { className: 'cv-note' }, fill(t('overlapEvidenceTool'), { list: plugin.evidence.join('、') }))
+          : plugin.evidenceKind === 'name' ? h('div', { className: 'cv-note' }, t('overlapEvidenceName')) : null)
+
+      const conflictBlock = (conflict, index) => h('div', {
+        key: conflict.tag,
+        style: index === 0 ? null : { borderTop: '1px solid var(--dsw-alias-border-l1)', paddingTop: '7px', marginTop: '7px' },
+      },
+      h('div', { style: { display: 'flex', gap: '6px', alignItems: 'baseline' } },
+        h('b', { style: { fontSize: '12.5px' } }, groupLabel(conflict.tag, t)),
+        h('span', { className: 'cv-tag' }, fill(t('overlapCount'), { n: (conflict.plugins ?? []).length }))),
+      conflict.reason ? h('div', { className: 'cv-card-sub' }, pickText(conflict.reason, chinese)) : null,
+      (conflict.plugins ?? []).map(conflictPlugin))
+
+      const conflictsCard = conflicts.length === 0 ? null : h(Panel, {
+        title: t('conflictsTitle'),
+        count: conflicts.length,
+        note: t('conflictsHint'),
+      }, conflicts.map(conflictBlock))
+
+      const sourcesNode = h(BarList, { items: sourceItems })
+
+      const insightSection = h('div', { className: 'cv-compact' },
+        diffCard,
+        conflictsCard,
+        fold('explain', t('explainTitle'), explainNode),
+        fold('gaps', t('gapsTitle'), gapsNode, gaps.length),
+        fold('model', t('modelTitle'), settingsNode),
+        fold('sources', t('coverageTitle'), h('div', null,
+          h('p', { className: 'cv-card-sub' }, t('coverageHint')),
+          sourcesNode)))
+
+      const insightWide = h('div', { className: 'cv-full' },
+        h('div', { className: 'cv-cols' },
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            diffCard,
+            h(Panel, { title: t('explainTitle') }, explainNode),
+            h(Panel, { title: t('gapsTitle'), count: gaps.length }, gapsNode)),
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h(Panel, { title: t('modelTitle') }, settingsNode),
+            h(Panel, { title: t('coverageTitle'), note: t('coverageHint') }, sourcesNode),
+            conflictsCard)))
+
+      const gapsSection = h(Panel, { title: t('gapsTitle'), count: gaps.length, note: t('gapsHint') }, gapsNode)
+
+      const body =
+        view === 'recs' ? [recsSection, recsWide]
+          : view === 'installed' ? [installedSection, installedWide]
+            : view === 'insight' ? [insightSection, insightWide]
+              : view === 'gaps' ? [gapsSection]
+                : [overviewCards]
+
+      const toastCard = toast === null ? null : h('div', {
+        className: 'cv-note',
+        role: 'status',
+        style: {
+          position: 'sticky',
+          bottom: 0,
+          marginTop: '2px',
+          padding: '7px 10px',
+          borderRadius: '9px',
+          background: 'var(--dsw-alias-bg-layer-2)',
+          color: toast.kind === 'err' ? 'var(--dsw-alias-state-error-primary,#c92a2a)' : 'inherit',
+          boxShadow: '0 4px 14px rgba(0,0,0,.10)',
+        },
+      }, toast.text)
+
+      return h('div', { className: 'cv' },
+        head,
+        kpis,
+        h('div', { className: 'cv-body' },
+          h(Rail, {
+            items: railItems,
+            active: view,
+            onPick: setView,
+            label: t('tabsLabel'),
+            foot: t('cvPanelHint'),
+          }),
+          h('main', { className: 'cv-main', id: 'pc-panel-' + view, role: 'tabpanel' }, body)),
+        toastCard)
     }
 
     function CuratorIcon() {
