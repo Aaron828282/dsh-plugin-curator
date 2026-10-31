@@ -133,6 +133,83 @@ test('attribution maps tools to bundles and skips core tools', () => {
   assert.equal(byBundle.read, undefined)
 })
 
+test('attribution uses declared tool exports over name guessing', () => {
+  const today = dateKey(new Date(now))
+  const bundles = [
+    // The bundle name shares no word with its tool: only the declaration links them.
+    { name: 'dsh-free-search', tools: ['web_search', 'platform_search'] },
+    { name: 'billion-context', tools: ['compress'] },
+  ]
+  const { byBundle } = buildAttribution({
+    usageDays: { [today]: { tools: { web_search: 9, compress: 3 } } },
+    bundles,
+    now,
+    windowDays: 30,
+  })
+  assert.equal(byBundle['dsh-free-search'].calls, 9)
+  assert.equal(byBundle['dsh-free-search'].how, 'declared')
+  assert.equal(byBundle['billion-context'].calls, 3)
+})
+
+test('attribution known-owner table beats the built-in core tool list', () => {
+  const today = dateKey(new Date(now))
+  // web_search is both a harness core tool name and a declared export here.
+  // A user override is the only thing allowed to outrank the core list.
+  const bundles = [{ name: 'dsh-free-search' }]
+  const { byBundle } = buildAttribution({
+    usageDays: { [today]: { tools: { web_search: 5 } } },
+    bundles,
+    overrides: { web_search: 'dsh-free-search' },
+    now,
+    windowDays: 30,
+  })
+  assert.equal(byBundle['dsh-free-search'].calls, 5)
+  assert.equal(byBundle['dsh-free-search'].how, 'override')
+})
+
+test('attribution known table only applies to installed bundles', () => {
+  const today = dateKey(new Date(now))
+  const { byBundle } = buildAttribution({
+    usageDays: { [today]: { tools: { compress: 4 } } },
+    bundles: [{ name: 'dsh-memory' }],
+    now,
+    windowDays: 30,
+  })
+  // billion-context is not installed, so compress stays unattributed.
+  assert.equal(byBundle['billion-context'], undefined)
+})
+
+test('attribution refuses a call against a tool the registry does not expose', () => {
+  const today = dateKey(new Date(now))
+  const { byBundle, unattributed } = buildAttribution({
+    // The bundle name shares a strong word with the tool name, which the
+    // name-guessing layer would happily accept; the registry says the tool
+    // does not exist, so the call must not be credited to it.
+    usageDays: { [today]: { tools: { dshmemory_remember: 7, ops_bash: 3 } } },
+    bundles: [{ name: 'dsh-memory', installed: true, enabled: true }],
+    live: ['ops_bash', 'memory_remember'],
+    now,
+    windowDays: 30,
+  })
+  assert.equal(byBundle['dsh-memory'], undefined)
+  assert.equal(unattributed.dshmemory_remember, 7)
+})
+
+test('attribution still guesses when the registry is unavailable', () => {
+  const today = dateKey(new Date(now))
+  const { byBundle } = buildAttribution({
+    usageDays: { [today]: { tools: { memory_remember: 2 } } },
+    bundles: [{ name: 'dsh-memory', installed: true, enabled: true }],
+    live: null,
+    now,
+    windowDays: 30,
+  })
+  // Without a registry the curator keeps its old behaviour instead of
+  // reporting every plugin as unused.
+  assert.equal(byBundle['dsh-memory'].calls, 2)
+  assert.equal(byBundle['dsh-memory'].how, 'guessed')
+})
+
 test('idle detection honours snooze, disabled and protected bundles', () => {
   const old = '2026-08-01'
   const bundles = [

@@ -117,6 +117,17 @@ window.__ModuleLoader__.load({
       modelTestFail: '连接失败：{reason}',
       modelSaved: '已保存，下一次分析生效。',
       modelCost: '每次只发送压缩摘要，费用按所选模型计费。',
+      modelEyebrow: '模型分析 · AI',
+      modelCurrent: '当前模型',
+      modelUnset: '还没有选择模型，AI 分析不会运行',
+      modelMissing: '这个供应商已经不存在了，请重新选择',
+      modelPick: '选择模型',
+      modelSearch: '搜索模型…',
+      modelEmpty: '没有可用的模型',
+      modelNoResult: '没有匹配的模型',
+      modelBack: '返回',
+      modelReasoningShort: '推理',
+      modelReasonFollow: '跟随默认',
       why: '为什么',
       howInstall: '怎么装',
       howUse: '怎么用',
@@ -265,6 +276,17 @@ window.__ModuleLoader__.load({
       modelTestFail: 'Connection failed: {reason}',
       modelSaved: 'Saved; applies to the next pass.',
       modelCost: 'Each pass sends a compact digest only; billed at the selected model rate.',
+      modelEyebrow: 'Model analysis · AI',
+      modelCurrent: 'Current model',
+      modelUnset: 'No model selected yet; AI analysis will not run',
+      modelMissing: 'That provider no longer exists, pick a model again',
+      modelPick: 'Pick a model',
+      modelSearch: 'Search models…',
+      modelEmpty: 'No models available',
+      modelNoResult: 'No matching model',
+      modelBack: 'Back',
+      modelReasoningShort: 'reasoning',
+      modelReasonFollow: 'follow default',
       why: 'why',
       howInstall: 'install',
       howUse: 'use',
@@ -360,6 +382,20 @@ window.__ModuleLoader__.load({
       '.pc-input:focus,.pc-select:focus{outline:none;border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}',
       '.pc-form{display:grid;grid-template-columns:110px 1fr auto;gap:10px 12px;align-items:center;}',
       '.pc-label{color:var(--dsw-alias-label-secondary);}',
+      '.pc-model{position:relative;display:flex;flex-direction:column;gap:10px;}',
+      '.pc-model-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}',
+      '.pc-model-name{font-size:13px;font-weight:600;color:var(--dsw-alias-label-primary);}',
+      '.pc-model-sub{font-size:11px;color:var(--dsw-alias-label-tertiary);}',
+      '.pc-pop{position:absolute;z-index:40;left:0;right:0;top:100%;margin-top:4px;border:1px solid var(--dsw-alias-border-l1);border-radius:12px;background:var(--dsw-alias-bg-base);box-shadow:0 12px 32px rgba(0,0,0,.16);overflow:hidden;}',
+      '.pc-pop-search{padding:8px;border-bottom:1px solid var(--dsw-alias-border-l1);}',
+      '.pc-pop-search input{width:100%;box-sizing:border-box;}',
+      '.pc-pop-list{max-height:260px;overflow-y:auto;padding:4px;margin:0;}',
+      '.pc-pop-group{position:sticky;top:0;z-index:1;padding:6px 8px 4px;font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--dsw-alias-label-tertiary);background:var(--dsw-alias-bg-base);}',
+      '.pc-pop-item{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:7px 8px;border:none;border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary);font-size:12px;text-align:left;cursor:pointer;}',
+      '.pc-pop-item[data-active="true"]{background:var(--dsw-alias-bg-l2,rgba(127,127,127,.12));}',
+      '.pc-pop-item .pc-grow{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.pc-pop-item .pc-tick{color:var(--dsw-alias-brand-primary);font-weight:700;}',
+      '.pc-pop-note{padding:14px 10px;font-size:12px;color:var(--dsw-alias-label-tertiary);text-align:center;}',
       '.pc-switch{position:relative;width:34px;height:19px;border-radius:999px;background:var(--dsw-alias-border-l1);cursor:pointer;transition:background .16s ease;border:none;padding:0;}',
       '.pc-switch[data-on="true"]{background:var(--dsw-alias-brand-primary);}',
       '.pc-switch i{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .16s ease;display:block;}',
@@ -571,6 +607,166 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /**
+     * A searchable provider/model menu, mirroring the harness model picker:
+     * one flat list grouped under sticky provider headers, a substring filter
+     * over both the model id and its display name, arrow/Enter/Escape keys and
+     * a tick on the current selection. It cannot reuse the harness picker
+     * itself — that one is bound to the session-scoped modelDirectories
+     * service and refuses addressed subagent sessions — but it reads the same
+     * provider list, so anything configured in Harness shows up here.
+     */
+    function ModelPicker(props) {
+      const { t, chinese, catalog, value, disabled, onPick } = props
+      const [open, setOpen] = React.useState(false)
+      const [query, setQuery] = React.useState('')
+      const [active, setActive] = React.useState(0)
+      const boxRef = React.useRef(null)
+      const inputRef = React.useRef(null)
+      const providers = (catalog && catalog.providers) || []
+      const groups = providers.map((provider) => ({ provider, models: provider.models || [] }))
+      const all = groups.flatMap((group) => group.models.map((model) => ({ provider: group.provider, model })))
+      const needle = query.trim().toLowerCase()
+      const shown = {}
+      for (const group of groups) {
+        const models = group.models.filter((model) =>
+          needle === '' ||
+          String(model.id || '').toLowerCase().includes(needle) ||
+          String(model.name || '').toLowerCase().includes(needle) ||
+          String(group.provider.name || group.provider.id || '').toLowerCase().includes(needle))
+        if (models.length > 0) shown[group.provider.id] = models
+      }
+      const visibleGroups = groups.filter((group) => shown[group.provider.id] !== undefined)
+      const visible = visibleGroups.flatMap((group) =>
+        shown[group.provider.id].map((model) => ({ providerId: group.provider.id, model })))
+      const flat = visible
+      const clamped = visible.length === 0 ? 0 : Math.min(active, visible.length - 1)
+      const currentProvider = providers.find((item) => item.id === value.provider)
+      const currentModel = currentProvider && (currentProvider.models || []).find((item) => item.id === value.model)
+      const label = currentModel ? (currentModel.name || currentModel.id) : (value.model || '')
+      const missing = value.provider !== '' && currentProvider === undefined
+
+      React.useEffect(() => {
+        if (!open) return undefined
+        const onDown = (event) => {
+          if (boxRef.current && !boxRef.current.contains(event.target)) setOpen(false)
+        }
+        document.addEventListener('mousedown', onDown)
+        const timer = setTimeout(() => { if (inputRef.current) inputRef.current.focus() }, 0)
+        return () => {
+          document.removeEventListener('mousedown', onDown)
+          clearTimeout(timer)
+        }
+      }, [open])
+      React.useEffect(() => {
+        const item = boxRef.current && boxRef.current.querySelector('[data-active="true"]')
+        if (item && item.scrollIntoView) item.scrollIntoView({ block: 'nearest' })
+      }, [clamped, open])
+      React.useEffect(() => {
+        if (open) { setQuery(''); setActive(0) }
+      }, [open])
+
+      const pick = (entry) => {
+        onPick({
+          provider: entry.providerId,
+          model: entry.model.id,
+          supportsVision: entry.model.image === true,
+          reasoningEffort: value.reasoningEffort || '',
+        })
+        setOpen(false)
+      }
+      const onKeyDown = (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault()
+          if (flat.length === 0) return
+          const step = event.key === 'ArrowDown' ? 1 : -1
+          setActive((current) => {
+            const next = Math.min(flat.length - 1, Math.max(0, current + step))
+            return next
+          })
+          return
+        }
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          const entry = flat[clamped]
+          if (entry !== undefined) pick(entry)
+          return
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault()
+          setOpen(false)
+        }
+      }
+
+      const header = h('div', { className: 'pc-model-head' },
+        h('span', { className: 'pc-model-sub' }, t('modelCurrent') + '：'),
+        label === ''
+          ? h('span', { className: 'pc-chip warn' }, t('modelUnset'))
+          : h('span', { className: 'pc-model-name' }, label),
+        currentProvider ? h('span', { className: 'pc-chip' }, currentProvider.name || currentProvider.id) : null,
+        currentModel && currentModel.image === true ? h('span', { className: 'pc-chip' }, '图片') : null,
+        missing ? h('span', { className: 'pc-chip warn' }, t('modelMissing') + '（' + value.provider + '）') : null,
+        currentModel && value.reasoningEffort
+          ? h('span', { className: 'pc-chip' }, t('modelReasoningShort') + ' ' + value.reasoningEffort)
+          : null,
+        h('span', { className: 'pc-grow' }),
+        h(Button, {
+          variant: 'ghost',
+          disabled: Boolean(disabled),
+          onClick: () => setOpen((current) => !current),
+        }, open ? t('modelBack') : t('modelPick')),
+      )
+
+      const list = flat.length === 0
+        ? h('div', { className: 'pc-pop-note' }, all.length === 0 ? t('modelEmpty') : t('modelNoResult'))
+        : h('div', { className: 'pc-pop-list', role: 'listbox' },
+          visibleGroups.map((group) => h('div', { key: group.provider.id },
+            h('div', { className: 'pc-pop-group' }, group.provider.name || group.provider.id),
+            shown[group.provider.id].map((model) => {
+              const key = group.provider.id + '::' + model.id
+              const isCurrent = group.provider.id === value.provider && model.id === value.model
+              const isActive = flat[clamped] !== undefined &&
+                flat[clamped].providerId === group.provider.id && flat[clamped].model.id === model.id
+              return h('button', {
+                key,
+                type: 'button',
+                role: 'option',
+                className: 'pc-pop-item',
+                'data-active': isActive ? 'true' : 'false',
+                'aria-selected': isCurrent ? 'true' : 'false',
+                onMouseEnter: () => setActive(visible.findIndex((entry) =>
+                  entry.providerId === group.provider.id && entry.model.id === model.id)),
+                onClick: () => pick({ providerId: group.provider.id, model }),
+              },
+                h('span', { className: 'pc-grow' }, model.name || model.id),
+                model.name && model.name !== model.id ? h('span', { className: 'pc-model-sub' }, model.id) : null,
+                model.image === true ? h('span', { className: 'pc-chip' }, '图片') : null,
+                isCurrent ? h('span', { className: 'pc-tick' }, '✓') : null,
+              )
+            }),
+          )),
+        )
+
+      return h('div', { className: 'pc-model', ref: boxRef },
+        header,
+        open
+          ? h('div', { className: 'pc-pop', onKeyDown },
+            h('div', { className: 'pc-pop-search' },
+              h('input', {
+                ref: inputRef,
+                className: 'pc-input',
+                type: 'text',
+                placeholder: t('modelSearch'),
+                value: query,
+                onChange: (event) => { setQuery(event.target.value); setActive(0) },
+              }),
+            ),
+            list,
+          )
+          : null,
+      )
+    }
+
     function SettingsCard(props) {
       const { t, chinese, value, status, testing, onSave, onTest } = props
       const [draft, setDraft] = React.useState(value)
@@ -579,9 +775,6 @@ window.__ModuleLoader__.load({
       if (!draft || !draft.catalog || draft.catalog.available !== true) return null
       const settings = draft.settings || {}
       const model = settings.model || { provider: '', model: '', supportsVision: false, reasoningEffort: '' }
-      const providers = draft.catalog.providers || []
-      const current = providers.find((item) => item.id === model.provider)
-      const models = (current && current.models) || []
       const update = (patch) => setDraft({ ...draft, settings: { ...settings, ...patch } })
       const save = () => {
         setSaving(true)
@@ -607,29 +800,15 @@ window.__ModuleLoader__.load({
           ),
           h('span'),
 
-          h('span', { className: 'pc-label' }, t('modelProvider')),
-          h('select', {
-            className: 'pc-select',
-            value: model.provider,
-            onChange: (event) => update({ model: { ...model, provider: event.target.value, model: '' } }),
-          },
-            h('option', { value: '' }, t('modelNone')),
-            ...providers.map((item) => h('option', { key: item.id, value: item.id }, item.name || item.id)),
-          ),
-          h('span'),
-
           h('span', { className: 'pc-label' }, t('modelModel')),
-          h('select', {
-            className: 'pc-select',
-            value: model.model,
-            onChange: (event) => {
-              const picked = models.find((item) => item.id === event.target.value)
-              update({ model: { ...model, model: event.target.value, supportsVision: picked && picked.image === true } })
-            },
-          },
-            h('option', { value: '' }, t('modelNone')),
-            ...models.map((item) => h('option', { key: item.id, value: item.id }, (item.name || item.id) + (item.image === true ? ' · 图片' : ''))),
-          ),
+          h(ModelPicker, {
+            t,
+            chinese,
+            catalog: draft.catalog,
+            value: model,
+            disabled: saving,
+            onPick: (next) => update({ model: { ...model, ...next } }),
+          }),
           h('span'),
 
           h('span', { className: 'pc-label' }, t('modelReasoning')),
@@ -1074,8 +1253,35 @@ window.__ModuleLoader__.load({
           busy === 'refresh' ? t('refreshing') + '…' : t('refresh')),
       )
 
+      const modelBadge = (() => {
+        const catalog = settingsValue && settingsValue.catalog
+        if (!catalog || catalog.available !== true) return null
+        const picked = settings.model || {}
+        const provider = (catalog.providers || []).find((item) => item.id === picked.provider)
+        const chosen = provider && (provider.models || []).find((item) => item.id === picked.model)
+        const status = data.modelStatus
+        const failed = status && status.ok === false
+        const reason = failed ? String(status.reason || '') : ''
+        const note = reason === 'provider-missing'
+          ? fill(t('modelMissing'), { p: String(status.detail || picked.provider || '') })
+          : reason !== '' ? fill(t('modelFailed'), { reason }) : ''
+        return h(Card, { title: t('modelTitle'), hint: t('modelHint') },
+          h('div', { className: 'pc-model-head' },
+            chosen
+              ? h('span', { className: 'pc-model-name' }, chosen.name || chosen.id)
+              : h('span', { className: 'pc-chip warn' }, t('modelUnset')),
+            chosen && provider ? h('span', { className: 'pc-chip' }, provider.name || provider.id) : null,
+            chosen && chosen.image === true ? h('span', { className: 'pc-chip' }, '图片') : null,
+            h('span', { className: 'pc-grow' }),
+            h(Button, { variant: 'ghost', onClick: () => setTab('insight') }, t('modelPick')),
+          ),
+          note !== '' ? h('div', { className: 'pc-desc', style: { color: 'var(--dsw-alias-state-warn-primary)' } }, note) : null,
+        )
+      })()
+
       const recsView = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
         chatView,
+        modelBadge,
         paneActions,
         h('div', { className: 'pc-grid' },
           recommendations.length === 0

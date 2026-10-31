@@ -749,6 +749,19 @@ export function apply(ctx, rawConfig) {
     }
     if (!llm || typeof llm.stream !== 'function') return { ok: false, reason: 'llm-unavailable' }
     if (!model?.provider || !model?.model) return { ok: false, reason: 'model-not-configured' }
+    // A saved provider can disappear (the plugin ships no provider list of its
+    // own; it borrows whatever the harness has configured). Asking for a
+    // provider that is gone fails instantly with an opaque "finish-error", so
+    // name the real problem instead and let the UI point at the picker.
+    let known = null
+    try {
+      known = (llm.listProviders?.() ?? []).map((provider) => String(provider?.id ?? provider?.name ?? ''))
+    } catch {
+      known = null
+    }
+    if (Array.isArray(known) && known.length > 0 && !known.includes(String(model.provider))) {
+      return { ok: false, reason: 'provider-missing', detail: String(model.provider), choices: known }
+    }
     let text = ''
     let finished = false
     try {
@@ -863,6 +876,37 @@ export function apply(ctx, rawConfig) {
     } catch (error) {
       warn('inventory read failed: ' + errorMessage(error))
       return { bundles: [], active: null, available: false }
+    }
+  }
+
+  /**
+   * The tools the runtime actually exposes right now, from the tool registry.
+   * A disabled bundle contributes nothing here, which is exactly the point:
+   * a call recorded against a tool that no longer exists came from somewhere
+   * else, and attribution should not credit the disabled bundle for it.
+   * `schemas()` with no scope returns the global view; the projection is
+   * read-only and never exposes execution callbacks.
+   */
+  function liveTools() {
+    let registry
+    try {
+      registry = ctx.get('tools')
+    } catch {
+      return null
+    }
+    if (!registry || typeof registry.schemas !== 'function') return null
+    try {
+      const schemas = registry.schemas()
+      if (!Array.isArray(schemas)) return null
+      const names = []
+      for (const schema of schemas) {
+        const name = String(schema?.name ?? '').trim()
+        if (name !== '') names.push(name)
+      }
+      return names.length === 0 ? null : names
+    } catch (error) {
+      warn('tool registry read failed: ' + errorMessage(error))
+      return null
     }
   }
 
@@ -1552,6 +1596,7 @@ export function apply(ctx, rawConfig) {
           at: Date.now(),
           ok: answer.ok === true,
           reason: answer.reason ?? '',
+          ...(answer.detail === undefined ? {} : { detail: answer.detail }),
           needs: answer.ok === true ? answer.needs.length : 0,
           picks: answer.ok === true ? answer.picks.length : 0,
         }
@@ -1818,6 +1863,7 @@ export function apply(ctx, rawConfig) {
         usageDays: state.usage.days,
         bundles: inventory.bundles,
         overrides: overrides(),
+        live: liveTools(),
         now,
         windowDays: 30,
       })
@@ -2400,7 +2446,7 @@ export function apply(ctx, rawConfig) {
           )
           sendJson(response, 200, {
             ok: true,
-            value: { ok: answer.ok === true, ms: Date.now() - started, reason: answer.reason ?? '' },
+            value: { ok: answer.ok === true, ms: Date.now() - started, reason: answer.reason ?? '', ...(answer.detail === undefined ? {} : { detail: answer.detail }) },
           })
         } catch (error) {
           sendJson(response, 200, { ok: true, value: { ok: false, ms: 0, reason: errorMessage(error) } })

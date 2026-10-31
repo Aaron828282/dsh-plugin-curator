@@ -78,12 +78,33 @@ const GENERIC_TOKENS = new Set([
   'http', 'api', 'node', 'server', 'runtime', 'config', 'settings', 'ui', 'kit', 'common',
 ])
 
+/**
+ * Tools exported by bundles whose tool names share no token with the bundle
+ * name. Name matching alone cannot recover these: dsh-free-search exports
+ * `web_search`, billion-context exports `compress`. Each entry is
+ * [bundleName, toolPrefixes]; a tool starting with one of the prefixes
+ * belongs to that bundle. Checked before the generic token match, so an
+ * explicit entry beats a coincidence such as `web` inside a bundle name.
+ */
+export const KNOWN_TOOL_OWNERS = [
+  ['dsh-free-search', ['web_search', 'web_fetch', 'platform_search', 'advanced_search', 'multi_search', 'research', 'video_search', 'domain_search', 'cache_search', 'free_search_test', 'global_search', 'search_pro', 'search_web_pages', 'web_search_exa', 'zhihu_search', 'weather']],
+  ['billion-context', ['compress', 'decompress', 'search_context', 'acp_status', 'acp_cache', 'acp_read_original_image', 'acp_retrieve', 'acp_rule', 'absorb']],
+  ['dsh-plugin-curator', ['plugin_curator']],
+  ['dsh-lingshu', ['cg', 'stg']],
+  ['dsh-ops', ['ops_']],
+  ['@furongjun1999/dsh-memory', ['memory_']],
+  ['dsh-univer-office', ['univer_']],
+  ['@ljwei-stak/dsh-model-router', ['model_router_']],
+]
+
 const CORE_TOOL_NAMES = new Set([
   'read', 'write', 'edit', 'glob', 'grep', 'bash', 'pwsh', 'web_search', 'web_fetch', 'skill',
   'todo_write', 'ask_user_question', 'subagent', 'subagent_fork', 'workflow', 'run_code',
   'create_goal', 'get_goal', 'update_goal', 'schedule_create', 'schedule_list', 'schedule_delete',
   'schedule_update', 'present', 'list_agents', 'send_message', 'interrupt_agent', 'job_list',
-  'job_output', 'job_kill', 'lsp', 'read_image',
+  'job_output', 'job_kill', 'lsp', 'read_image', 'session_search', 'session_event_search',
+  'session_event_read', 'session_event_trace', 'session_trace', 'working_directory',
+  'load_workspace_dependencies',
 ])
 
 export function clamp(value, min, max) {
@@ -531,25 +552,80 @@ function bundleTokens(bundle) {
 }
 
 /**
- * Attribute tool calls to installed bundles. Exact overrides win; then an MCP
- * server prefix; then the longest token a bundle's name/rows share with the
- * tool name. This is an estimate and the UI labels it as one.
+ * Attribute tool calls to installed bundles. Four layers, first match wins:
+ * exact user override; bundle-declared tool names; a known tool-owner table;
+ * then the longest token a bundle's name/rows share with the tool name. The
+ * last layer is a guess and the UI labels the result as an estimate.
  */
-export function buildAttribution({ usageDays = {}, bundles = [], overrides = {}, now = Date.now(), windowDays = 30 } = {}) {
+export function buildAttribution({ usageDays = {}, bundles = [], overrides = {}, live = null, now = Date.now(), windowDays = 30 } = {}) {
   const tokensByBundle = new Map()
   for (const bundle of bundles) tokensByBundle.set(bundle.name, bundleTokens(bundle))
+  const installed = new Set(bundles.map((bundle) => String(bundle?.name ?? '')))
+  /**
+   * The tool registry is the only first-hand evidence that a name is a real,
+   * currently registered tool — `ctx.tools.schemas()` answers that but says
+   * nothing about ownership, and no bundle manifest on disk reliably lists its
+   * exports. So `live` is used as a *veto*, never as a source of attribution:
+   * a call against a name the registry does not know does not belong to any
+   * installed bundle, whatever the name happens to spell.
+   */
+  const liveTools = Array.isArray(live) && live.length > 0
+    ? new Set(live.map((name) => String(name ?? '').toLowerCase()))
+    : null
+  // Tools a bundle declares it exports: authoritative when present.
+  const toolsByOwner = new Map()
+  for (const bundle of bundles) {
+    for (const tool of bundle?.tools ?? []) {
+      if (typeof tool === 'string' && tool !== '') toolsByOwner.set(tool.toLowerCase(), bundle.name)
+    }
+  }
+  // Fallback table for bundles that declare nothing: only for bundles that
+  // are actually installed, so a stale entry cannot claim calls.
+  const knownByPrefix = []
+  for (const [bundleName, prefixes] of KNOWN_TOOL_OWNERS) {
+    if (!installed.has(bundleName)) continue
+    for (const prefix of prefixes) knownByPrefix.push({ prefix: prefix.toLowerCase(), bundle: bundleName })
+  }
+  knownByPrefix.sort((a, b) => b.prefix.length - a.prefix.length)
   const callsByBundle = new Map()
   const toolsByBundle = new Map()
   const lastByBundle = new Map()
   const unattributed = new Map()
+  const howByBundle = new Map()
 
   const overrideEntries = Object.entries(overrides ?? {})
 
   const ownerOf = (tool) => {
     const lower = String(tool ?? '').toLowerCase()
     for (const [exact, bundle] of overrideEntries) {
-      if (exact.toLowerCase() === lower) return bundle
+      if (exact.toLowerCase() === lower) return { bundle, how: 'override' }
     }
+    // A declared export is evidence, so it must be consulted BEFORE the
+    // built-in core list: a plugin is free to export a tool whose name the
+    // harness also uses (dsh-free-search exports `web_search`), and the
+    // installed plugin is what actually served the call. The core list only
+    // breaks ties for names no installed bundle claims.
+    const declared = toolsByOwner.get(lower)
+    if (declared !== undefined) return { bundle: declared, how: 'declared' }
+    // An explicit table entry is curated knowledge about a real bundle, so it
+    // outranks both the core list and the registry veto: `ctx.tools.schemas()`
+    // reflects the CURRENT scope, while usage history spans past sessions and
+    // subagent scopes whose tools may not be registered right now. Vetoing on
+    // that basis would erase real historical calls (dsh-ops, dsh-memory).
+    for (const entry of knownByPrefix) {
+      if (lower === entry.prefix || lower.startsWith(entry.prefix + '_')) {
+        return { bundle: entry.bundle, how: 'known' }
+      }
+    }
+    // A name the registry does not expose cannot have come from a live
+    // bundle. Manual overrides and the curated table stay authoritative
+    // because they encode knowledge the registry cannot express.
+    if (liveTools !== null && !liveTools.has(lower)) {
+      if (CORE_TOOL_NAMES.has(lower)) return undefined
+      return { bundle: undefined, how: 'unknown' }
+    }
+    // The harness core ships its own tools; never hand them to a plugin on
+    // the strength of a name guess when a plugin name merely shares a word.
     if (CORE_TOOL_NAMES.has(lower)) return undefined
     let best
     let bestScore = 0
@@ -569,7 +645,7 @@ export function buildAttribution({ usageDays = {}, bundles = [], overrides = {},
         }
       }
     }
-    return best
+    return best === undefined ? undefined : { bundle: best, how: 'guessed' }
   }
 
   for (const day of lastNDays(now, windowDays)) {
@@ -579,15 +655,23 @@ export function buildAttribution({ usageDays = {}, bundles = [], overrides = {},
       const n = Number(count)
       if (!Number.isFinite(n) || n <= 0) continue
       const owner = ownerOf(tool)
-      if (owner === undefined) {
-        unattributed.set(tool, (unattributed.get(tool) ?? 0) + n)
+      // `undefined` means "the harness served this itself"; the `unknown`
+      // marker means "a call we cannot place". Both stay out of per-bundle
+      // counts, but only the second is worth reporting as unattributed.
+      if (owner === undefined || owner.bundle === undefined) {
+        if (owner !== undefined) unattributed.set(tool, (unattributed.get(tool) ?? 0) + n)
         continue
       }
-      callsByBundle.set(owner, (callsByBundle.get(owner) ?? 0) + n)
-      const toolsForBundle = toolsByBundle.get(owner) ?? new Map()
+      callsByBundle.set(owner.bundle, (callsByBundle.get(owner.bundle) ?? 0) + n)
+      const toolsForBundle = toolsByBundle.get(owner.bundle) ?? new Map()
       toolsForBundle.set(tool, (toolsForBundle.get(tool) ?? 0) + n)
-      toolsByBundle.set(owner, toolsForBundle)
-      lastByBundle.set(owner, day)
+      toolsByBundle.set(owner.bundle, toolsForBundle)
+      lastByBundle.set(owner.bundle, day)
+      // Record the weakest link: a bundle is only as trustworthy as its
+      // shakiest attribution, so the UI can say how sure it is.
+      const rank = { override: 3, declared: 2, known: 1, guessed: 0 }
+      const seen = howByBundle.get(owner.bundle)
+      if (seen === undefined || rank[owner.how] < rank[seen]) howByBundle.set(owner.bundle, owner.how)
     }
   }
 
@@ -597,6 +681,7 @@ export function buildAttribution({ usageDays = {}, bundles = [], overrides = {},
       calls,
       tools: Object.fromEntries([...toolsByBundle.get(bundle)].sort((a, b) => b[1] - a[1])),
       lastUsed: lastByBundle.get(bundle) ?? '',
+      how: howByBundle.get(bundle) ?? 'guessed',
     }
   }
   return { byBundle: result, unattributed: Object.fromEntries(unattributed) }
