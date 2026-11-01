@@ -171,9 +171,9 @@ test('the panel renders structured markup with no unstyled classes', () => {
   seen = 0
   const wrapper = page.component({ ...injected, t: (key) => key })
   assert.ok(wrapper && wrapper.children.length === 1, 'the wrapper renders the tab')
-  const Tab = wrapper.children[0].type
+  const Tab = wrapper.children[0].children[0].type
   seen = 0
-  const tree = Tab({ ...wrapper.children[0].props, t: (key) => key })
+  const tree = Tab({ ...wrapper.children[0].children[0].props, t: (key) => key })
 
   const classes = new Set()
   let nodes = 0

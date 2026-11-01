@@ -251,6 +251,12 @@ window.__ModuleLoader__.load({
       cvToolTitle: '调用最多的工具',
       cvToolNote: '按工具调用次数排序',
       cvToolEmpty: '还没有记录到工具调用',
+      cvSectionInstalled: '已安装插件',
+      cvSectionPicks: '今日推荐',
+      cvSectionSources: '采集来源覆盖',
+      cvSectionInsight: '今日变化',
+      cvSectionGaps: '能力缺口',
+      cvSectionTopTools: '调用最多的工具',
       cvLogTitle: '运行记录',
       cvLogNote: '最近的巡检与刷新',
       cvTopEmpty: '近 {days} 天还没有插件被调用',
@@ -499,6 +505,12 @@ window.__ModuleLoader__.load({
       cvToolTitle: 'Most-called tools',
       cvToolNote: 'Ranked by tool call count',
       cvToolEmpty: 'No tool call recorded yet',
+      cvSectionInstalled: 'Installed bundles',
+      cvSectionPicks: "Today's picks",
+      cvSectionSources: 'Source coverage',
+      cvSectionInsight: 'Recent changes',
+      cvSectionGaps: 'Capability gaps',
+      cvSectionTopTools: 'Most-called tools',
       cvLogTitle: 'Activity log',
       cvLogNote: 'Recent refreshes',
       cvTopEmpty: 'No bundle was called in the last few days',
@@ -519,7 +531,10 @@ window.__ModuleLoader__.load({
 
     const CSS = [
       '.cv{--cv-accent:var(--dsw-alias-brand-primary,#1b1b1f);--cv-bg:var(--dsw-alias-bg-base,#fff);--cv-line:var(--dsw-alias-border-l1,#e7e7ea);--cv-line-strong:var(--dsw-alias-border-l2,#d9d9de);--cv-text:var(--dsw-alias-label-primary,#1b1b1f);--cv-text-2:var(--dsw-alias-label-secondary,#5c5c66);--cv-text-3:var(--dsw-alias-label-tertiary,#8e8e99);--cv-fill:var(--dsw-alias-bg-layer-2,#f3f3f5);--cv-surface:var(--dsw-alias-bg-layer-1,#fbfbfc);--cv-radius:10px;container-type:inline-size;display:flex;flex-direction:column;gap:10px;padding:0 0 22px;color:var(--cv-text);font-size:12px;line-height:1.5;}',
-      '.cv{display:flex;flex-direction:column;gap:9px;padding:0 0 10px;width:100%;box-sizing:border-box;min-height:100%;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv{display:flex;flex-direction:column;gap:9px;padding:0;width:100%;box-sizing:border-box;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv-page{flex-direction:column;align-items:center;gap:24px;padding:0 clamp(24px,4vw,48px) 48px;display:flex;height:100%;min-height:0;box-sizing:border-box;overflow:auto;background:var(--dsw-alias-bg-base,#fff);}',
+      '.cv-page > *{width:100%;max-width:960px;min-width:0;}',
+      '.cv-page > .cv{flex:0 0 auto;}',
       '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;width:100%;box-sizing:border-box;}',
       '.cv-side{display:flex;flex-direction:column;gap:2px;min-width:0;}',
       '.cv-side-item{display:flex;align-items:center;gap:6px;width:100%;padding:5px 9px;border:1px solid transparent;border-radius:8px;background:transparent;font:inherit;color:var(--cv-text-2);text-align:left;cursor:pointer;}',
@@ -2240,9 +2255,7 @@ function useColumnCount() {
           foot: latestRun ? fill(t('statNextSub'), { time: clock(data.generatedAt, chinese) }) : t('never'),
         }))
       const head = h('div', { className: 'cv-head' },
-        h('div', { style: { minWidth: 0 } },
-          h('h1', null, t('title')),
-          h('p', null, t('subtitle')),
+        h('div', { style: { minWidth: 0, flex: '1 1 auto' } },
           h('div', { className: 'cv-meta' },
             h('span', null, (latestRun ? t('updated') + ' ' + clock(data.generatedAt, chinese) : t('never'))),
             data.nextRunAt ? h('span', null, t('nextRun') + ' ' + clock(data.nextRunAt, chinese)) : null,
@@ -2856,7 +2869,8 @@ const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
     }
 
     function CuratorPanel(props) {
-      return h('div', { style: { height: '100%', overflowY: 'auto' } }, h(CuratorTab, props))
+      return h('div', { className: 'cv-page', 'data-plugin': 'plugin-curator' },
+        h('div', { style: { height: 'auto' } }, h(CuratorTab, props)))
     }
 
     return {
