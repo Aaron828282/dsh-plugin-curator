@@ -112,16 +112,17 @@ const port = await new Promise((resolve) => server.listen(0, '127.0.0.1', () => 
 const puppeteer = require('puppeteer-core')
 const browser = await puppeteer.launch({ executablePath: chromiumPath, headless: true, args: ['--no-sandbox'] })
 
-const widths = [420, 760, 1280, 1500]
+const widths = [420, 760, 1280, 1500, 1905]
 const report = []
 for (const width of widths) {
   const page = await browser.newPage()
   const errors = []
-  page.on('pageerror', (e) => errors.push(String(e.message).slice(0, 200)))
-  await page.setViewport({ width, height: 1000, deviceScaleFactor: 1 })
+  page.on('pageerror', (e) => errors.push(String(e.stack || e.message).slice(0, 900)))
+  await page.setViewport({ width, height: width >= 1900 ? 1034 : 1000, deviceScaleFactor: 1 })
   await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'networkidle0' })
   await new Promise((r) => setTimeout(r, 700))
   const info = await page.evaluate(() => {
+    if (!document.querySelector('.cv-card')) { const el = document.getElementById('root'); return { docW: 0, docH: 0, rootW: 0, rootH: 0, lastBottom: 0, mode: 'none', kpiCols: 0, masonryCols: 0, rightEdge: 0, cards: [], text: (el ? el.textContent : '').slice(0, 400) } }
     const cards = [...document.querySelectorAll('.cv-card')].map((el) => {
       const h3 = el.querySelector('h3')
       const r = el.getBoundingClientRect()
@@ -136,10 +137,41 @@ for (const width of widths) {
       rootH: rr ? Math.round(rr.height) : 0,
       lastBottom: cards.reduce((m, c) => Math.max(m, c.y + c.h), 0),
       mode: document.querySelector('.cv-masonry') ? 'masonry' : 'grid',
+      kpiCols: (function(){const g=document.querySelector('.cv-grid4');if(!g)return 0;const cs=getComputedStyle(g);return cs.gridTemplateColumns.split(' ').length})(),
+      masonryCols: document.querySelectorAll('.cv-masonry-col').length,
+      rightEdge: cards.reduce((m,c)=>Math.max(m,c.x+c.w),0),
       cards,
     }
   })
+  info.rows = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => ({ c: r.className.split(' ').pop(), n: r.children.length, w: Math.round(r.getBoundingClientRect().width), h: Math.round(r.getBoundingClientRect().height) })))
+  info.shot = await page.screenshot({ encoding: 'base64', fullPage: false })
+  info.bytes = Buffer.from(await page.screenshot({ fullPage: false })).toString('base64')
+  info.cssText = await page.evaluate(() => Array.from(document.querySelectorAll('style')).map((el) => (el.textContent || '').length))
+  info.probe = await page.evaluate(() => { const out = { at: '', ar: '' }; for (const sheet of Array.from(document.styleSheets)) { for (const rule of Array.from(sheet.cssRules || [])) { const t = rule.cssText || ''; if (t.includes('cv-ov-row') && !out.at) out.at = t.slice(0, 200); if (t.includes('data-probe') && !out.ar) out.ar = t.slice(0, 100) } } return out })
+  info.which = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => r.className.split(' ').pop() + '=' + getComputedStyle(r).gridTemplateColumns.slice(0, 40)))
+  info.mq = await page.evaluate(() => { const r = document.querySelector('.cv-ov-row-c'); return { w: Math.round(r.getBoundingClientRect().width), mq900: window.matchMedia('(min-width: 900px)').matches, mq1120: window.matchMedia('(min-width: 1120px)').matches, dpr: window.devicePixelRatio } })
+  info.geo = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => { const c = r.firstElementChild; const k = c ? c.firstElementChild : null; const rr = r.getBoundingClientRect(); const cr = c ? c.getBoundingClientRect() : null; const kr = k ? k.getBoundingClientRect() : null; const cs = getComputedStyle(r); return { row: Math.round(rr.width), cell: cr ? Math.round(cr.width) : -1, card: kr ? Math.round(kr.width) : -1, disp: cs.display, cols: cs.gridTemplateColumns.slice(0, 30) } }))
   info.errors = errors
+  info.chain = await page.evaluate(() => {
+    const out = []
+    let el = document.querySelector('.cv')
+    while (el && el !== document.body) {
+      const cs = getComputedStyle(el)
+      out.push({ c: String(el.className || el.tagName), w: Math.round(el.getBoundingClientRect().width), mx: cs.maxWidth, d: cs.display, fs: cs.fontSize })
+      el = el.parentElement
+    }
+    out.push({ c: 'BODY', w: Math.round(document.body.getBoundingClientRect().width), fs: getComputedStyle(document.body).fontSize, mx: getComputedStyle(document.body).maxWidth })
+    return out
+  })
+  info.groups = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((row) => ({ c: String(row.className), w: Math.round(row.getBoundingClientRect().width), cols: getComputedStyle(row).gridTemplateColumns })))
+  info.media = await page.evaluate(() => window.matchMedia('(min-width: 1120px)').matches)
+  info.overview = await page.evaluate(() => {
+    const el = document.querySelector('.cv-overview')
+    const m = document.querySelector('.cv-main')
+    return { ov: el ? { w: Math.round(el.getBoundingClientRect().width), d: getComputedStyle(el).display, kids: el.children.length } : null, main: m ? Math.round(m.getBoundingClientRect().width) : null, rowsD: Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => getComputedStyle(r).display) }
+  })
+  info.kpi = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-grid4 .cv-stat')).map((el) => ({ txt: el.textContent.slice(0, 24), cols: getComputedStyle(el).gridColumn, w: Math.round(el.getBoundingClientRect().width) })))
+  info.gridW = await page.evaluate(() => { const g = document.querySelector('.cv-grid4'); return g ? Math.round(g.getBoundingClientRect().width) : -1 })
   await page.screenshot({ path: join(here, `__p_${width}.png`), fullPage: false })
   report.push(info)
   await page.close()
@@ -149,8 +181,21 @@ server.close()
 
 for (const r of report) {
   const gapRight = r.docW - Math.min(r.docW, r.rootW + 0)
-  console.log(`\n== width ${r.docW} (${r.mode}) rootH=${r.rootH} pageH=${r.docH} cardsBottom=${r.lastBottom} trailing=${r.docH - r.lastBottom}`)
+  console.log(`\n== width ${r.docW} (${r.mode}) rootH=${r.rootH} pageH=${r.docH} cardsBottom=${r.lastBottom} trailing=${r.docH - r.lastBottom} kpiCols=${r.kpiCols} masonry=${r.masonryCols} rightEdge=${r.rightEdge}`)
   for (const c of r.cards) console.log(`   ${c.t.padEnd(16)} x=${String(c.x).padStart(4)} y=${String(c.y).padStart(4)} w=${String(c.w).padStart(4)} h=${String(c.h).padStart(4)}`)
+  if (r.text) console.log('   ROOT TEXT: ' + r.text)
+  if (r.bytes && r.docW >= 1500) { writeFileSync(join(here, '__live_' + r.docW + '.png'), Buffer.from(r.bytes, 'base64')); console.log('   SAVED live ' + r.docW) }
+  if (r.mq && r.docW >= 1500) console.log('   MQ: ' + JSON.stringify(r.mq))
+  if (r.probe && r.docW >= 1500) console.log('   PROBE: ' + JSON.stringify(r.probe).slice(0, 400))
+  if (r.cssText && r.docW >= 1500) console.log('   STYLES: ' + JSON.stringify(r.cssText))
+  if (r.which && r.docW >= 1500) console.log('   WHICH: ' + JSON.stringify(r.which))
+  if (r.geo && r.docW >= 1900) console.log('   GEO: ' + JSON.stringify(r.geo))
+  if (r.rows && r.docW >= 1500) console.log('   ROWS: ' + JSON.stringify(r.rows))
+  if (r.kpi && r.docW >= 1500) console.log('   KPI: gw=' + r.gridW + ' ' + JSON.stringify(r.kpi.slice(0, 3)))
+  if (r.overview && r.docW >= 1500) console.log('   OVERVIEW: ' + JSON.stringify(r.overview))
+  if (r.groups && r.docW >= 1500) console.log('   GROUPS: mq=' + r.media + ' ' + JSON.stringify(r.groups))
+  if (r.chain && r.docW >= 1500) console.log('   CHAIN: ' + JSON.stringify(r.chain))
   if (r.errors.length) console.log('   ERRORS: ' + r.errors.join(' | '))
 }
+for (const r of report) delete r.bytes
 writeFileSync(join(here, '__report.json'), JSON.stringify(report, null, 2))

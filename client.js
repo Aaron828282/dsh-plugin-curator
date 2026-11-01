@@ -520,11 +520,71 @@ window.__ModuleLoader__.load({
     const CSS = [
       '.cv{--cv-accent:var(--dsw-alias-brand-primary,#1b1b1f);--cv-bg:var(--dsw-alias-bg-base,#fff);--cv-line:var(--dsw-alias-border-l1,#e7e7ea);--cv-line-strong:var(--dsw-alias-border-l2,#d9d9de);--cv-text:var(--dsw-alias-label-primary,#1b1b1f);--cv-text-2:var(--dsw-alias-label-secondary,#5c5c66);--cv-text-3:var(--dsw-alias-label-tertiary,#8e8e99);--cv-fill:var(--dsw-alias-bg-layer-2,#f3f3f5);--cv-surface:var(--dsw-alias-bg-layer-1,#fbfbfc);--cv-radius:10px;container-type:inline-size;display:flex;flex-direction:column;gap:10px;padding:0 0 22px;color:var(--cv-text);font-size:12px;line-height:1.5;}',
       '.cv{display:flex;flex-direction:column;gap:9px;padding:0 0 10px;width:100%;box-sizing:border-box;min-height:100%;color:var(--cv-text);font-size:12px;line-height:1.5;}',
+      '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;width:100%;box-sizing:border-box;}',
+      '.cv-side{display:flex;flex-direction:column;gap:2px;min-width:0;}',
+      '.cv-side-item{display:flex;align-items:center;gap:6px;width:100%;padding:5px 9px;border:1px solid transparent;border-radius:8px;background:transparent;font:inherit;color:var(--cv-text-2);text-align:left;cursor:pointer;}',
+      '.cv-side-item b{margin-left:auto;font-size:11px;font-weight:500;color:var(--cv-text-3);}',
+      '.cv-side-item:hover{background:var(--cv-fill,var(--dsw-alias-bg-layer-2));}',
+      '.cv-side-item[data-on=true]{background:var(--cv-fill,var(--dsw-alias-bg-layer-2));color:var(--cv-text);font-weight:600;}',
+      '.cv-side-item[data-on=true] b{color:var(--cv-text-2);}',
+      '.cv-side-foot{margin-top:8px;padding:0 2px;color:var(--cv-text-3);font-size:10.5px;line-height:1.5;}',
+      '.cv *{min-width:0;}',
+      '.cv-body{grid-template-columns:minmax(0,1fr);}',
+      '@container (min-width:680px){.cv-body{grid-template-columns:150px minmax(0,1fr);gap:12px;}.cv-side{position:sticky;top:0;align-self:start;}}',
+      '.cv-head{flex-wrap:wrap;}',
+      '.cv-grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;min-width:0;}',
+      '@container (min-width:1000px){.cv-grid4{grid-template-columns:repeat(6,minmax(0,1fr));}}',
       '.cv-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}',
       '.cv-main{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 auto;min-height:0;height:100%;}',
       '.cv-masonry{display:flex;align-items:stretch;gap:8px;width:100%;}',
       '.cv-masonry-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px;}',
       '.cv-masonry-col > *{margin:0;flex:0 0 auto;display:flex;flex-direction:column;min-height:0;}',
+      '.cv-overview{display:flex;flex-direction:column;gap:8px;width:100%;}',
+      '.cv-kpis{width:100%;min-width:0;}',
+      '.cv-rows{display:flex;flex-direction:column;gap:2px;min-width:0;}',
+      '.cv-mini-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;min-width:0;padding:5px 7px;border:0;border-radius:7px;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer;}',
+      '.cv-mini-row:nth-child(odd){background:var(--cv-surface,var(--dsw-alias-bg-layer-1));}',
+      '.cv-mini-row:hover{background:var(--cv-fill,var(--dsw-alias-bg-layer-2));}',
+      '.cv-mini-row:focus-visible{outline:2px solid var(--cv-accent);outline-offset:-2px;}',
+      '.cv-mini-lead{flex:0 0 auto;font-size:11px;font-weight:600;color:var(--cv-text-2);font-variant-numeric:tabular-nums;min-width:20px;}',
+      '.cv-mini-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--cv-text);}',
+      '.cv-mini-tag{flex:0 0 auto;max-width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--cv-text-3);}',
+      '.cv-section-bar{display:flex;align-items:baseline;gap:7px;min-width:0;}',
+      '.cv-ov-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
+      '.cv-ov-row-a,.cv-ov-row-b,.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:minmax(0,1fr) !important;}',
+      '@container (min-width:560px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}',
+      '@container (min-width:1120px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}.cv-ov-row-c>.cv-cell-usage{grid-column:auto !important;}}',
+      '.cv-cell{min-width:0;display:block;}',
+      '.cv-ov-row>.cv-cell:only-child{grid-column:1 / -1;}',
+      '.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{display:grid;}',
+      '@container (min-width:560px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(2,minmax(0,1fr));}.cv-ov-row-c>.cv-cell-usage{grid-column:1 / -1;}}',
+      '.cv-main-inner,.cv-grid2,.cv-grid3,.cv-grid4,.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;min-width:0;}',
+      '.cv-card{box-sizing:border-box;min-width:0;background:var(--cv-surface,var(--dsw-alias-bg-layer-1));border:1px solid var(--cv-line,var(--dsw-alias-border-l1));border-radius:10px;padding:9px 11px 10px;}',
+      '.cv-card-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0;margin-bottom:6px;}',
+      '.cv-card-head h3{margin:0;font-size:12px;font-weight:600;color:var(--cv-text);min-width:0;}',
+      '.cv-card-note{margin-left:auto;font-size:10.5px;line-height:1.4;color:var(--cv-text-3);text-align:right;max-width:100%;}',
+      '.cv-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;min-width:0;padding:7px 9px 8px;background:var(--cv-surface,var(--dsw-alias-bg-layer-1));border:1px solid var(--cv-line,var(--dsw-alias-border-l1));border-radius:10px;text-align:center;}',
+      '.cv-stat-label{order:0;font-size:11px;color:var(--cv-text-2);}',
+      '.cv-stat-value{order:1;font-size:20px;font-weight:600;letter-spacing:-.6px;color:var(--cv-text);font-variant-numeric:tabular-nums;}',
+      '.cv-stat-foot{order:2;font-size:10.5px;line-height:1.4;color:var(--cv-text-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+      '@container (min-width:720px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(2,minmax(0,1fr));}}',
+      '@container (min-width:1120px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-ov-row-c>.cv-cell-usage{grid-column:auto;}}',
+      '.cv-section-bar h3{color:var(--cv-text);}',
+      '.cv-empty-line{margin:0;padding:3px 0 4px;color:var(--cv-text-3);font-size:10.5px;line-height:1.5;}',
+      '.cv-bars{display:flex;flex-direction:column;gap:4px;min-width:0;}',
+      '.cv-bar-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:3px 0;border:0;background:transparent;font:inherit;color:inherit;text-align:left;min-width:0;}',
+      '.cv-bar-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--cv-text);}',
+      '.cv-bar-val{font-size:11px;color:var(--cv-text-3);font-variant-numeric:tabular-nums;}',
+      '.cv-donut{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}',
+      '.cv-legend{flex:1 1 140px;min-width:0;display:flex;flex-direction:column;gap:3px;}',
+      '.cv-legend-row{display:grid;grid-template-columns:9px minmax(0,1fr) auto;align-items:center;gap:7px;font-size:11px;}',
+      '.cv-legend-dot{width:9px;height:9px;border-radius:3px;}',
+      '.cv-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:999px;background:var(--cv-fill,var(--dsw-alias-bg-layer-2));font-size:10.5px;color:var(--cv-text-2);white-space:nowrap;}',
+      '.cv-tag.ok{color:#2b8a3e;}',
+      '.cv-tag.warn{color:#c4314b;}',
+      '.cv-log-row{display:flex;gap:8px;align-items:baseline;min-width:0;padding:2px 0;font-size:11px;}',
+      '.cv-log-time{flex:0 0 auto;color:var(--cv-text-3);font-variant-numeric:tabular-nums;}',
+      '.cv-log-text{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cv-text-2);}',
         '.cv-masonry-col > * > *{min-height:0;}',
       '.pc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}',
       '.pc-title{font-size:19px;font-weight:650;letter-spacing:.2px;margin:0 0 2px;}',
@@ -1770,8 +1830,6 @@ function useColumnCount() {
       const chinese = String(localeId).startsWith('zh')
 
       const [data, setData] = React.useState(null)
-      const [rowRef, masonryCols] = useColumnCount()
-      const measuredHeights = useMeasuredHeights(rowRef)
       const [error, setError] = React.useState('')
       const [busy, setBusy] = React.useState('')
       const [toast, setToast] = React.useState(null)
@@ -2363,34 +2421,112 @@ function useColumnCount() {
           h(Panel, { title: t('cvLogTitle'), count: log.length, note: t('cvLogNote') },
             h('div', { className: 'cv-log' }, rows)))
       }
-      const buildOverviewCards = () => {
-        const pool = [
-          { key: 'usage', height: 96, node: usageCard },
-          { key: 'donut', height: 140, node: h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut) },
-          { key: 'tools', height: (profile.topTools ?? []).length === 0 ? 84 : 180, node: topCard },
-          { key: 'health', height: 76, node: healthCard },
-          { key: 'model', height: 110, node: modelCard },
-          { key: 'adhoc', height: 100, node: adhocCard },
-          { key: 'gaps', height: gaps.length === 0 ? 76 : 76 + gaps.length * 34, node: gapPreviewCard },
-          { key: 'diff', height: 74, node: buildDiffPreviewCard() },
-          { key: 'picks', height: 60 + scored.length * 86, node: picksCard },
-          { key: 'installed', height: 150 + Math.min(5, installed.filter((one) => one.status === 'unused').length) * 22, node: installedCard },
-        ]
-        const usable = pool.filter((entry) => entry.node !== null && entry.node !== undefined && entry.node !== false)
-        const sized = usable.map((entry) => (measuredHeights[entry.key] ? { ...entry, height: measuredHeights[entry.key] } : entry))
-        const columns = packColumns(sized, masonryCols)
-        return h('div', { className: 'cv-masonry', ref: rowRef },
-          columns.map((columnItems, columnIndex) => h('div', {
-            key: columnIndex,
-            className: 'cv-masonry-col',
-          }, columnItems.map((item) => h('div', {
-            key: item.key,
-            'data-card-key': item.key,
-            style: { display: 'block' },
-          }, item.node)))))
+      // One line per entry. Shared by every overview block so the four stands in
+      // read the same and nothing can leak an i18n object into JSX.
+      const textOf = (value) => {
+        const picked = pickText(value, chinese)
+        if (typeof picked === 'string') return picked
+        if (picked === null || picked === undefined) return ''
+        return String(picked)
+      }
+      const miniRows = (items) => h('div', { className: 'cv-rows' },
+        items.map((item) => h('button', {
+          key: item.key,
+          type: 'button',
+          className: 'cv-mini-row',
+          onClick: item.go,
+        },
+          h('span', { className: 'cv-mini-lead' }, item.lead),
+          h('span', { className: 'cv-mini-title' }, item.title),
+          h('span', { className: 'cv-mini-tag' }, item.tag))))
+      const reasonOf = (item) => {
+        const reasons = Array.isArray(item.reasons) ? item.reasons : []
+        return reasons.length === 0 ? textOf(item.category) : textOf(reasons[0])
+      }
+      const statusRank = { unused: 0, watching: 1, active: 2 }
+      const installedOrdered = installed.slice().sort((left, right) => {
+        const delta = (statusRank[left.status] ?? 3) - (statusRank[right.status] ?? 3)
+        if (delta !== 0) return delta
+        return String(left.title || left.name).localeCompare(String(right.title || right.name))
+      })
+      const buildPicksBlock = () => miniRows(scored.slice(0, 12).map((item) => ({
+        key: String(item.id || item.name),
+        lead: numberFmt(item.score, chinese),
+        title: textOf(item.title) || textOf(item.name),
+        tag: reasonOf(item),
+        go: () => { setOpenRec(item.id); setView('recs') },
+      })))
+      const buildInstalledBlock = () => miniRows(installedOrdered.slice(0, 14).map((item) => ({
+        key: String(item.name),
+        lead: (chinese ? item.statusZh : item.statusEn) || t(item.status),
+        title: textOf(item.title) || textOf(item.name),
+        tag: item.status === 'unused' ? t('unused') : numberFmt(item.calls, chinese) + ' ' + t('installedCalls'),
+        go: () => setView('installed'),
+      })))
+      const buildInsightBlock = () => {
+        const rows = []
+        if (diff) {
+          rows.push({ label: t('diffAdded'), value: diff.added.length })
+          rows.push({ label: t('diffDropped'), value: diff.dropped.length })
+          rows.push({ label: t('diffInstalled'), value: diff.installed.length })
+          rows.push({ label: t('diffRemoved'), value: diff.removed.length })
+        }
+        for (const conflict of conflicts) {
+          const names = Array.isArray(conflict.bundles) ? conflict.bundles : []
+          rows.push({ label: names.map((one) => textOf(one)).join(' / '), value: conflict.tools ? conflict.tools.length : 0 })
+        }
+        for (const item of installedOrdered.filter((one) => one.update).slice(0, 3)) {
+          rows.push({ label: textOf(item.title) || textOf(item.name), value: textOf(item.update) })
+        }
+        if (rows.length === 0) return h('p', { className: 'cv-empty-line' }, t('diffEmpty'))
+        return h('div', { className: 'cv-bars' }, rows.slice(0, 12).map((row, index) => h('div', {
+          key: 'insight-' + index,
+          className: 'cv-bar-item',
+        },
+          h('span', { className: 'cv-bar-name' }, textOf(row.label)),
+          h('span', { className: 'cv-bar-val' }, typeof row.value === 'number' ? numberFmt(row.value, chinese) : textOf(row.value)))))
+      }
+      const buildGapsBlock = () => {
+        if (gaps.length === 0) return h('p', { className: 'cv-empty-line' }, t('gapEmpty'))
+        return miniRows(gaps.slice(0, 12).map((gap) => ({
+          key: String(gap.tag || gap.id || gap.label),
+          lead: numberFmt(gap.hits || 0, chinese),
+          title: textOf(gap.label) || textOf(gap.tag),
+          tag: textOf(gap.evidence),
+          go: () => setView('gaps'),
+        })))
       }
 
-      const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
+      const buildOverviewCards = () => {
+        const cell = (key, node) => h('div', {
+          key,
+          'data-card-key': key,
+          className: 'cv-cell cv-cell-' + key,
+        }, node)
+        const row = (key, cells) => h('div', { key: 'row-' + key, className: 'cv-ov-row cv-ov-row-' + key }, cells)
+        return h('div', { className: 'cv-overview' },
+          row('a', cell('installed', h(Panel, { title: t('cvSectionInstalled'), count: installedCount, note: t('installedHint') }, buildInstalledBlock()))),
+          row('b', cell('picks', h(Panel, { title: t('cvSectionPicks'), count: scored.length, note: t('recommendHint') }, buildPicksBlock()))),
+          row('c', [
+            cell('sources', h(Panel, { title: t('cvSectionSources'), note: t('chartSourceHint') }, sourcesNode)),
+            cell('health', healthCard),
+            cell('usage', usageCard),
+          ]),
+          row('d', [
+            cell('insight', h(Panel, { title: t('cvSectionInsight'), note: t('diffHint') }, buildInsightBlock())),
+            cell('gapsblock', h(Panel, { title: t('cvSectionGaps'), count: gaps.length, note: t('gapsHint') }, buildGapsBlock())),
+            cell('model', modelCard),
+          ]),
+          row('e', [
+            cell('donut', h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut)),
+            cell('tools', h(Panel, { title: t('cvSectionTopTools'), note: t('cvToolNote') }, topTools.length === 0 ? h('p', { className: 'cv-empty-line' }, t('cvToolEmpty')) : h(Bars, { items: topTools }))),
+            cell('log', buildActivityCard()),
+          ]),
+        )
+      }
+
+      
+const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
         h('div', { className: 'cv-chat' },
           messages.length === 0
             ? h(EmptyBox, { title: t('chatEmpty'), hint: t('chatEmptyHint') })

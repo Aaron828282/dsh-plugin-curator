@@ -199,7 +199,10 @@ test('the panel renders structured markup with no unstyled classes', () => {
 
   // Every cv-* class the panel emits needs a rule in one of the stylesheet
   // constants. Scanning the whole source is enough: the only place a class
-  // name appears with a leading dot is a CSS rule.
-  const missing = [...classes].filter((piece) => piece.startsWith('cv-') && !clientSource.includes('.' + piece))
+  // name appears with a leading dot is a CSS rule. Cell modifiers are data
+  // hooks for the grid, not styling hooks, so they are exempt.
+  const cssOnly = [...classes]
+    .filter((piece) => piece.startsWith('cv-') && !piece.startsWith('cv-cell-'))
+  const missing = cssOnly.filter((piece) => !clientSource.includes('.' + piece))
   assert.deepEqual(missing, [], 'every cv-* class used by the panel has a CSS rule')
 })
