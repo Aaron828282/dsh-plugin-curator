@@ -567,22 +567,36 @@ window.__ModuleLoader__.load({
       '.cv-mini-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--cv-text);}',
       '.cv-mini-tag{flex:0 0 auto;max-width:56%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--cv-text-3);}',
       '@media (min-width:1180px){.cv-cell-installed .cv-mini-tag,.cv-cell-picks .cv-mini-tag{max-width:64%;}}',
+      '.cv-mini-row{display:flex;flex-wrap:nowrap;align-items:baseline;gap:6px;padding:4px 6px;line-height:1.35;}',
+      '.cv-mini-lead{min-width:0;flex:0 0 auto;}',
+      '.cv-mini-title{flex:1 1 auto;}',
+      '.cv-mini-tag{flex:0 1 auto;max-width:58%;}',
+      '.cv-mini-rows.cv-mini-3{grid-template-columns:minmax(0,1fr);}',
+      '@container (min-width:400px){.cv-mini-rows.cv-mini-3{grid-template-columns:repeat(2,minmax(0,1fr));}}',
+      '@container (min-width:620px){.cv-mini-rows.cv-mini-3{grid-template-columns:repeat(3,minmax(0,1fr));}}',
+      '.cv-mini:nth-child(odd of .cv-cell){padding-top:6px;}',
+      '.cv-overview{display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:8px;}',
+      '.cv-overview>.cv-cell{flex:0 1 320px;min-width:0;}',
+      '@container (min-width:760px){.cv-overview>.cv-cell{flex:0 1 calc(50% - 4px);}}',
+      '@container (min-width:1000px){.cv-overview>.cv-cell{flex:0 1 calc(33.333% - 6px);}}',
+      '.cv-overview>.cv-cell-wide{flex:0 1 100%;}',
+      '.cv-overview>.cv-cell-full{flex:1 1 100%;}',
+      '@container (min-width:1000px){.cv-overview>.cv-cell-wide{flex:0 1 calc(66.666% - 3px);}}',
+      '.cv-ov-fill{display:flex;flex-direction:column;gap:8px;min-height:0;flex:1 1 auto;}',
+      '@container (min-width:1000px){.cv-cell-installed .cv-ov-fill{flex-direction:row;gap:14px;align-items:stretch;}}',
+      '@container (min-width:1000px){.cv-cell-installed .cv-ov-half{flex:1 1 0;min-width:0;}}',
+      '@container (min-width:1000px){.cv-cell-installed .cv-ov-half+.cv-ov-half{border-top:0;border-left:1px solid var(--cv-line);padding-top:0;padding-left:14px;margin:0;}}',
+      '.cv-ov-half{min-width:0;display:flex;flex-direction:column;gap:2px;}',
+      '.cv-ov-half+.cv-ov-half{border-top:1px solid var(--cv-line);padding-top:6px;margin-top:2px;}',
+      '.cv-ov-label{font-size:11px;font-weight:600;color:var(--cv-text-2);padding:0 2px 2px;}',
+      '@container (min-width:1000px){.cv-cell-installed .cv-ov-half{flex:1 1 auto;}.cv-cell-installed .cv-ov-half .cv-mini-rows{grid-template-columns:minmax(0,1fr);}}',
       '.cv-rows{display:grid;grid-template-columns:minmax(0,1fr);gap:2px 14px;min-width:0;}',
       '@container (min-width:1180px){.cv-rows{grid-template-columns:repeat(2,minmax(0,1fr));}}',
       '@container (min-width:1440px){.cv-rows{grid-template-columns:repeat(3,minmax(0,1fr));}}',
       '.cv-mini-rows{display:grid;grid-template-columns:minmax(0,1fr);gap:0 14px;min-width:0;}',
-      '@container (min-width:1180px){.cv-mini-rows{grid-template-columns:repeat(2,minmax(0,1fr));}}',
-      '@container (min-width:1440px){.cv-mini-rows{grid-template-columns:repeat(3,minmax(0,1fr));}}',
-      '.cv-ov-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;}',
-      '.cv-ov-row-a,.cv-ov-row-b,.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:minmax(0,1fr) !important;}',
-      '@container (min-width:560px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}',
-      '@container (min-width:1120px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}.cv-ov-row-c>.cv-cell-usage{grid-column:auto !important;}}',
       '.cv-cell{min-width:0;display:block;}',
-      '.cv-ov-row>.cv-cell:only-child{grid-column:1 / -1;}',
-      '.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{display:grid;}',
-      '@container (min-width:560px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(2,minmax(0,1fr));}.cv-ov-row-c>.cv-cell-usage{grid-column:1 / -1;}}',
       '.cv-main-inner,.cv-grid2,.cv-grid3,.cv-grid4,.cv-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:start;min-width:0;}',
-      '.cv-card{box-sizing:border-box;min-width:0;background:var(--cv-surface,var(--dsw-alias-bg-layer-1));border:1px solid var(--cv-line,var(--dsw-alias-border-l1));border-radius:10px;padding:9px 11px 10px;}',
+      '.cv-card{height:100%;box-sizing:border-box;min-width:0;background:var(--cv-surface,var(--dsw-alias-bg-layer-1));border:1px solid var(--cv-line,var(--dsw-alias-border-l1));border-radius:10px;padding:9px 11px 10px;}',
       '.cv-card-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0;margin-bottom:6px;}',
       '.cv-card-head h3{margin:0;font-size:12px;font-weight:600;color:var(--cv-text);min-width:0;}',
       '.cv-card-note{margin-left:auto;font-size:10.5px;line-height:1.4;color:var(--cv-text-3);text-align:right;max-width:100%;}',
@@ -590,8 +604,6 @@ window.__ModuleLoader__.load({
       '.cv-stat-label{order:0;font-size:11px;color:var(--cv-text-2);}',
       '.cv-stat-value{order:1;font-size:20px;font-weight:600;letter-spacing:-.6px;color:var(--cv-text);font-variant-numeric:tabular-nums;}',
       '.cv-stat-foot{order:2;font-size:10.5px;line-height:1.4;color:var(--cv-text-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
-      '@container (min-width:720px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(2,minmax(0,1fr));}}',
-      '@container (min-width:1120px){.cv-ov-row-c,.cv-ov-row-d,.cv-ov-row-e{grid-template-columns:repeat(3,minmax(0,1fr));}.cv-ov-row-c>.cv-cell-usage{grid-column:auto;}}',
       '.cv-section-bar{display:flex;align-items:baseline;gap:7px;min-width:0;}',
       '.cv-section-bar h3{color:var(--cv-text);}',
       '.cv-empty-line{margin:0;padding:3px 0 4px;color:var(--cv-text-3);font-size:10.5px;line-height:1.5;}',
@@ -2451,7 +2463,7 @@ function useColumnCount() {
         if (picked === null || picked === undefined) return ''
         return String(picked)
       }
-      const miniRows = (items) => h('div', { className: 'cv-mini-rows' },
+      const miniRows = (items, dense) => h('div', { className: 'cv-mini-rows' + (dense ? ' cv-mini-3' : '') },
         items.map((item) => h('button', {
           key: item.key,
           type: 'button',
@@ -2471,20 +2483,26 @@ function useColumnCount() {
         if (delta !== 0) return delta
         return String(left.title || left.name).localeCompare(String(right.title || right.name))
       })
-      const buildPicksBlock = () => miniRows(scored.slice(0, 12).map((item) => ({
+      const buildPicksBlock = () => miniRows(scored.map((item) => ({
         key: String(item.id || item.name),
         lead: numberFmt(item.score, chinese),
         title: textOf(item.title) || textOf(item.name),
         tag: reasonOf(item),
         go: () => { setOpenRec(item.id); setView('recs') },
-      })))
-      const buildInstalledBlock = () => miniRows(installedOrdered.slice(0, 14).map((item) => ({
-        key: String(item.name),
-        lead: (chinese ? item.statusZh : item.statusEn) || t(item.status),
-        title: textOf(item.title) || textOf(item.name),
-        tag: item.status === 'unused' ? t('unused') : numberFmt(item.calls, chinese) + ' ' + t('installedCalls'),
-        go: () => setView('installed'),
-      })))
+      }), true))
+      const buildInstalledBlock = () => {
+        const each = h('div', { className: 'cv-ov-half' }, miniRows(installedOrdered.map((item) => ({
+          key: String(item.name),
+          lead: (chinese ? item.statusZh : item.statusEn) || t(item.status),
+          title: textOf(item.title) || textOf(item.name),
+          tag: item.status === 'unused' ? t('unused') : numberFmt(item.calls, chinese) + ' ' + t('installedCalls'),
+          go: () => setView('installed'),
+        }))))
+        const delta = h('div', { className: 'cv-ov-half' },
+          h('div', { className: 'cv-ov-label' }, t('cvSectionInsight')),
+          buildInsightBlock())
+        return h('div', { className: 'cv-ov-fill' }, each, delta)
+      }
       const buildInsightBlock = () => {
         const rows = []
         if (diff) {
@@ -2516,34 +2534,28 @@ function useColumnCount() {
           title: textOf(gap.label) || textOf(gap.tag),
           tag: textOf(gap.evidence),
           go: () => setView('gaps'),
-        })))
+        })), true)
       }
 
       const buildOverviewCards = () => {
-        const cell = (key, node) => h('div', {
+        // Wrap layout instead of fixed rows: cards flow into 320px columns and
+        // fill BOTH sides, so the page stays dense at any window width.
+        const cell = (key, node, size) => h('div', {
           key,
           'data-card-key': key,
-          className: 'cv-cell cv-cell-' + key,
+          className: 'cv-cell cv-cell-' + key + (size ? ' cv-cell-' + size : ''),
         }, node)
-        const row = (key, cells) => h('div', { key: 'row-' + key, className: 'cv-ov-row cv-ov-row-' + key }, cells)
         return h('div', { className: 'cv-overview' },
-          row('a', cell('installed', h(Panel, { title: t('cvSectionInstalled'), count: installedCount, note: t('installedHint') }, buildInstalledBlock()))),
-          row('b', cell('picks', h(Panel, { title: t('cvSectionPicks'), count: scored.length, note: t('recommendHint') }, buildPicksBlock()))),
-          row('c', [
-            cell('sources', h(Panel, { title: t('cvSectionSources'), note: t('chartSourceHint') }, sourcesNode)),
-            cell('health', healthCard),
-            cell('usage', usageCard),
-          ]),
-          row('d', [
-            cell('insight', h(Panel, { title: t('cvSectionInsight'), note: t('diffHint') }, buildInsightBlock())),
-            cell('gapsblock', h(Panel, { title: t('cvSectionGaps'), count: gaps.length, note: t('gapsHint') }, buildGapsBlock())),
-            cell('model', modelCard),
-          ]),
-          row('e', [
-            cell('donut', h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut)),
-            cell('tools', h(Panel, { title: t('cvSectionTopTools'), note: t('cvToolNote') }, topTools.length === 0 ? h('p', { className: 'cv-empty-line' }, t('cvToolEmpty')) : h(Bars, { items: topTools }))),
-            cell('log', buildActivityCard()),
-          ]),
+          cell('installed', h(Panel, { title: t('cvSectionInstalled'), count: installedCount, note: t('installedHint') }, buildInstalledBlock()), 'wide'),
+          cell('picks', h(Panel, { title: t('cvSectionPicks'), count: scored.length, note: t('recommendHint') }, buildPicksBlock())),
+          cell('gapsblock', h(Panel, { title: t('cvSectionGaps'), count: gaps.length, note: t('gapsHint') }, buildGapsBlock())),
+          cell('sources', h(Panel, { title: t('cvSectionSources'), note: t('chartSourceHint') }, sourcesNode)),
+          cell('health', healthCard),
+          cell('usage', usageCard),
+          cell('model', modelCard),
+          cell('donut', h(Panel, { title: t('chartUsageTitle'), note: fill(t('chartUsageHint'), { days }) }, usageDonut)),
+          cell('tools', h(Panel, { title: t('cvSectionTopTools'), note: t('cvToolNote') }, topTools.length === 0 ? h('p', { className: 'cv-empty-line' }, t('cvToolEmpty')) : h(Bars, { items: topTools }))),
+          cell('log', buildActivityCard()),
         )
       }
 
@@ -2839,7 +2851,7 @@ const chatCard = h(Panel, { title: t('chatTitle'), note: t('chatHint') },
           : view === 'installed' ? [installedSection]
             : view === 'insight' ? [insightSection]
               : view === 'gaps' ? [gapsSection]
-                : [buildOverviewCards(), buildActivityCard()]
+                : [buildOverviewCards()]
 
       const toastCard = toast === null ? null : h('div', {
         className: 'cv-note',

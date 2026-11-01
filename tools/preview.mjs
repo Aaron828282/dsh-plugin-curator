@@ -143,14 +143,14 @@ for (const width of widths) {
       cards,
     }
   })
-  info.rows = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => ({ c: r.className.split(' ').pop(), n: r.children.length, w: Math.round(r.getBoundingClientRect().width), h: Math.round(r.getBoundingClientRect().height) })))
+  info.rows = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-overview > .cv-cell')).map((r) => ({ c: String(r.className).split(' ').pop(), n: r.children.length, w: Math.round(r.getBoundingClientRect().width), h: Math.round(r.getBoundingClientRect().height) })))
   info.shot = await page.screenshot({ encoding: 'base64', fullPage: false })
   info.bytes = Buffer.from(await page.screenshot({ fullPage: false })).toString('base64')
   info.cssText = await page.evaluate(() => Array.from(document.querySelectorAll('style')).map((el) => (el.textContent || '').length))
-  info.probe = await page.evaluate(() => { const out = { at: '', ar: '' }; for (const sheet of Array.from(document.styleSheets)) { for (const rule of Array.from(sheet.cssRules || [])) { const t = rule.cssText || ''; if (t.includes('cv-ov-row') && !out.at) out.at = t.slice(0, 200); if (t.includes('data-probe') && !out.ar) out.ar = t.slice(0, 100) } } return out })
-  info.which = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => r.className.split(' ').pop() + '=' + getComputedStyle(r).gridTemplateColumns.slice(0, 40)))
-  info.mq = await page.evaluate(() => { const r = document.querySelector('.cv-ov-row-c'); return { w: Math.round(r.getBoundingClientRect().width), mq900: window.matchMedia('(min-width: 900px)').matches, mq1120: window.matchMedia('(min-width: 1120px)').matches, dpr: window.devicePixelRatio } })
-  info.geo = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((r) => { const c = r.firstElementChild; const k = c ? c.firstElementChild : null; const rr = r.getBoundingClientRect(); const cr = c ? c.getBoundingClientRect() : null; const kr = k ? k.getBoundingClientRect() : null; const cs = getComputedStyle(r); return { row: Math.round(rr.width), cell: cr ? Math.round(cr.width) : -1, card: kr ? Math.round(kr.width) : -1, disp: cs.display, cols: cs.gridTemplateColumns.slice(0, 30) } }))
+  info.probe = await page.evaluate(() => { const out = { at: '', ar: '' }; for (const sheet of Array.from(document.styleSheets)) { for (const rule of Array.from(sheet.cssRules || [])) { const t = rule.cssText || ''; if (t.includes('cv-overview') && !out.at) out.at = t.slice(0, 200); if (t.includes('data-probe') && !out.ar) out.ar = t.slice(0, 100) } } return out })
+  info.which = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-overview > .cv-cell')).map((r) => String(r.className).split(' ').pop() + '=' + Math.round(r.getBoundingClientRect().width)))
+  info.mq = await page.evaluate(() => { const r = document.querySelector('.cv-overview'); return { w: r ? Math.round(r.getBoundingClientRect().width) : 0, mq900: window.matchMedia('(min-width: 900px)').matches, mq1120: window.matchMedia('(min-width: 1120px)').matches, dpr: window.devicePixelRatio } })
+  info.geo = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-overview')).map((r) => { const c = r.firstElementChild; const k = c ? c.firstElementChild : null; const rr = r.getBoundingClientRect(); const cr = c ? c.getBoundingClientRect() : null; const kr = k ? k.getBoundingClientRect() : null; const cs = getComputedStyle(r); return { row: Math.round(rr.width), cell: cr ? Math.round(cr.width) : -1, card: kr ? Math.round(kr.width) : -1, disp: cs.display, cols: cs.gridTemplateColumns.slice(0, 30) } }))
   info.errors = errors
   info.chain = await page.evaluate(() => {
     const out = []
@@ -163,7 +163,7 @@ for (const width of widths) {
     out.push({ c: 'BODY', w: Math.round(document.body.getBoundingClientRect().width), fs: getComputedStyle(document.body).fontSize, mx: getComputedStyle(document.body).maxWidth })
     return out
   })
-  info.groups = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-ov-row')).map((row) => ({ c: String(row.className), w: Math.round(row.getBoundingClientRect().width), cols: getComputedStyle(row).gridTemplateColumns })))
+  info.groups = await page.evaluate(() => Array.from(document.querySelectorAll('.cv-overview > .cv-cell')).map((row) => ({ c: String(row.className), w: Math.round(row.getBoundingClientRect().width), cols: getComputedStyle(row).gridTemplateColumns })))
   info.media = await page.evaluate(() => window.matchMedia('(min-width: 1120px)').matches)
   info.overview = await page.evaluate(() => {
     const el = document.querySelector('.cv-overview')
